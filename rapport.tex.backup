@@ -1,0 +1,103 @@
+\documentclass[12pt, a4paper, titlepage, oneside]{article}
+
+%%%%%% On commence par enjoliver %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage[francais]{babel}	%typographie française
+% \usepackage[utf-8]{inputenc}	% accents 8 bits dans le source
+\usepackage[T1]{fontenc}	% accents dans le DVI
+\usepackage{lmodern}	% Sans cette ligne la typo va être merdique!!!
+
+\pdfcompresslevel=9
+\usepackage[pdftex]{graphicx}
+\DeclareGraphicsExtensions{.jpg, .png , .pdf}
+
+
+%%%%%% on inclue de l'utilitaire %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage{float}
+\usepackage{graphicx}
+\newcommand{\Hrule}{\rule{\linewidth}{0.5mm}}
+\usepackage{listings}
+
+%%%%%% on configure des marges mouzat-compliant (c'est pas terrible quand on utilise des foot-notes, à améliorer)
+% \usepackage{vmargin}
+% \setmarginsrb{1.5cm}{1.5cm}{1.5cm}{1.5cm}{15.71402pt}{1.5cm}{0.5cm}{2cm}
+
+%%%%%% On personnalise la numérotation qui par défaut s'arrête aux subsubsections
+\setcounter{secnumdepth}{4}	% active la numerotation auto jusqu'au niveau des paragraphes
+\renewcommand{\theparagraph}{\alph{paragraph})}	% et avec une lettre plutôt qu'une plaque d'immatriculation
+
+%%%%%% puis de jolis headers/footers %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\renewcommand{\sectionmark}[1]{\markright{\thesection\ #1}}
+\renewcommand{\headrulewidth}{0.5pt}	% un trait en haut des pages
+\renewcommand{\footrulewidth}{0.5pt}	% et un autre en bas
+\fancyhead{}	% commande pour effacer le header
+\fancyfoot{}	% commande pour effacer le footer
+
+
+\begin{document}
+%%%%%% page de garde %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% 	\input{titre.tex}
+% 	\newpage
+% 	\thispagestyle{empty}
+% 	~
+% 	\input{titre.tex}
+%%%%%% résumé %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% 	\input{resume.tex}
+%%%%%% remerciements %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% 	\fancyhead[L]{Gestion/Supervision d'outils de charge VoIP}%Outils de charge VoIP Open-Source}	%{Evaluation d'outils de charge open-source}
+% 	\fancyhead[R]{Remerciements}
+% 	\fancyfoot[L]{R\&D/CORE/M2V/SID}
+% 	\fancyfoot[C]{}
+% 	\fancyfoot[R]{Rapport de stage 2008}
+% 	\input{remerciements.tex}
+%%%%%% table des matières %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% 	\fancyhead[R]{Table des matières}
+% 	\fancyfoot[C]{}
+% 	\tableofcontents
+% 	\pagebreak
+%%%%%% on rétablie la numérotation à partir d'ici %%%%%%%%%%%%%%%%%%%%%%%%%%%%
+	\fancyfoot[C]{\thepage}
+	\pagenumbering{arabic}
+%%%%%% Introduction %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% 	\fancyhead[R]{Introduction}
+% 	\input{introduction.tex}
+%%%%%% Présentation de l'entreprise %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% 	\fancyhead[R]{Présentation de l'entreprise}
+% 	\input{presentation_entreprise.tex}
+%%%%%% Et enfin l'étude %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+	\fancyhead[R]{\rightmark}
+	\input{partie_1/partie_1.tex}
+% 	\newpage
+% 	~
+% 	\newpage
+% 	\input{partie_2/partie_2.tex}
+% 	\newpage
+% 	~
+% 	\newpage
+% 	\input{partie_3/partie_3.tex}
+%%%%%% Conclusion %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% 	\newpage
+% 	~
+% 	\newpage
+% 	\fancyhead[R]{Conclusion}
+% 	\input{./conclusion.tex}
+%%%%%% Bibliographie %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% 	\fancyhead[R]{Bibliographie}
+% 	\input{./bibliographie.tex}
+% 	\pagebreak
+%%%%%% lexique %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% 	\fancyhead[R]{Lexique}
+% 	\input{lexique.tex}
+%%%%%% table des figures %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% 	\fancyhead[R]{Table des figures}
+% 	\addcontentsline{toc}{section}{Table des figures}
+% 	\listoffigures
+% 	\pagebreak
+% 	\fancyhead{}
+% 	\fancyfoot{}
+% 	\newpage
+% 	~
+% 	\thispagestyle{empty}
+% 	\newpage
+\end{document}
