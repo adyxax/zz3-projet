@@ -21,7 +21,7 @@ column=0
 encoding=UTF-8
 highlight=LaTeX
 line=6
-open=true
+open=false
 order=4
 
 [item:conclusion.tex]
@@ -57,7 +57,7 @@ column=150
 encoding=UTF-8
 highlight=LaTeX
 line=6
-open=true
+open=false
 order=1
 
 [item:partie_2/openvpn.tex]
@@ -66,7 +66,7 @@ column=0
 encoding=UTF-8
 highlight=LaTeX
 line=8
-open=true
+open=false
 order=5
 
 [item:partie_2/partie_2.tex]
@@ -75,7 +75,7 @@ column=25
 encoding=UTF-8
 highlight=LaTeX
 line=0
-open=true
+open=false
 order=2
 
 [item:partie_3/partie_3.tex]
@@ -84,7 +84,7 @@ column=19
 encoding=UTF-8
 highlight=LaTeX
 line=2
-open=true
+open=false
 order=3
 
 [item:rapport.tex]
@@ -125,9 +125,9 @@ order=-1
 
 [item:titre.tex]
 archive=true
-column=0
+column=51
 encoding=UTF-8
 highlight=LaTeX
-line=0
+line=37
 open=false
 order=-1
