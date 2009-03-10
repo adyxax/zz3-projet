@@ -10,7 +10,7 @@ OpenVPN est basé sur une architecture client-server. Le VPN fonctionne soit sit
 \subsubsection{Les deux types de VPN}
 Il existe deux types de VPN : les VPN bridgés et les VPN routés. Dans le cas du mode bridgé le réseau virtuel créé devient une réelle extension du réseau local. L'avantage de ce mode est la facilité d'intégration de la solution VPN au sein de l'infrastructure déjà en place. Ce mode est d'ailleurs la seule option si pour une raison ou pour une autre des paquets broadcasts doivent traverser le VPN. Le principal inconvénient de ce mode apparait lors du passage à l'échelle : comme c'est le réseau local qui doit absorber les clients du VPN, il faut suffisament de ressources disponibles (adresses IP, etc.).
 
-Le mode routé est le mode le plus utilisé. Bien que sa mise en place soit plus complexe, ce mode permet de faire du réseau virtuel un réseau à part du réseau local. On est ainsi capable de mettre en place une politique d'accès différente pour les utilisateurs connectés depuis l'extérieur, ce qui renforce encore la sécurité de l'infrastructure. Le second grand aventage des VPN routés est que le passage a l'échelle s'effectue sans douleur étant donné que l'on n'impacte pas l'utilisation du réseau local.
+Le mode routé est le mode le plus utilisé. Bien que sa mise en place soit plus complexe, ce mode permet de faire du réseau virtuel un réseau à part du réseau local. On est ainsi capable de mettre en place une politique d'accès différente pour les utilisateurs connectés depuis l'extérieur, ce qui renforce encore la sécurité de l'infrastructure. Le second grand aventage des VPN routés est que le passage a l'échelle s'effectue ne pose aucun problème étant donné que l'on n'impacte pas l'utilisation du réseau local.
 
 ~
 
@@ -50,6 +50,13 @@ La version d'OpenVPN utilisée pour le projet est la 2.0.9 disponible sur \verb|
 \subsubsection{Génération des clefs et certificats de sécurité}
 
 \subsubsection{Authentification via l'annuaire de l'ISIMA}
+
+OpenVPN étant capable de réaliser une authentification PAM (méthode standart sur les systèmes UNIX), c'est la solution que nous avons retenue. Nous allons donc configurer un client NIS sur la machine de test, et indiquer à OpenVPN comment l'utiliser.
+
+La première étape consiste à installer l'annuaire NIS si ce n'est pas déjà fait (paquet \texttt|ypserv|) à faire entrer la machine dans le domaine NIS de l'ISIMA : .
+
+
+
 
 \pagebreak
 
