@@ -8,6 +8,40 @@ ipsec esp-sha1
 
 \paragraph{Configuration de base}
 
+Commençons par configurer les interfaces du routeur :
+\begin{figure}[H]
+	\begin{center}
+		\begin{minipage}{0.90\textwidth}
+			\begin{lstlisting}[frame=trBL]
+(config)# hostname CISCOVPN
+(config)# enable secret cisco
+(config)# no ip domain-lookup
+(config)# interface FastEthernet0/0
+(config-if)# description interface to the external network
+(config-if)# ip address dhcp
+(config-if)# no shutdown
+(config-if)# exit
+(config)# interface FastEthernet0/1.1
+(config-if)# description interface to the prof network
+(config-if)# encapsulation dot1Q 333
+(config-if)# ip address 10.0.0.1 255.255.255.0
+(config-if)# exit
+(config)# interface FastEthernet0/1.2
+(config-if)# description interface to the student network
+(config-if)# encapsulation dot1Q 111
+(config-if)# ip address 192.168.0.1 255.255.255.0
+(config-if)# exit
+(config)# interface FastEthernet0/1
+(config-if)# no shutdown
+(config-if)# exit
+			\end{lstlisting}
+		\end{minipage}
+	\end{center}
+	\caption{Configuration des interfaces}
+	\label{configuration_interfaces}
+\end{figure}
+
+Ajoutons
 
 \paragraph{Configuration de l'authentification radius}
 
@@ -19,6 +53,8 @@ Ensuite le cisco.
 
 \paragraph{Configuration du VPN IPSEC}
 
+IKE
+isakmp
 
 
 
