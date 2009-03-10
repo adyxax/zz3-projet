@@ -10,7 +10,7 @@ OpenVPN propose deux types de VPN : les VPN bridgés et les VPN routés. Dans le
 
 TODO : c'est pas tout à fait vrai
 
-Le mode routé est le mode le plus utilisé. Bien que sa mise en place soit plus complexe, ce mode permet de faire du réseau virtuel un réseau à part du réseau local. On est ainsi capable de mettre en place une politique d'accès différente pour les utilisateurs connectés depuis l'extérieur, ce qui renforce encore la sécurité de l'infrastructure. Le second grand aventage des VPN routés est que le passage a l'échelle s'effectue sans douleur étant donné que l'on n'impacte pas l'utilisation du réseau local.
+Le mode routé est le mode le plus utilisé. Bien que sa mise en place soit plus complexe, ce mode permet de faire du réseau virtuel un réseau à part du réseau local. On est ainsi capable de mettre en place une politique d'accès différente pour les utilisateurs connectés depuis l'extérieur, ce qui renforce encore la sécurité de l'infrastructure. Le second grand aventage des VPN routés est que le passage a l'échelle s'effectue ne pose aucun problème étant donné que l'on n'impacte pas l'utilisation du réseau local.
 
 ~
 
@@ -51,7 +51,12 @@ La version d'OpenVPN utilisée pour le projet est la 2.0.9 disponible sur \verb|
 
 \subsubsection{Authentification via l'annuaire de l'ISIMA}
 
+OpenVPN étant capable de réaliser une authentification PAM (méthode standart sur les systèmes UNIX), c'est la solution que nous avons retenue. Nous allons donc configurer un client NIS sur la machine de test, et indiquer à OpenVPN comment l'utiliser.
+
+La première étape consiste à installer l'annuaire NIS si ce n'est pas déjà fait (paquet \texttt|ypserv|) à faire entrer la machine dans le domaine NIS de l'ISIMA : .
+
 \subsubsection{Configuration de démarrage de la machine}
+
 
 \pagebreak
 
