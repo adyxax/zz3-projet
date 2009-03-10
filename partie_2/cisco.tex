@@ -1,0 +1,27 @@
+\subsection{Solution Cisco}
+
+\subsubsection{Généralités}
+ipsec esp-sha1
+
+\subsubsection{Mise en place côté serveur}
+
+
+\paragraph{Configuration de base}
+
+
+\paragraph{Configuration de l'authentification radius}
+
+Tout d'abord le serveur FreeRadius.
+Authentication PAP entre radius server and cisco router :
+Ajouter \verb|ciscovpn User-Password := "isima"|  au début du fichier \verb|/etc/raddb/users|, où ciscovpn est le hostname du routeur et isima le mot de passe qui lui sera associé.
+
+Ensuite le cisco.
+
+\paragraph{Configuration du VPN IPSEC}
+
+
+
+
+\subsubsection{Mise en place côté client}
+
+
