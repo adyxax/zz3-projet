@@ -7,8 +7,9 @@ ipsec esp-sha1
 
 
 \paragraph{Configuration de base}
+~\\
 
-Commençons par configurer les interfaces du routeur :
+Commençons par configurer les interfaces du routeur. L'interface connectée au réseau de l'ISIMA récupère son adresse IP via DHCP. Cela :
 \begin{figure}[H]
 	\begin{center}
 		\begin{minipage}{0.90\textwidth}
@@ -41,9 +42,40 @@ Commençons par configurer les interfaces du routeur :
 	\label{configuration_interfaces}
 \end{figure}
 
-Ajoutons
+~
+
+Configurons maintenant les accès à distance au routeur :
+\begin{figure}[H]
+	\begin{center}
+		\begin{minipage}{0.90\textwidth}
+			\begin{lstlisting}[frame=trBL]
+(config)# banner login #Unauthorized access prohibited - F5 only!#
+(config)# banner motd #
+This router is part of a wonderfull ZZ3F5 project for 2008-2009.
+If you have any question, comment, insults, whatsoever...
+please contact coscia@poste.isima.fr and dessaux@poste.isima.fr.
+Thank you if you read this till the end.#
+(config)# enable secret cisco
+(config)# line con 0
+(config-line)# logging synchronous
+(config-line)# password cisco
+(config-line)# login
+(config-line)# exit
+(config)# line vty 0 4
+(config-line)# transport input telnet
+(config-line)# password cisco
+(config-line)# login
+(config-line)# exit
+(config)# service password-encryption
+			\end{lstlisting}
+		\end{minipage}
+	\end{center}
+	\caption{Configuration des interfaces}
+	\label{configuration_interfaces}
+\end{figure}
 
 \paragraph{Configuration de l'authentification radius}
+~\\
 
 Tout d'abord le serveur FreeRadius.
 Authentication PAP entre radius server and cisco router :
@@ -52,11 +84,65 @@ Ajouter \verb|ciscovpn User-Password := "isima"|  au début du fichier \verb|/et
 Ensuite le cisco.
 
 \paragraph{Configuration du VPN IPSEC}
+~\\
 
-IKE
-isakmp
+Les lignes qui suivent permettent de configurer la cryptographie isakmp :
+\begin{itemize}
+	\item algorithme de chiffrement triple DES.
+	\item algorithme de hashage sha-1.
+	\item authentification via clefs partagées.
+	\item Diffie-Hellman 1024 bits.
+	\item durée de vie du contexte cryptographique égale à une journée.
+	\item utilisation du hostname plutôt que de l'adresse IP pour protéger les échanges.
+\end{itemize}
 
 
+\begin{figure}[H]
+	\begin{center}
+		\begin{minipage}{0.90\textwidth}
+			\begin{lstlisting}[frame=trBL]
+(config)# crypto isakmp policy 1
+(config-isakmp)# encryption 3des
+(config-isakmp)# hash sha
+(config-isakmp)# authentication pre-share
+(config-isakmp)# group 2
+(config-isakmp)# lifetime 86400
+(config-isakmp)# exit
+(config)# crypto isakmp identity hostname
+			\end{lstlisting}
+		\end{minipage}
+	\end{center}
+	\caption{Configuration IKE}
+	\label{configuration_ike}
+\end{figure}
+
+Ajoutons les pools DHCP qui fourniront leurs adresses IP aux étudiants et aux professeurs :
+\begin{figure}[H]
+	\begin{center}
+		\begin{minipage}{0.90\textwidth}
+			\begin{lstlisting}[frame=trBL]
+(config)# ip local pool profs 10.0.1.20 10.0.1.254
+(config)# crypto isakmp client configuration group profs
+(config-isakmp-group)# key isimaprofs
+(config-isakmp-group)# dns 10.0.0.11
+(config-isakmp-group)# domain isima.fr
+(config-isakmp-group)# pool profs
+(config-isakmp-group)# exit
+(config)# ip local pool students 192.168.1.20 192.168.1.254
+(config)# crypto isakmp client configuration group students
+(config-isakmp-group)# key isimastudents
+(config-isakmp-group)# dns 192.168.1.11
+(config-isakmp-group)# domain isima.fr
+(config-isakmp-group)# pool students
+(config-isakmp-group)# exit
+			\end{lstlisting}
+		\end{minipage}
+	\end{center}
+	\caption{Configuration des interfaces}
+	\label{configuration_interfaces}
+\end{figure}
+
+% TODO certificats
 
 \subsubsection{Mise en place côté client}
 
