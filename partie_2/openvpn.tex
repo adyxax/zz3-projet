@@ -1,4 +1,4 @@
-\section{OpenVPN}
+\subsection{OpenVPN}
 
 \subsubsection{Généralités}
 OpenVPN est un outil Open-Source permettant de créer des tunnels sécurisés (SSL/TLS) à travers un réseau non sûr comme Internet. OpenVPN est à la fois facile à installer et à configurer, en plus d'être disponible sur à peut prêt toutes les plates-formes (Linux, Windows, BSD, Mac OS, Solaris). Le principe de configuration reste le même quelque soit la plate-forme utilisée.
@@ -31,7 +31,7 @@ La figure \ref{tableau_types_vpn} résume les avantages et inconvénient de chac
 
 Nous avons choisi de mettre en place une configuration de VPN routé, car mieux adaptée à l'utilisation que l'ISIMA pourrait en faire.
 
-\subsection{Mise en place côté serveur}
+\subsubsection{Mise en place côté serveur}
 
 La mise en place de l'infrastructure s'effectue en plusieures étapes. Tout d'abord nous installerons et configurerons OpenVPN sur le serveur, ensuite nous génèrerons les clefs et certificats de sécurité nécessaires, et enfin nous mettrons en place les outils nécessaires pour authentifier les utilisateurs via l'annuaire NIS de l'ISIMA.
 
@@ -45,15 +45,20 @@ La machine fonctionne sous \texttt{Linux CentOS 5.1}. OpenVPN n'étant pas dispo
 
 La version d'OpenVPN utilisée pour le projet est la 2.0.9 disponible sur \verb|http://openvpn.net/|. Celle-ci dépend des paquets \verb|lzo-devel-1.08-fr2.i386| et \verb|lzo-1.08-fr2.i386|, disponibles par exemple sur \verb|http://rpmfind.net/|.
 
-\verb|[root@centosvpn ~]# wget ftp://rpmfind.net/linux/freshrpms/redhat/9/lzo/lzo-devel-1.08-fr2.i386.rpm|
+\verb|[root@centosvpn ~]# wget ftp://rpmfind.net/linux/freshrpms/redhat/9/|
+
+\verb|                    lzo/lzo-devel-1.08-fr2.i386.rpm|
+
+
 
 \subsubsection{Génération des clefs et certificats de sécurité}
+
 
 \subsubsection{Authentification via l'annuaire de l'ISIMA}
 
 OpenVPN étant capable de réaliser une authentification PAM (méthode standart sur les systèmes UNIX), c'est la solution que nous avons retenue. Nous allons donc configurer un client NIS sur la machine de test, et indiquer à OpenVPN comment l'utiliser.
 
-La première étape consiste à installer l'annuaire NIS si ce n'est pas déjà fait (paquet \texttt|ypserv|) à faire entrer la machine dans le domaine NIS de l'ISIMA : .
+La première étape consiste à installer le client NIS si ce n'est pas déjà fait (paquet \texttt|ypserv|) et à faire entrer la machine dans le domaine NIS de l'ISIMA. \texttt{glouglou.isima.fr}.
 
 \subsubsection{Configuration de démarrage de la machine}
 
