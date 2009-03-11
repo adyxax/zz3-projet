@@ -7,7 +7,7 @@ ipsec esp-sha1
 
 
 \paragraph{Configuration de base}
-~\\
+~
 
 Commençons par configurer les interfaces du routeur. L'interface connectée au réseau de l'ISIMA récupère son adresse IP via DHCP. Cela :
 \begin{figure}[H]
@@ -47,7 +47,7 @@ Commençons par configurer les interfaces du routeur. L'interface connectée au 
 Configurons maintenant les accès à distance au routeur :
 \begin{figure}[H]
 	\begin{center}
-		\begin{minipage}{0.90\textwidth}
+		\begin{minipage}{0.95\textwidth}
 			\begin{lstlisting}[frame=trBL]
 (config)# banner login #Unauthorized access prohibited - F5 only!#
 (config)# banner motd #
@@ -70,21 +70,43 @@ Thank you if you read this till the end.#
 			\end{lstlisting}
 		\end{minipage}
 	\end{center}
-	\caption{Configuration des interfaces}
-	\label{configuration_interfaces}
+	\caption{Configuration de l'accès à distance}
+	\label{configuration_acces_a_distance}
 \end{figure}
 
-\paragraph{Configuration de l'authentification radius}
-~\\
+\paragraph{Configuration de l'authentification Radius}
+~
 
 Tout d'abord le serveur FreeRadius.
 Authentication PAP entre radius server and cisco router :
 Ajouter \verb|ciscovpn User-Password := "isima"|  au début du fichier \verb|/etc/raddb/users|, où ciscovpn est le hostname du routeur et isima le mot de passe qui lui sera associé.
 
-Ensuite le cisco.
+~
+
+
+\begin{figure}[H]
+	\begin{center}
+		\begin{minipage}{0.90\textwidth}
+			\begin{lstlisting}[frame=trBL]
+(config)# aaa new-model
+(config)# radius-server host 192.168.102.121 auth-port 1812
+acct-port 1813 key isima
+(config)# ip radius source-interface FastEthernet 0/0
+(config)# aaa group server radius RadiusServer
+(config-sg-radius)# radius-server host 192.168.102.121 auth-port
+1812 acct-port 1813
+(config-sg-radius)# exit
+(config)# aaa authentication login default group RadiusServer
+			\end{lstlisting}
+		\end{minipage}
+	\end{center}
+	\caption{Configuration de l'authentification Radius}
+	\label{configuration_authentification_radius}
+\end{figure}
+
 
 \paragraph{Configuration du VPN IPSEC}
-~\\
+~
 
 Les lignes qui suivent permettent de configurer la cryptographie isakmp :
 \begin{itemize}
@@ -128,6 +150,7 @@ Ajoutons les pools DHCP qui fourniront leurs adresses IP aux étudiants et aux p
 (config-isakmp-group)# domain isima.fr
 (config-isakmp-group)# pool profs
 (config-isakmp-group)# exit
+
 (config)# ip local pool students 192.168.1.20 192.168.1.254
 (config)# crypto isakmp client configuration group students
 (config-isakmp-group)# key isimastudents
@@ -138,11 +161,69 @@ Ajoutons les pools DHCP qui fourniront leurs adresses IP aux étudiants et aux p
 			\end{lstlisting}
 		\end{minipage}
 	\end{center}
-	\caption{Configuration des interfaces}
-	\label{configuration_interfaces}
+	\caption{Configuration des pools utilisateurs}
+	\label{configuration_pools_utilisateurs}
 \end{figure}
 
 % TODO certificats
+
+Configurons maintenant la police IPsec :
+\begin{itemize}
+	\item Mise en place de l'ACL pour indiquer que l'on veut filtrer l'ensemble du trafic IP.
+	\item Encapsulation ESP, chiffrement 3des, intégrité sha-1.
+	\item Mode tunnel (ie au niveau 3, par opposition au mode transport au niveau 4).
+	\item Configuration de l'authentification des profs et des étudiants via le serveur radius.
+\end{itemize}
+
+\begin{figure}[H]
+	\begin{center}
+		\begin{minipage}{1\textwidth}
+			\begin{lstlisting}[frame=trBL]
+(config)# access-list 101 permit ip any any
+(config)# crypto ipsec transform-set policy esp-3des esp-sha-hmac
+(cfg-crypto-trans)# mode tunnel
+(cfg-crypto-trans)# exit
+(config)# crypto dynamic-map prof-map 1
+(config-crypto-map)# set transform-set policy
+(config-crypto-map)# exit
+
+(config)# crypto map prof-map
+(config)# crypto map prof-map 1 ipsec-isakmp dynamic prof-map
+(config)# crypto map prof-map client authentication list RadiusServer
+(config)# cryto map prof-map client configuration address respond
+(config)# crypto map prof-map isakmp authorization list 101
+
+(config)# aaa authorization network 101 local
+			\end{lstlisting}
+		\end{minipage}
+	\end{center}
+	\caption{Configuration de la police IPsec}
+	\label{configuration_police_ipsec}
+\end{figure}
+
+une seule crypto map, identification en fonction du group dans le client (appel direct au pool car la crypto map n'y est pas liée, ça marche). Le problème c'est qu'un étudiant peut facilement se faire passer pour un prof.
+
+\begin{figure}[H]
+	\begin{center}
+		\begin{minipage}{1\textwidth}
+			\begin{lstlisting}[frame=trBL]
+(config)# crypto ca identity isima.fr
+(ca-trustpoint)# enrollment url
+http://192.168.102.250/certsrv/mscep/mscep.dll
+(ca-trustpoint)# exit
+(config)# crypto ca authenticate isima.fr
+(config)# crypto ca trustpoint isima.fr
+(ca-trustpoint)# crl optional
+(ca-trustpoint)# exit
+(config)# crypto isakmp policy 1
+(config-isakmp)# authentication rsa-sig
+(config-isakmp)# exit
+			\end{lstlisting}
+		\end{minipage}
+	\end{center}
+	\caption{Configuration de l'authentification via certificats}
+	\label{configuration_authentification_certificats}
+\end{figure}
 
 \subsubsection{Mise en place côté client}
 
