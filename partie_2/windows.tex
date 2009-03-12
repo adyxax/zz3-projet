@@ -183,13 +183,13 @@ Dans l'onglet IP, il faut configurer la manière dont le service va distribuer l
 En naviguant dans les différentes options, on se rend rapidement compte que le service d'accès distant se lie avec une seule carte réseau. C'est la grande limitation. Il n'est pas possible que les deux cartes réseaux destinés pour le traffic interne redirige les différents flux réseaux.
 
 D'un point de vue sécurité, il est possible de créer des stratégies d'accès distant. Pour le projet, nous avons créer une stratégie avec les spécifications suivantes:
-~
+~\
 \begin{itemize}
  	\item Appartenance à un groupe : PROFS ou STUDENTS
 	\item Type d'authentification : MS-CHAP V2
 	\item Spécification du type de connexion : VPN
 \end{itemize}
-
+~
 
 
 Cette stratégie d'accès distant comporte une priorité de 1. Si un client respecte tous ces critères il pourra alors se connecter sur le serveur VPN.
@@ -206,5 +206,12 @@ Dans la stratégie d'accès on peut rajouter un paramètre sur la date. En effet
 
 Concernant le tyoe d'authentification, on utilise le protocole MS-CHAP V2 qui est un protocole propriétaire de Miscrosoft. En complement de cela, le serveur VPN fait un challenge de type MD5 afin d'authentifier le client.
 
-Le protocole MS-CHAP V2 utilise une authentification mutuelle. Cela permet au serveur d'authentification et à la machine distante de vérifier leurs identités respectives. L'inconvenient de cette méthode d'authentification est que le login du client passe en clair sur le réseau. En sniffant la connexion par l'intermédiare de Wireshark, nous nous sommes rendu compte de cela. Par contre, le challenge MD5, et les mots de passe sont chiffrés.
+Le protocole MS-CHAP V2 utilise une authentification mutuelle. Cela permet au serveur d'authentification et à la machine distante de vérifier leurs identités respectives. L'inconvenient de cette méthode est que le login du client passe en clair sur le réseau. En sniffant la connexion par l'intermédiare de Wireshark, nous nous sommes rendu compte de cela. Par contre, le challenge MD5, et les mots de passe sont chiffrés.
 
+
+
+Afin d'améliorer la sécurité, nous avons décider de mettre en place une autorité de certification.
+
+\paragraph{Autorité de certification}
+
+Cette autorité va nous permettre de délivrer des certificats qui nous seront utile par la suite dans la configuration du routeur CISCO. Pour la configuration de l'autorité nous avons choisi une autorité racine autonime ayant comme nom commun ISIMA. Les certificats ont une validité d'un an.
