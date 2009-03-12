@@ -8,10 +8,11 @@
 
 
 \begin{itemize}
-	\item  - DHCP,
-	\item  - DNS, 
-	\item  - Active Directory,
-	\item  - Routage et accès distant.(VPN)
+	\item  DHCP,
+	\item  DNS, 
+	\item  Active Directory,
+	\item  Routage et accès distant (VPN),
+	\item  Autorité de certification (CA).
 \end{itemize}
 ~	
 
@@ -137,4 +138,24 @@ Intéressons nous à présent à la configuration de l'Active Directory.
 \paragraph{Active Directory}
 ~\
 
-Ce service nous a permi de créer un annuaire afin d'indentifier les clients souhaitant se connecter sur le réseau interne.
+Ce service nous a permi de créer un annuaire afin d'indentifier les clients souhaitant se connecter sur le réseau interne. Afin de pouvoir effectuer des tests sur la connexion VPN, nous avons dans un premier temps créeer deux groupes: un groupe STUDENTS et un groupe PROFS.
+
+Il est à noter que lorsqu'on crée un utilisateur, on doit l'ajouter dans le groupe PROFS ou STUDENTS sans oublier de lui donner l'autorisation de pouvoir se connecter. 
+
+\begin{figure}[H]
+	\begin{center}
+		\includegraphics[width=0.50\textwidth]{partie_2/screen_windows/vpn.JPG}\\
+	\end{center}
+	\caption{Autorisation de se connecter via VPN sur le serveur Windows 2k3}
+	\label{VPN_AUTORISATION}
+\end{figure}
+
+Du point de vue de la stratégie de groupe (GPO) nous avons décider de laisser la configuration par défaut.
+
+Une fois les services de base installé, voyons à présent la configuration du service de \textit{Routage et accès distant} .
+
+\paragraph{Routage et accès distant}
+~\
+
+
+Le service routage et accès distant est le service qui va nous permettre de monter un tunnel sécurisé.
