@@ -16,7 +16,16 @@ Le travail a été effectué intégralement dans la salle A214 de l'école. Nous
 \subsection{Etat de l'art}
 \subsubsection{Les différents types de VPN}
 \subsubsection{Les classes de protocoles}
-% \paragraph{Solution IPsec}
+\paragraph{IPsec}
+~
+
+IPsec est une suite protocolaire de niveau 3, visant à apporter la sécurité manquant au protocole IP. Cette suite utilise plusieurs protocoles au cours des différentes phases de mise en place d'IPsec.
+
+La première phase est une phase négociation au cours de laquelle les parties se mettent d'accord sur les algorithmes de chiffrement à utiliser et échangent des clefs de session via le protocole ISAKMP (Internet Security Association and Key Management Protocol). Au cours de cette phase le protocole IKE (Internet Key Exchange) intervient également pour générer ces clefs de session soit grâce à une clef partagée soit à l'aide de certificats RSA.
+
+La seconde phase est la phase de communication au cours de laquelle les données peuvent traverser le tunnel et sont chiffrées. Deux protocoles peuvent intervenir en fonction de la finalité du tunnel : ESP qui fournit à la fois intégrité et confidentialité des données, et AH qui fournit l'intégrité et l'authentification.
+
+
 % \paragraph{VPN basés sur pptp}
 % \paragraph{VPN basés sur TLS}
 
