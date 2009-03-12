@@ -158,4 +158,53 @@ Une fois les services de base installé, voyons à présent la configuration du 
 ~\
 
 
-Le service routage et accès distant est le service qui va nous permettre de monter un tunnel sécurisé.
+Le service routage et accès distant est le service qui va nous permettre de monter un tunnel sécurisé. Lors de l'installation du service, l'administrateur doit choisir l'option ``routage pour réseaux locaux uniquement'' ainsi que l'option ``serveur d'accès distant''. Une fois le service installé, il faut configurer les options de sécurité qui sont propre au serveur (un clique droit sur le nom du serveur permet de modififer les propriétés). Cela correspond à la manière que les utilisateurs s'identifie. Le service propose deux choix : identification par l'annuaire ou bien en utilisant un serveur RADIUS.
+
+\begin{figure}[H]
+	\begin{center}
+		\includegraphics[width=0.50\textwidth]{partie_2/screen_windows/secu_vpn.PNG}\\
+	\end{center}
+	\caption{Choix de la méthode d'authentification}
+	\label{VPN_AUTHENTIFICATION}
+\end{figure}
+
+Nous avons essayer de tester la maquette en utilisant le serveur RADIUS afin que celui-ci authentifie l'utilisateur avec la base NIS. Cependant les essais n'ont pas été concluant, nous n'avons pas pu nous identifier en utilisant notre compte ISIMA. Afin de rendre la maquette fonctionnel, nous avons dû laisser l'authentification par l'intermédiaire de l'annuaire local.
+
+Dans l'onglet IP, il faut configurer la manière dont le service va distribuer les adresses IP. Ici nous avons le choix, soit le système gère les adresses IP en utilisant le service DHCP, soit l'administrateur peut remplir manuellement la plage d'adresse IP. La dernière option ``carte'' qui correpond à un menu déroulant nous permettant de selectionner la carte réseau qui repondrera aux demandes de la création d'un tunnel sécurisé. 
+
+\begin{figure}[H]
+	\begin{center}
+		\includegraphics[width=0.50\textwidth]{partie_2/screen_windows/choix_carte.PNG}\\
+	\end{center}
+	\caption{Selection de l'interface réseau}
+	\label{VPN_CARTE_ECOUTE}
+\end{figure}
+
+En naviguant dans les différentes options, on se rend rapidement compte que le service d'accès distant se lie avec une seule carte réseau. C'est la grande limitation. Il n'est pas possible que les deux cartes réseaux destinés pour le traffic interne redirige les différents flux réseaux.
+
+D'un point de vue sécurité, il est possible de créer des stratégies d'accès distant. Pour le projet, nous avons créer une stratégie avec les spécifications suivantes:
+~
+\begin{itemize}
+ 	\item Appartenance à un groupe : PROFS ou STUDENTS
+	\item Type d'authentification : MS-CHAP V2
+	\item Spécification du type de connexion : VPN
+\end{itemize}
+
+
+
+Cette stratégie d'accès distant comporte une priorité de 1. Si un client respecte tous ces critères il pourra alors se connecter sur le serveur VPN.
+
+\begin{figure}[H]
+	\begin{center}
+		\includegraphics[width=0.50\textwidth]{partie_2/screen_windows/strat.png}\\
+	\end{center}
+	\caption{Stratégie d'accès distant}
+	\label{VPN_STRAT}
+\end{figure}
+
+Dans la stratégie d'accès on peut rajouter un paramètre sur la date. En effet, on le paramétrant, on peut définir une plage horaire où l'utilisateur ne pourra pas se connecter.
+
+Concernant le tyoe d'authentification, on utilise le protocole MS-CHAP V2 qui est un protocole propriétaire de Miscrosoft. En complement de cela, le serveur VPN fait un challenge de type MD5 afin d'authentifier le client.
+
+Le protocole MS-CHAP V2 utilise une authentification mutuelle. Cela permet au serveur d'authentification et à la machine distante de vérifier leurs identités respectives. L'inconvenient de cette méthode d'authentification est que le login du client passe en clair sur le réseau. En sniffant la connexion par l'intermédiare de Wireshark, nous nous sommes rendu compte de cela. Par contre, le challenge MD5, et les mots de passe sont chiffrés.
+
