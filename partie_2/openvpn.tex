@@ -35,9 +35,29 @@ Nous avons choisi de mettre en place une configuration de VPN routé, car mieux 
 
 La mise en place de l'infrastructure s'effectue en plusieures étapes. Tout d'abord nous installerons et configurerons OpenVPN sur le serveur, ensuite nous génèrerons les clefs et certificats de sécurité nécessaires, et enfin nous mettrons en place les outils nécessaires pour authentifier les utilisateurs via l'annuaire NIS de l'ISIMA.
 
+Les interfaces de la machine sont configurées comme indiqué sur le schéma ref{TODO}, et résumé dans le tableau figure \ref{linux_interfaces} :
+
+\begin{figure}[H]
+	\begin{center}
+		\begin{tabular}{c|c|l}
+			Interface & Adresse IP & Commentaire \\
+			\hline
+			eth0 & 192.168.0.10 & Réseau interne étudiants \\
+			eth1 & 192.168.102.121 & Réseau externe \\
+			eth2 & 10.0.0.10 & Réseau interne profs \\
+		\end{tabular}
+	\end{center}
+	\caption{Configuration des interfaces de la machine Linux}
+	\label{linux_interfaces}
+\end{figure}
+
+
 \subsubsection{Installation et configuration d'OpenVPN}
 
-La machine fonctionne sous \texttt{Linux CentOS 5.1}. OpenVPN n'étant pas disponible directement dans les paquets de cette distribution, nous allons construire notre propre rpm. Les paquets requis pour mener à bien cette étape sont à installer grâce à la commande suivante :
+\paragraph{Résolution des dépendances}
+~
+
+La machine fonctionne sous \texttt{Linux CentOS 5.1}. OpenVPN n'étant pas disponible directement dans les paquets de cette distribution (datant d'il y a presque deux ans à l'écriture de ces lignes), nous allons construire notre propre rpm. Les paquets requis pour mener à bien cette étape sont à installer grâce à la commande suivante :
 
 \verb|[root@centosvpn ~]# yum install openssl-devel pam-devel rpm-build gcc-c++|
 
@@ -47,12 +67,87 @@ La version d'OpenVPN utilisée pour le projet est la 2.0.9 disponible sur \verb|
 
 \verb|[root@centosvpn ~]# wget ftp://rpmfind.net/linux/freshrpms/redhat/9/|
 
-\verb|                    lzo/lzo-devel-1.08-fr2.i386.rpm|
+\verb|[root@centosvpn ~]# lzo/lzo-devel-1.08-fr2.i386.rpm|
+
+\verb|[root@centosvpn ~]# rpm -ivh lzo-1.08-fr2.i386 lzo-devel-1.08-fr2.i386.rpm|
+
+\paragraph{Compiler OpenVPN}
+~
+
+Lors de la configuration de notre maquette la version courante d'OpenVPN était la 2.0.9; adaptez les numéros de version avec celui de la dernière release stable d'OpenVPN. Les commandes suivantes permettent à la fois de la récupérer, de la compiler, et de l'installer :
+
+\verb|[root@centosvpn ~]# wget http://openvpn.net/release/openvpn-2.0.9.tar.gz|
+
+\verb|[root@centosvpn ~]# rpmbuild -tb openvpn-2.0.9.tar.gz|
+
+\verb|[root@centosvpn ~]# rpm -ivh /usr/src/redhat/RPMS/i386/openvpn-2.0.9-1.i386.rpm|
+
+\paragraph{Configuration de base}
+~
+
+Une instance d'OpenVPN ne peut gérer qu'un seul pool d'adresses à la fois, et donc un seul type de clients pour le VPN. La solution pour gérer à la fois les professeurs et les étudiants grâce à une même machine est donc de lancer deux instances du serveur en écoute sur un port différent. Nous allons donc utiliser deux fichiers de configuration distincts dont la figure \ref{configuration_base_openvpn} présente les paramètres qui leurs sont communs : Interface d'écoute, protocole de transport, etc.
+
+\begin{figure}[H]
+	\begin{center}
+		\begin{minipage}{0.90\textwidth}
+			\begin{lstlisting}[frame=trBL]
+local 192.168.102.121
+proto udp
+dev tap
+client-to-client
+duplicate-cn
+keepalive 10 120
+comp-lzo
+user nobody
+group nobody
+persist-key
+persist-tun
+status openvpn-status.log
+verb 3
+			\end{lstlisting}
+		\end{minipage}
+	\end{center}
+	\caption{Configuration de base d'OpenVPN}
+	\label{configuration_base_openvpn}
+\end{figure}
+
+~
+
+Pour configurer correctement deux instances qui puissent cohabiter, celles-ci doivent se mettre en écoute sur un port différent. Nous avons choisi le port 1194 (port par défaut d'OpenVPN) pour le serveur profs, ainsi que le port 1195 pour le serveur étudiant. Les figures \ref{configuration_base_prof} et \ref{configuration_base_student} détaillent également la configuration des pool d'adresses à affecter aux clients, ainsi que les informations de routage à leur transmettre :
+
+\begin{figure}[H]
+	\begin{lstlisting}[frame=trBL]
+port 1194
+server 10.0.1.0 255.255.255.0
+ifconfig-pool-persist ipp-profs.txt
+push "route 10.0.0.0 255.255.255.0"
+	\end{lstlisting}
+	\caption{Configuration spécifique à \texttt{/etc/openvpn/server-prof.conf}}
+	\label{configuration_base_prof}
+\end{figure}
+\begin{figure}[H]
+	\begin{lstlisting}[frame=trBL]
+port 1195
+server 192.168.1.0 255.255.255.0
+ifconfig-pool-persist ipp-profs.txt
+push "route 192.168.0.0 255.255.255.0"
+	\end{lstlisting}
+	\caption{Configuration spécifique à \texttt{/etc/openvpn/server-student.conf}}
+	\label{configuration_base_student}
+\end{figure}
 
 
+
+% ca /etc/openvpn/ca.crt
+% cert /etc/openvpn/openvpn.crt
+% key /etc/openvpn/openvpn.key  # This file should be kept secret
+% dh /etc/openvpn/dh1024.pem
+% tls-auth /etc/openvpn/ta.key 0 # This file is secret
+% plugin /usr/share/openvpn/plugin/lib/openvpn-auth-pam.so login
 
 \subsubsection{Génération des clefs et certificats de sécurité}
 
+Nous allons maintenant utiliser openssl pour générer nos clefs et certificats de sécurité.
 
 \subsubsection{Authentification via l'annuaire de l'ISIMA}
 
