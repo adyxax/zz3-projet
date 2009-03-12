@@ -1,20 +1,43 @@
 \section{Introduction à l'étude}
 \subsection{Sujet de l'étude}
-L'objet de cette étude est d'évaluer différentes technologies permettant de mettre en place des connexions sécurisées via des Réseaux Privés Virtuels (VPN). L'objectif est de recenser plusieurs solutions fonctionnant sur divers systèmes d'exploitation et de les confronter entre-elles. Les différentes solutions seront d'abord évaluées en termes de complexité d'installation pour l'utilisateur final, puis en termes de performances, de confort d'utilisation, etc. Ce travail est effectué en vue de mettre en place une solution de VPN au sein de l'ISIMA.
+L'objet de cette étude est d'évaluer différentes technologies permettant de mettre en place des connexions sécurisées via des Réseaux Privés Virtuels (VPN). L'objectif est de recenser plusieurs solutions fonctionnant sur divers systèmes d'exploitation et de les confronter entre-elles. Les différentes solutions seront d'abord évaluées en termes de complexité d'installation pour l'utilisateur final, puis en termes de performances et de facilité d'utilisation.
+
+VPN, ou Réseau Privé Virtuel, est le nom donné à une technologie permettant de relier des machines de façon sécurisée à travers un réseau non sûr comme internet. Ce travail est effectué en vue de mettre en place une telle solution d'accès au sein de l'ISIMA. Les avantages d'une telle installation seraient multiples, de par la possibilité qui serait offerte d'accéder au réseau interne de l'école depuis l'extérieur dans les mêmes conditions que si l'on était à l'intérieur.
 
 % \subsection{Contexte de travail}
 \subsection{Architecture étudiée}
 \subsubsection{Schéma logique}
+
+Le travail a été intégralement réalisé dans la salle A214 de l'école. Nous avons pu mettre en place une maquette complète, permettant de simuler les accès depuis Internet vers un réseau interne. La figure \ref{schema-logique-maquette} présente un schéma logique de la maquette.
+
+\begin{figure}[H]
+	\begin{center}
+% 		\includegraphics[width=\textwidth]{partie_1/images/schema_logique_maquette.JPG}\\
+	\end{center}
+	\caption{Schéma logique de la maquette}
+	\label{schema-logique-maquette}
+\end{figure}
+
 \subsubsection{Schéma physique}
 
+Pour faire cohabiter physiquement les trois architectures ensembles nous avons dû faire des conscessions. La plus importante a consisté à récupérer en DHCP les adresses IP des interfaces connectées au réseau de l'ISIMA, dans un coucis d'interropérabilité. La figure \ref{schema-physique-maquette} illustre l'architecture mise en place :
 
-VPN, ou Réseau Privé Virtuel, est le nom donné à une technologie permettant de relier des machines de façon sécurisée à travers un réseau non sécurisé comme internet. Il existe deux familles de technologies VPN : les VPN basés sur IPsec qui sont la technologie la plus ancienne, et les VPN basés sur SSL qui sont eux plus récents. (TODO : et pptp? et pourquoi)
-
-% \subsection{Architecture étudiée et objectifs fixés}
-Le travail a été effectué intégralement dans la salle A214 de l'école. Nous avons pu mettre en place une maquette sur laquelle travailler, simulant les accès depuis Internet vers le réseau interne de l'ISIMA. La figure ref{schema-logique-maquette} présente un schéma logique de la maquette.
+\begin{figure}[H]
+	\begin{center}
+% 		\includegraphics[width=\textwidth]{partie_1/images/schema_logique_maquette.JPG}\\
+	\end{center}
+	\caption{Schéma physique de la maquette}
+	\label{schema-physique-maquette}
+\end{figure}
 
 \subsection{Etat de l'art}
+
 \subsubsection{Les différents types de VPN}
+
+Comme expliqué précédemment, un VPN est une technologie permettant de créer des connexions sécurisés à travers un réseau non sûr. Pour cela il existe deux types de mises en place, chacune ayant sa finalité : les VPN bridgés et les VPN routés. Les VPN bridgés sont généralement utilisés lors de connexions site-à-site, tandis que les VPN routés sont eux préférés pour connecter des clients nomades.
+
+
+
 \subsubsection{Les classes de protocoles}
 \paragraph{IPsec}
 ~
@@ -25,10 +48,11 @@ La première phase est une phase négociation au cours de laquelle les parties s
 
 La seconde phase est la phase de communication au cours de laquelle les données peuvent traverser le tunnel et sont chiffrées. Deux protocoles peuvent intervenir en fonction de la finalité du tunnel : ESP qui fournit à la fois intégrité et confidentialité des données, et AH qui fournit l'intégrité et l'authentification.
 
+\paragraph{PPTP}
+~
 
-% \paragraph{VPN basés sur pptp}
-% \paragraph{VPN basés sur TLS}
-
+\paragraph{TLS}
+~
 
 \subsection{Objectifs fixés}
 Recenser les technologies de VPN, mettre en place une maquette de test, confronter les différentes solutions.
