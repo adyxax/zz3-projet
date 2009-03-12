@@ -1,9 +1,9 @@
 \subsection{OpenVPN}
 
 \subsubsection{Généralités}
-OpenVPN est un outil Open-Source permettant de créer des tunnels sécurisés (SSL/TLS) à travers un réseau non sûr comme Internet. OpenVPN est à la fois facile à installer et à configurer, en plus d'être disponible sur à peut prêt toutes les plates-formes (Linux, Windows, BSD, Mac OS, Solaris). Le principe de configuration reste le même quelque soit la plate-forme utilisée.
 
-OpenVPN est basé sur une architecture client-server. Le VPN fonctionne soit site-à-site, soit avec des clefs partagées. Les données sont tunnelisées sur un seul port, TCP ou UDP.
+OpenVPN est un outil Open-Source permettant de créer des tunnels sécurisés utilisant un chiffrement SSL/TLS. OpenVPN propose un client à la fois facile à installer et à configurer, en plus d'être disponible sur à peut prêt toutes les plates-formes (Linux, Windows, BSD, Mac OS, Solaris). Le principe de configuration reste le même quelque soit la plate-forme utilisée.
+
 % 
 % \subsubsection{Les deux types de VPN}
 % OpenVPN propose deux types de VPN : les VPN bridgés et les VPN routés. Dans le cas du mode bridgé le réseau virtuel créé devient une réelle extension du réseau local. L'avantage de ce mode est la facilité d'intégration de la solution VPN au sein de l'infrastructure déjà en place. Ce mode est d'ailleurs la seule option si pour une raison ou pour une autre des paquets broadcasts doivent traverser le VPN. Le principal inconvénient de ce mode apparait lors du passage à l'échelle : comme c'est le réseau local qui doit absorber les clients du VPN, il faut suffisament de ressources disponibles (adresses IP, etc.).
@@ -295,8 +295,7 @@ Il nous reste à planifier le lancement des services au démarrage :
 \subsubsection{Mise en place des clients}
 
 
-
-\pagebreak
+\subsubsection{Bilan et limites de la solution}
 
 
 % \begin{figure}[H]
