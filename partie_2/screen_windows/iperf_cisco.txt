@@ -1,0 +1,42 @@
+
+C:\Documents and Settings\Leo\Bureau\Bench Reseau>iperf.exe -s -i1
+------------------------------------------------------------
+Server listening on TCP port 5001
+TCP window size: 8.00 KByte (default)
+------------------------------------------------------------
+[1860] local 10.0.0.50 port 5001 connected with 10.0.1.24 port 1398
+[ ID] Interval       Transfer     Bandwidth
+[1860]  0.0- 1.0 sec  3.73 MBytes  31.3 Mbits/sec
+[1860]  1.0- 2.0 sec  3.76 MBytes  31.5 Mbits/sec
+[1860]  2.0- 3.0 sec  3.77 MBytes  31.7 Mbits/sec
+[1860]  3.0- 4.0 sec  3.69 MBytes  31.0 Mbits/sec
+[1860]  4.0- 5.0 sec  3.79 MBytes  31.8 Mbits/sec
+[1860]  5.0- 6.0 sec  3.76 MBytes  31.5 Mbits/sec
+[1860]  6.0- 7.0 sec  3.75 MBytes  31.4 Mbits/sec
+[1860]  7.0- 8.0 sec  3.76 MBytes  31.5 Mbits/sec
+[1860]  8.0- 9.0 sec  3.77 MBytes  31.7 Mbits/sec
+[1860]  9.0-10.0 sec  3.77 MBytes  31.7 Mbits/sec
+[1860] 10.0-11.0 sec  3.76 MBytes  31.5 Mbits/sec
+[1860] 11.0-12.0 sec  3.78 MBytes  31.7 Mbits/sec
+[1860] 12.0-13.0 sec  3.76 MBytes  31.5 Mbits/sec
+[1860] 13.0-14.0 sec  3.76 MBytes  31.5 Mbits/sec
+[1860] 14.0-15.0 sec  3.76 MBytes  31.5 Mbits/sec
+[1860] 15.0-16.0 sec  3.76 MBytes  31.5 Mbits/sec
+[1860] 16.0-17.0 sec  3.77 MBytes  31.6 Mbits/sec
+[1860] 17.0-18.0 sec  3.77 MBytes  31.7 Mbits/sec
+[1860] 18.0-19.0 sec  3.75 MBytes  31.4 Mbits/sec
+[1860] 19.0-20.0 sec  3.79 MBytes  31.8 Mbits/sec
+[ ID] Interval       Transfer     Bandwidth
+[1860] 20.0-21.0 sec  3.74 MBytes  31.3 Mbits/sec
+[1860] 21.0-22.0 sec  3.75 MBytes  31.5 Mbits/sec
+[1860] 22.0-23.0 sec  3.77 MBytes  31.6 Mbits/sec
+[1860] 23.0-24.0 sec  3.75 MBytes  31.5 Mbits/sec
+[1860] 24.0-25.0 sec  3.76 MBytes  31.5 Mbits/sec
+[1860] 25.0-26.0 sec  3.77 MBytes  31.7 Mbits/sec
+[1860] 26.0-27.0 sec  3.76 MBytes  31.5 Mbits/sec
+[1860] 27.0-28.0 sec  3.77 MBytes  31.7 Mbits/sec
+[1860] 28.0-29.0 sec  3.77 MBytes  31.6 Mbits/sec
+[1860] 29.0-30.0 sec  3.76 MBytes  31.5 Mbits/sec
+[1860] 30.0-31.0 sec  3.71 MBytes  31.1 Mbits/sec
+[1860] 31.0-32.0 sec  3.72 MBytes  31.2 Mbits/sec
+[1860]  0.0-32.7 sec   123 MBytes  31.5 Mbits/sec
