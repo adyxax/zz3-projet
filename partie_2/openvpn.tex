@@ -87,6 +87,8 @@ Lors de la configuration de notre maquette la version courante d'OpenVPN était 
 
 Une instance d'OpenVPN ne peut gérer qu'un seul pool d'adresses à la fois, et donc un seul type de clients pour le VPN. La solution pour gérer à la fois les professeurs et les étudiants grâce à une même machine est donc de lancer deux instances du serveur en écoute sur un port différent. Nous allons donc utiliser deux fichiers de configuration distincts dont la figure \ref{configuration_base_openvpn} présente les paramètres qui leurs sont communs : Interface d'écoute, protocole de transport, etc.
 
+Pour toute la suite nous considérerons que ces fichiers se trouvent dans le dossier \texttt{/etc/openvpn/} et portent les noms \texttt{server-prof.conf} et \texttt{server-student.conf} :
+
 \begin{figure}[H]
 	\begin{center}
 		\begin{minipage}{0.90\textwidth}
@@ -120,9 +122,9 @@ Pour configurer correctement deux instances qui puissent cohabiter, celles-ci do
 port 1194
 server 10.0.1.0 255.255.255.0
 ifconfig-pool-persist ipp-profs.txt
-push "route 10.0.0.0 255.255.255.0"
+push ``route 10.0.0.0 255.255.255.0''
 	\end{lstlisting}
-	\caption{Configuration spécifique à \texttt{/etc/openvpn/server-prof.conf}}
+	\caption{Configuration spécifique aux profs}
 	\label{configuration_base_prof}
 \end{figure}
 \begin{figure}[H]
@@ -130,34 +132,168 @@ push "route 10.0.0.0 255.255.255.0"
 port 1195
 server 192.168.1.0 255.255.255.0
 ifconfig-pool-persist ipp-profs.txt
-push "route 192.168.0.0 255.255.255.0"
+push ``route 192.168.0.0 255.255.255.0''
 	\end{lstlisting}
-	\caption{Configuration spécifique à \texttt{/etc/openvpn/server-student.conf}}
+	\caption{Configuration spécifique aux étudiants}
 	\label{configuration_base_student}
 \end{figure}
 
 
 
-% ca /etc/openvpn/ca.crt
-% cert /etc/openvpn/openvpn.crt
-% key /etc/openvpn/openvpn.key  # This file should be kept secret
-% dh /etc/openvpn/dh1024.pem
-% tls-auth /etc/openvpn/ta.key 0 # This file is secret
 % plugin /usr/share/openvpn/plugin/lib/openvpn-auth-pam.so login
 
 \paragraph{Génération des clefs et certificats de sécurité}
+~
 
-Nous allons maintenant utiliser openssl pour générer nos clefs et certificats de sécurité.
+Dans cette section nous allons voir comment générer les clefs et certificats qui serviront à sécuriser les authentifications auprès du serveur OpenVPN. Pour cela nous allons utiliser une suite de scripts shell nommée \verb|easy-rsa|, une sorte de frontend pour OpenSSL. Cette suite \verb|easy-rsa| fournie avec OpenVPN permet de grandement simplifier le travail de génération et de gestion des clefs et certificats.
 
+~
+
+Commençons par récupérer les outils. Si OpenVPN a été compilé suivant les étapes ci-dessus, ceux-ci se trouve dans le répertoire \verb|/usr/share/openvpn/easy-rsa|. Il faut copier ce répertoire dans un lieu sûr puis ouvrir un shell à cet endroit.
+
+L'étape suivante consiste à éditer le fichier \verb|vars| pour configurer les paramètres globaux des scripts : KEY\_COUNTRY, KEY\_PROVINCE, KEY\_CITY, KEY\_ORG, et KEY\_EMAIL comme indiqué en exemple par la figure \ref{easy-rsa-globals} :
+
+\begin{figure}[H]
+	\begin{center}
+		\begin{minipage}{0.90\textwidth}
+			\begin{lstlisting}[frame=trBL]
+export KEY_COUNTRY=FR
+export KEY_PROVINCE=FR
+export KEY_CITY=``Clermont-Ferrand''
+export KEY_ORG=``ISIMA''
+export KEY_EMAIL=``nobody@nowhere.com''
+			\end{lstlisting}
+		\end{minipage}
+	\end{center}
+	\caption{Paramètres globaux des certificats}
+	\label{easy-rsa-globals}
+\end{figure}
+
+Initialiser ensuite l'environnement du shell en important le contenu du fichier var :
+
+\verb|[root@centosvpn ~]# . ./vars|
+
+Comme c'est notre premier lancement on s'assure que tout est propre :
+
+\verb|[root@centosvpn ~]# ./clean-all|
+
+~
+
+Nous créons ensuite nos clef et certificat de CA (Certificate Authority) afin de pouvoir signer les certificats de nos clients. Seule l'entrée ``COMMON NAME'' n'est pas tirée du fichier \verb|vars|, la valeur \verb|ISIMA CA| fera très bien l'affaire :
+
+\verb|[root@centosvpn ~]# ./build-ca|
+
+~
+
+Nous allons maintenant générer les clefs et certificats pour le serveur et les deux types de clients. L'entrée ``COMMON NAME'' devra être précisée de façon à prendre respectivement les valeurs ``ISIMA SERVER'', ``ISIMA PROF'' et ``ISIMA STUDENT''. De plus il faut signer chaque certificat avec notre CA et commiter le résultat dans la base OpenSSL du serveur :
+
+\verb|[root@centosvpn ~]# ./build-key-server server|
+
+\verb|[root@centosvpn ~]# ./build-key prof|
+
+\verb|[root@centosvpn ~]# ./build-key student|
+
+~
+
+Ensuite nous initialisons un générateur de grand nombres premiers pour le procédé d'échange de clefs via la méthode Diffie Hellman :
+
+\verb|[root@centosvpn ~]# ./build-dh|
+
+~
+
+Pour finir, il nous reste à générer une dernière clef qui sera utilisée pour signer chaque paquet échangé entre les clients et le serveur et augmenter encore le niveau de sécurité du serveur VPN :
+
+\verb|[root@centosvpn ~]# (cd keys ; openvpn --genkey --secret ta.key)|
+
+~
+
+Dans cette section nous avons généré de nombreuses clefs et certificats dans le dossier \verb|keys| de notre répertoire de travail. Le tableau de la figure \ref{easy-rsa-clefs} indique les rôles et finalité de chacun des fichiers, ainsi que leur niveau de confidentialité. Les fichiers qui ne figurent pas dans le tableau peuvent être simplement supprimés.
+
+\begin{figure}[H]
+	\begin{center}
+		\begin{tabular}{l|l|l|c}
+			Fichier		& Requis par	& Rôle							& Secret\\
+			\hline
+			ta.key		& Tous			& clef de signature				& OUI\\
+			ca.crt		& Tous			& certificat root CA			& non\\
+			ca.key		& serveur		& clef privée Root CA			& OUI\\
+			dh{n}.pem	& serveur		& paramètres Diffie Hellman		& non\\
+			server.crt	& serveur		& certificat serveur			& non\\
+			server.key	& serveur		& server Key					& OUI\\
+			prof.crt	& professeurs	& certificat public professeurs	& non\\
+			prof.key	& professeurs	& clef privée professeurs		& OUI\\
+			student.crt	& étudiants		& certificat public étudiants	& non\\
+			student.key	& étudiants		& clef privée étudiants			& OUI\\
+		\end{tabular}
+	\end{center}
+	\caption{Rôle des clefs et certificats}
+	\label{easy-rsa-clefs}
+\end{figure}
+
+Il reste donc à copier les clefs et certificats du serveur dans le dossier \verb|/etc/openvpn| et à indiquer dans nos deux fichiers de configuration du serveur d'utiliser ces fichiers en leur ajoutant les lignes suivantes :
+
+\begin{figure}[H]
+	\begin{center}
+		\begin{minipage}{0.90\textwidth}
+			\begin{lstlisting}[frame=trBL]
+ca /etc/openvpn/ca.crt
+cert /etc/openvpn/server.crt
+key /etc/openvpn/server.key
+dh /etc/openvpn/dh1024.pem
+tls-auth /etc/openvpn/ta.key 0
+			\end{lstlisting}
+		\end{minipage}
+	\end{center}
+	\caption{Configuration des clefs et certificats}
+	\label{configuration-clefs-et-certificats-serveur}
+\end{figure}
 
 
 \paragraph{Authentification via l'annuaire de l'ISIMA}
+~
 
-OpenVPN étant capable de réaliser une authentification PAM (méthode standart sur les systèmes UNIX), c'est la solution que nous avons retenue. Nous allons donc configurer un client NIS sur la machine de test, et indiquer à OpenVPN comment l'utiliser.
+OpenVPN étant capable de réaliser une authentification PAM (méthode standart sur les systèmes de type UNIX), c'est la solution que nous avons retenue. Nous allons donc configurer un client NIS sur la machine de test, et indiquer à OpenVPN comment l'utiliser.
 
-La première étape consiste à installer le client NIS si ce n'est pas déjà fait (paquet \texttt|ypserv|) et à faire entrer la machine dans le domaine NIS de l'ISIMA. \texttt{glouglou.isima.fr}.
+La première étape consiste à installer le client NIS si ce n'est pas déjà fait (paquet \texttt{ypserv}) et à faire entrer la machine dans le domaine NIS de l'ISIMA en ajoutant la ligne suivante au fichier \verb|/etc/yp.conf|. Il va de soie que glouglou doit être référencé dans le fichier \verb|/etc/hosts| de la machine.
 
-% \subsubsection{Configuration de démarrage de la machine}
+\verb|domain glouglou.isima.fr server glouglou|
+
+~
+
+La deuxième étape consiste à indiquer au système qu'il doit intérroger la base NIS lorsqu'un utilisateur tente de s'authentifier. Pour cela il faut modifier 3 des lignes du fichier \verb|/etc/nsswitch.conf| pour obtenir :
+
+\begin{figure}[H]
+	\begin{center}
+		\begin{minipage}{0.90\textwidth}
+			\begin{lstlisting}[frame=trBL]
+passwd:     files nis
+shadow:     files nis
+group:      files nis
+			\end{lstlisting}
+		\end{minipage}
+	\end{center}
+	\caption{Authentification via l'annuaire NIS}
+	\label{nsswitch_conf}
+\end{figure}
+
+
+\paragraph{Finalisation du serveur}
+~
+
+La configuration du serveur touche à sa fin, il nous reste à protéger nos fichiers de configurations, clefs et certificats des regards indiscrets. Il est également judicieux de supprimer les clefs privées du répertoire \verb|easy-rsa|.
+
+\verb|[root@centosvpn ~]# chmod -R 600 /etc/openvpn|
+
+~
+
+Il nous reste à planifier le lancement des services au démarrage :
+
+\verb|[root@centosvpn ~]# chkconfig --add ypbind|
+
+\verb|[root@centosvpn ~]# chkconfig --add openvpn|
+
+\subsubsection{Mise en place des clients}
+
 
 
 \pagebreak
