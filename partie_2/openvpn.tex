@@ -4,32 +4,32 @@
 OpenVPN est un outil Open-Source permettant de créer des tunnels sécurisés (SSL/TLS) à travers un réseau non sûr comme Internet. OpenVPN est à la fois facile à installer et à configurer, en plus d'être disponible sur à peut prêt toutes les plates-formes (Linux, Windows, BSD, Mac OS, Solaris). Le principe de configuration reste le même quelque soit la plate-forme utilisée.
 
 OpenVPN est basé sur une architecture client-server. Le VPN fonctionne soit site-à-site, soit avec des clefs partagées. Les données sont tunnelisées sur un seul port, TCP ou UDP.
-
-\subsubsection{Les deux types de VPN}
-OpenVPN propose deux types de VPN : les VPN bridgés et les VPN routés. Dans le cas du mode bridgé le réseau virtuel créé devient une réelle extension du réseau local. L'avantage de ce mode est la facilité d'intégration de la solution VPN au sein de l'infrastructure déjà en place. Ce mode est d'ailleurs la seule option si pour une raison ou pour une autre des paquets broadcasts doivent traverser le VPN. Le principal inconvénient de ce mode apparait lors du passage à l'échelle : comme c'est le réseau local qui doit absorber les clients du VPN, il faut suffisament de ressources disponibles (adresses IP, etc.).
-
-TODO : c'est pas tout à fait vrai
-
-Le mode routé est le mode le plus utilisé. Bien que sa mise en place soit plus complexe, ce mode permet de faire du réseau virtuel un réseau à part du réseau local. On est ainsi capable de mettre en place une politique d'accès différente pour les utilisateurs connectés depuis l'extérieur, ce qui renforce encore la sécurité de l'infrastructure. Le second grand aventage des VPN routés est que le passage a l'échelle s'effectue ne pose aucun problème étant donné que l'on n'impacte pas l'utilisation du réseau local.
-
-~
-
-La figure \ref{tableau_types_vpn} résume les avantages et inconvénient de chacun des deux types de VPN :
-\begin{figure}[H]
-	\begin{center}
-		\begin{tabular}{c|c}
-			VPN bridgé & VPN routé \\
-			\hline
-			extension du réseau local & réseau à part \\
-			mauvais passage à l'échelle & passage à l'échelle \\
-			laisse passer les broadcasts & broadcasts impossibles \\
-		\end{tabular}
-	\end{center}
-	\caption{Avantages et inconvénients des deux types de VPN}
-	\label{tableau_types_vpn}
-\end{figure}
-
-Nous avons choisi de mettre en place une configuration de VPN routé, car mieux adaptée à l'utilisation que l'ISIMA pourrait en faire.
+% 
+% \subsubsection{Les deux types de VPN}
+% OpenVPN propose deux types de VPN : les VPN bridgés et les VPN routés. Dans le cas du mode bridgé le réseau virtuel créé devient une réelle extension du réseau local. L'avantage de ce mode est la facilité d'intégration de la solution VPN au sein de l'infrastructure déjà en place. Ce mode est d'ailleurs la seule option si pour une raison ou pour une autre des paquets broadcasts doivent traverser le VPN. Le principal inconvénient de ce mode apparait lors du passage à l'échelle : comme c'est le réseau local qui doit absorber les clients du VPN, il faut suffisament de ressources disponibles (adresses IP, etc.).
+% 
+% TODO : c'est pas tout à fait vrai
+% 
+% Le mode routé est le mode le plus utilisé. Bien que sa mise en place soit plus complexe, ce mode permet de faire du réseau virtuel un réseau à part du réseau local. On est ainsi capable de mettre en place une politique d'accès différente pour les utilisateurs connectés depuis l'extérieur, ce qui renforce encore la sécurité de l'infrastructure. Le second grand aventage des VPN routés est que le passage a l'échelle s'effectue ne pose aucun problème étant donné que l'on n'impacte pas l'utilisation du réseau local.
+% 
+% ~
+% 
+% La figure \ref{tableau_types_vpn} résume les avantages et inconvénient de chacun des deux types de VPN :
+% \begin{figure}[H]
+% 	\begin{center}
+% 		\begin{tabular}{c|c}
+% 			VPN bridgé & VPN routé \\
+% 			\hline
+% 			extension du réseau local & réseau à part \\
+% 			mauvais passage à l'échelle & passage à l'échelle \\
+% 			laisse passer les broadcasts & broadcasts impossibles \\
+% 		\end{tabular}
+% 	\end{center}
+% 	\caption{Avantages et inconvénients des deux types de VPN}
+% 	\label{tableau_types_vpn}
+% \end{figure}
+% 
+% Nous avons choisi de mettre en place une configuration de VPN routé, car mieux adaptée à l'utilisation que l'ISIMA pourrait en faire.
 
 \subsubsection{Mise en place côté serveur}
 
@@ -155,7 +155,7 @@ OpenVPN étant capable de réaliser une authentification PAM (méthode standart 
 
 La première étape consiste à installer le client NIS si ce n'est pas déjà fait (paquet \texttt|ypserv|) et à faire entrer la machine dans le domaine NIS de l'ISIMA. \texttt{glouglou.isima.fr}.
 
-\subsubsection{Configuration de démarrage de la machine}
+% \subsubsection{Configuration de démarrage de la machine}
 
 
 \pagebreak
