@@ -1,7 +1,7 @@
 	Pour ce projet, nous avons décider d'installer Windows Server 2003 Entreprise Edition, afin d'avoir un sytème d'exploitation récent. Toutes les fonctionnalités utilisées pour la création d'un VPN sont incluses dans cette version. Il n'y a pas besoin d'installer une application tierce.
 	Voyons à présent les différents services nécessaires pour la mise en place du VPN de Microsoft.
 
-\subsubsection{Services installés}
+\subsubsection{Côté serveur : les services installés}
 
 	Afin de pouvoir se mettre dans les conditions du réseau interne de l'ISIMA, nous avons décidé de configurer plusieurs services:
 ~
@@ -314,3 +314,34 @@ Il est à remarquer que sous Windows 2000 la taille de la clé ne dépasse pas l
 	\caption{Cryptage MPPE}
 	\label{VPN_CRYPTAGE}
 \end{figure}
+
+
+\subsubsection{Bilan et limites de la solution}
+~
+
+Microsoft propose une solution VPN très intéressante et facile à mettre en place (côté serveur comme côte client). Cependant, elle est vraiment destiné à des petites structures réseaux. Dans le cas de l'ISIMA, la structure du réseau est plus complexe. En effet, le réseau se compose d'une branche PROFESSEUR et d'une branche ETUDIANT. L'inconvenient majeur de Microsoft est que chaque service doit se lier avec une seule carte réseau. Il est donc impossible de dissocier le trafic réseau sur les deux cartes, ce qui ne respecte pas le cachier des charges du projet.
+
+Du point de vue client, nous n'avons pas réussi à nous connecter avec une plateforme LINUX à cause d'une mauvaise implementation du protocole PPTP.
+
+
+Concernant la récupération des login et des mots de passe de l'ISIMA, nous avons décider de ne pas interfacer notre maquette, car le service VPN se lie avec une seule carte réseau. Ceci nous empeche de gérer le réseau et de savoir quelle type d'utilisateur est connecté (PROF ou ELEVE). Cependant, la procédure à suivre serait de rajouter sur le domaine de l'ISIMA le serveur Windows et de lancer une réplication de la base Active Directory. 
+Si l'on souhaite utiliser la base NIS de l'ISIMA Microsoft propose une suite d'outil \verb| Windows Service for UNIX| téléchargeable directement sur le site. Cette suite propose d'intégrer à Windows les commandes d'UNIX. On pourra par exemple utiliser les commandes YPCAT. Une des améliorations possible de la maquette serait de récuperer toutes les informations des personnes de l'ISIMA via ces outils. L'interopérabilité serait complète.
+
+D'un point de vue sécurité, sans l'utilisation de certificats, le mot de passe du client est crypté. Par contre le login du client et le nom de la machine est en clair sur le réseau pendant la phase du challenge MD5. 
+Voici une trace issue de Wireshark qui montre ce problème de sécurité.
+
+\begin{figure}[H]
+	\begin{center}
+		\includegraphics[width=0.5\textwidth]{partie_2/screen_windows/connexion.png}\\
+	\end{center}
+	\caption{Trace d'une connexion}
+	\label{VPN_CONNEXION}
+\end{figure}
+
+
+Par rapport à l'autorité de certifications, nous avons été capable de générer des certificats et les installer sur les machines tests. Par contre, la connexion avec le serveur VPN n'a pas pu s'établir. A l'heure actuel nous ne savons toujours pas d'où provient le problème. Nous soupçonnons un problème de communication entre l'autorité de certification et la machine test.
+
+Après avoir expliquer la configuration du serveur Windows 2003 et ses limitations, intéressons nous à la solution VPN sous Linux avec le logiciel OpenVPN.
+ 
+
+
