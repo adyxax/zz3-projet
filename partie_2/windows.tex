@@ -303,4 +303,14 @@ Pour notre exemple, nous utiliserons l'utilisateur \verb leo. Une fois la connex
 Cette image nous montre des informations importantes sur la nature du VPN. Tout d'abord, elle nous informe le protocole qu'elle utilise. Ici on utilise PPTP. Ensuite, le client nous donne le type de connexion : VPN ainsi que sa nouvelle adresse IP : 10.0.2.106
 Du point de vue sécurité, l'authentification se fait par l'intermédiaire de MS-CHAP V2 et le chiffrement par le protocole MPPE.
 
-MPPE est le protocole de chiffrement de Microsoft. Il se base l'algorithme RSA RC4 MPPE supporte 
+MPPE est le protocole de chiffrement de Microsoft. Il se base l'algorithme RSA RC4. MPPE supporte trois tailles de clés : 40 bits, 56 bits et 128 bits.
+
+Il est à remarquer que sous Windows 2000 la taille de la clé ne dépasse pas les 40 bits. Il ne faut pas oublier d'activer sur le serveur VPN les différents tailles des clés sans quoi la connexion est refusée. 
+
+\begin{figure}[H]
+	\begin{center}
+		\includegraphics[width=0.50\textwidth]{partie_2/screen_windows/cryptage.PNG}\\
+	\end{center}
+	\caption{Cryptage MPPE}
+	\label{VPN_CRYPTAGE}
+\end{figure}
