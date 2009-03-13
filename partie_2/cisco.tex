@@ -5,7 +5,7 @@ ipsec esp-sha1
 
 \subsubsection{Mise en place côté serveur}
 
-
+% TODO ecrire le noyau du routeur : c2800mn-advsecurityk9-mz.124-24.T.bin
 \paragraph{Configuration de base}
 ~
 
@@ -228,4 +228,41 @@ http://192.168.102.250/certsrv/mscep/mscep.dll
 
 \subsubsection{Mise en place côté client}
 
+La mise en place du côté client necessite l'installation du client CISCO sur sa machine. Ce client a la particularité d'être compatible avec Linux.
 
+L'installation du client ne demande pas d'explication propre car celle-ci est relativement basique. Dans cette partie nous allons expliquer la configuration que le client doit faire lorsqu'il souhaite se connecter sur le serveur VPN.
+
+Tout d'abord la création d'une nouvelle connexion se fait grâce au bouton ``NEW''. Une nouvelle fenêtre s'ouvre et demande à l'utilisateur de remplir différentes informations comme son groupe, l'adresse IP du serveur et la clé partagé. Ici dans notre exemple, on souhaite se connecter sur le réseau PROFS. La clé partagée est \verb isimaprofs.
+
+\begin{figure}[H]
+	\begin{center}
+		\includegraphics[width=0.75\textwidth]{partie_2/screen_windows/client_cisco.png}\\
+	\end{center}
+	\caption{Client CISCO}
+	\label{VPN_CISCO}
+\end{figure}
+
+
+Une fois les informations remplie, le client va lancer la phase 1 d'ISAKMP afin de négocier la méthode d'authenrification avec le routeur CISCO. Si cette opération est réussite, une nouvelle fenêtre s'ouvre afin que l'utilisateur puisse entrer son login et son mot de passe et s'authentifier grâce au serveur NIS de l'ISIMA.
+
+\begin{figure}[H]
+	\begin{center}
+		\includegraphics[width=0.75\textwidth]{partie_2/screen_windows/fenetre_connexion.PNG}\\
+	\end{center}
+	\caption{Identification du client}
+	\label{VPN_CISCO_CLIENT}
+\end{figure}
+
+
+
+\subsubsection{Bilan et limites de la solution}
+
+Dans cette partie, nous ferons des brefs tests de connexion afin de vérifier le bon fonctionnement de la solution.
+
+% TODO inserser le fichier profs.txt
+
+On peut refaire la même expérience en se connectant avec un utilisateur appartenant au groupe STUDENTS.
+
+% TODO inserser le fichier students.txt
+
+On remarque bien que la solution CISCO est fonctionnelle, en fonction du groupe d'appartenance le routeur est capable de rediriger l'utilisateur sur le bon réseau.
