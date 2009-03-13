@@ -213,5 +213,63 @@ Le protocole MS-CHAP V2 utilise une authentification mutuelle. Cela permet au se
 Afin d'améliorer la sécurité, nous avons décider de mettre en place une autorité de certification.
 
 \paragraph{Autorité de certification}
+~
 
-Cette autorité va nous permettre de délivrer des certificats qui nous seront utile par la suite dans la configuration du routeur CISCO. Pour la configuration de l'autorité nous avons choisi une autorité racine autonime ayant comme nom commun ISIMA. Les certificats ont une validité d'un an.
+
+Cette autorité va nous permettre de délivrer des certificats qui nous seront utile par la suite dans la configuration du routeur CISCO. Pour la configuration de l'autorité nous avons choisi une autorité racine autonome ayant comme nom commun ISIMA. Les certificats ont une validité d'un an. D'un point de vue sécurité, l'autorité utilise l'algorithme de hashage SHA-1 et pour le cryptage on utilise Microsoft Strong Cryptographic Provider. La clé publique est chiffrée grâce à l'algorithme RSA sur 2048 bits.
+Pour récupérer un certificat, le client doit se connecter sur l'URL suivante : \verb|http://192.168.102.250/certsrv|
+Lorsqu'il se connecte sur cette page, il doit faire une demande de certificat. L'utilisateur a le choix entre un certificat de type WEB ou de type MESSAGERIE. Une fois le choix fait, l'autorité de certification recoit une demande de certificat. L'administrateur doit autoriser ou refuser cette demande. Dans le cas où la demande est validée, l'utilisateur doit se reconnecter à nouveau sur le site WEB afin de pouvoir installer ce certificat sur sa machine.
+
+Cependant, après avoir fait plusieurs essais, la connexion sur le serveur VPN Windows ne se produit pas. Nous pensons que le problème se situe dans la définition de la requête du certificat. Pour l'architecture du VPN Windows, ne nous utiliserons pas d'autorité de certification afin d'augmenter le niveau de sécurité. 
+
+Voyons à présent, la configuration du côté client
+
+\subsubsection{Configuration du client}
+~
+
+
+L'un des avantages majeures de la solution Windows est que le client VPN est déjà intégrer dans le système d'exploitation de Microsoft. Voici les différentes étapes pour la création d'une connexion VPN.
+
+La 1ère étape consiste à configurer une nouvelle connexion. La connexion de type entreprise permet à l'utilisateur de se connecter au réseau privé. (VPN).
+
+	\begin{minipage}{0.5\textwidth}
+		\begin{flushleft} \large
+			\includegraphics[height=7cm]{partie_2/screen_windows/etape1.PNG}\\
+		\end{flushleft}
+	\end{minipage}
+	\begin{minipage}{0.43\textwidth}
+		\begin{flushright} \large
+			\includegraphics[height=7cm]{partie_2/screen_windows/etape2.PNG}\\
+		\end{flushright}
+	\end{minipage}
+
+~\
+
+La 2ème étape consiste à donner un nom à sa connexion VPN et spécifier si l'on souhaite effectuer une connexion initiale avant la connexion VPN.
+
+	\begin{minipage}{0.5\textwidth}
+		\begin{flushleft} \large
+			\includegraphics[height=7cm]{partie_2/screen_windows/etape3.PNG}\\
+		\end{flushleft}
+	\end{minipage}
+	\begin{minipage}{0.43\textwidth}
+		\begin{flushright} \large
+			\includegraphics[height=7cm]{partie_2/screen_windows/etape4.PNG}\\
+		\end{flushright}
+	\end{minipage}
+~\
+
+
+La dernière étape est importante car on spécifie l'adresse du serveur qui nous permettera de monter une liaison sécurié. L'utilisateur pourra pour augmenter la sécurité utiliser une carte à puce pour s'authentifier.
+
+	\begin{minipage}{0.5\textwidth}
+		\begin{flushleft} \large
+			\includegraphics[height=7cm]{partie_2/screen_windows/etape5.PNG}\\
+		\end{flushleft}
+	\end{minipage}
+	\begin{minipage}{0.43\textwidth}
+		\begin{flushright} \large
+			\includegraphics[height=7cm]{partie_2/screen_windows/etape6.PNG}\\
+		\end{flushright}
+	\end{minipage}
+~\
