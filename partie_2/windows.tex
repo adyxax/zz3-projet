@@ -232,6 +232,7 @@ L'un des avantages majeures de la solution Windows est que le client VPN est dé
 
 La 1ère étape consiste à configurer une nouvelle connexion. La connexion de type entreprise permet à l'utilisateur de se connecter au réseau privé. (VPN).
 
+\begin{figure}[H]
 	\begin{minipage}{0.5\textwidth}
 		\begin{flushleft} \large
 			\includegraphics[height=7cm]{partie_2/screen_windows/etape1.PNG}\\
@@ -242,11 +243,14 @@ La 1ère étape consiste à configurer une nouvelle connexion. La connexion de t
 			\includegraphics[height=7cm]{partie_2/screen_windows/etape2.PNG}\\
 		\end{flushright}
 	\end{minipage}
-
+	\caption{Configuration nouvelle connexion}
+	\label{VPN_ETAPE1}
+\end{figure}
 ~\
 
 La 2ème étape consiste à donner un nom à sa connexion VPN et spécifier si l'on souhaite effectuer une connexion initiale avant la connexion VPN.
 
+\begin{figure}[H]
 	\begin{minipage}{0.5\textwidth}
 		\begin{flushleft} \large
 			\includegraphics[height=7cm]{partie_2/screen_windows/etape3.PNG}\\
@@ -257,11 +261,15 @@ La 2ème étape consiste à donner un nom à sa connexion VPN et spécifier si l
 			\includegraphics[height=7cm]{partie_2/screen_windows/etape4.PNG}\\
 		\end{flushright}
 	\end{minipage}
+	\caption{Configuration nom connexion}
+	\label{VPN_ETAPE2}
+\end{figure}
 ~\
 
 
 La dernière étape est importante car on spécifie l'adresse du serveur qui nous permettera de monter une liaison sécurié. L'utilisateur pourra pour augmenter la sécurité utiliser une carte à puce pour s'authentifier.
 
+\begin{figure}[H]
 	\begin{minipage}{0.5\textwidth}
 		\begin{flushleft} \large
 			\includegraphics[height=7cm]{partie_2/screen_windows/etape5.PNG}\\
@@ -272,4 +280,27 @@ La dernière étape est importante car on spécifie l'adresse du serveur qui nou
 			\includegraphics[height=7cm]{partie_2/screen_windows/etape6.PNG}\\
 		\end{flushright}
 	\end{minipage}
+	\caption{Configuration adresse IP du serveur VPN}
+	\label{VPN_ETAPE3}
+\end{figure}
+
 ~\
+
+Une fois la nouvelle connexion VPN crée le client va pouvoir désormais se connecter sur le serveur VPN en utilisant un login et un mot de passe qui ont été défini dans l'Active Directory. Nous avons laissé les configurations de sécurité par défaut pour le client.
+
+Pour notre exemple, nous utiliserons l'utilisateur \verb leo. Une fois la connexion accepté par le serveur, voici ce que l'utilisateur peut voir sur son sytème d'exploitation.
+
+\begin{figure}[H]
+	\begin{center}
+		\includegraphics[width=0.50\textwidth]{partie_2/screen_windows/etape7.PNG}\\
+	\end{center}
+	\caption{Information VPN}
+	\label{VPN_ETAPE7}
+\end{figure}
+
+~\
+
+Cette image nous montre des informations importantes sur la nature du VPN. Tout d'abord, elle nous informe le protocole qu'elle utilise. Ici on utilise PPTP. Ensuite, le client nous donne le type de connexion : VPN ainsi que sa nouvelle adresse IP : 10.0.2.106
+Du point de vue sécurité, l'authentification se fait par l'intermédiaire de MS-CHAP V2 et le chiffrement par le protocole MPPE.
+
+MPPE est le protocole de chiffrement de Microsoft. Il se base l'algorithme RSA RC4 MPPE supporte 
