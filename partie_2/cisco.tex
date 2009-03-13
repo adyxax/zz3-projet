@@ -80,6 +80,7 @@ Thank you if you read this till the end.#
 Tout d'abord le serveur FreeRadius.
 Authentication PAP entre radius server and cisco router :
 Ajouter \verb|ciscovpn User-Password := "isima"|  au début du fichier \verb|/etc/raddb/users|, où ciscovpn est le hostname du routeur et isima le mot de passe qui lui sera associé.
+Ajouter quelques lignes pour autoriser le router à interroger la base RADIUS dans le fichier /etc/raddb/clients.conf, et commenter la ligne shadow dans radiusd.conf
 
 ~
 
@@ -105,7 +106,7 @@ acct-port 1813 key isima
 \end{figure}
 
 
-\paragraph{Configuration du VPN IPSEC}
+\paragraph{Configuration d'IPsec}
 ~
 
 Les lignes qui suivent permettent de configurer la cryptographie isakmp :
