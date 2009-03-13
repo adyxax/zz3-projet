@@ -139,9 +139,6 @@ push ``route 192.168.0.0 255.255.255.0''
 \end{figure}
 
 
-
-% plugin /usr/share/openvpn/plugin/lib/openvpn-auth-pam.so login
-
 \paragraph{Génération des clefs et certificats de sécurité}
 ~
 
@@ -276,6 +273,10 @@ group:      files nis
 	\label{nsswitch_conf}
 \end{figure}
 
+Le dernier point consiste à indiquer aux instances d'OpenVPN qu'elles doivent charger le module d'authentification PAM, en ajoutant une ligne à la configuration de chaque serveur :
+
+\verb|plugin /usr/share/openvpn/plugin/lib/openvpn-auth-pam.so login|
+
 
 \paragraph{Finalisation du serveur}
 ~
@@ -296,13 +297,83 @@ Il nous reste à planifier le lancement des services au démarrage :
 
 Comme expliqué précédemment, il existe un client pour OpenVPN quelque soit la plate-forme utilisée. Le client pour Windows peut être récupéré depuis le site officiel d'OpenVPN et à l'installer comme n'importe quel autre logiciel. Pour ce qui est des systèmes Linux récents, ils possèdent tous un client OpenVPN intégré à la distribution. Concernant les autres systèmes, c'est à dire les Linux moins récents, MacOS, Solaris et BSD il est nécessaire de récupérer les sources du client (au format tar.gz) depuis le site officiel d'OpenVPN puis le compiler. De nombreux tutoriaux existent et couvrent tous les cas de figure pour ces différents systèmes.
 
-Une fois le client installé la configuration est extrêmement simple : il suffit de copier le fichier de paramètres ainsi que le certificat et la clef du client dans le bon répertoire : \verb|/etc/openvpn/| pour les systèmes UNIX, et généralement \verb|c:\Program Files\openvpn\config| sous Windows.
+Une fois le client installé la configuration est extrêmement simple : il suffit de copier le fichier de paramètres ainsi que le certificat et la clef du client dans le bon répertoire : \verb|/etc/openvpn/| pour les systèmes UNIX, et généralement \verb|c:\Program Files\openvpn\config| sous Windows. Les différents fichiers pourrait typiquement être récupérés depuis l'intranet.
 
-à récupérer depuis une section spécifique de l'intranet
+La figure \ref{config_openvpn_client_student} présente le contenu des fichiers de configuration pour les clients professeur et étudiant :
 
+\begin{figure}[H]
+	\begin{minipage}{0.50\textwidth}
+		\begin{flushleft}
+			\begin{minipage}{0.90\textwidth}
+				\begin{lstlisting}[frame=trBL]
+client
+dev tap
+proto udp
+remote 192.168.102.121 1194
+resolv-retry infinite
+nobind
+persist-key
+persist-tun
+ca ca.crt
+cert prof.crt
+key prof.key
+ns-cert-type server
+tls-auth ta.key 1
+comp-lzo
+verb 3
+auth-user-pass
+				\end{lstlisting}
+			\end{minipage}
+		\end{flushleft}
+	\end{minipage}
+	\begin{minipage}{0.49\textwidth}
+		\begin{flushright}
+			\begin{minipage}{0.90\textwidth}
+				\begin{lstlisting}[frame=trBL]
+client
+dev tap
+proto udp
+remote 192.168.102.121 1195
+resolv-retry infinite
+nobind
+persist-key
+persist-tun
+ca ca.crt
+cert student.crt
+key student.key
+ns-cert-type server
+tls-auth ta.key 1
+comp-lzo
+verb 3
+auth-user-pass
+				\end{lstlisting}
+			\end{minipage}
+		\end{flushright}
+	\end{minipage}
+	\caption{Configuration des clients OpenVPN étudiant et professeur}
+	\label{config_openvpn_client_student}
+\end{figure}
+
+Une fois installé et lancé, le client est très discret, comme le montre la figure \ref{openvpn_screen_windows}
+
+\begin{figure}[H]
+	\begin{center}
+		\includegraphics[width=0.50\textwidth]{partie_2/images/openvpn-client-connect.png}\\
+	\end{center}
+	\caption{Client OpenVPN sous windows}
+	\label{openvpn_screen_windows}
+\end{figure}
 
 
 \subsubsection{Bilan et limites de la solution}
+
+Une fois passée la phase un peu fastidieuse de mise en place et de configuration du serveur, OpenVPN se révèle facile à installer et à utiliser. Côté serveur, une fois les phases de compilation, installation, configuration, génération des certificats et lien avec la base NIS accomplies, le travail d'administration du serveur est quasi nul et n'impose plus que de regénérer les certificats une fois de temps en temps.
+
+Côté client, la tâche est aisée, tout du moins sous Linux et Windows. Pour les autres systèmes la tâche peut se révéler complexe, mais le client a au moins le mérite d'exister et de fonctionner parfaitement.
+
+La solution en elle même fournit un très bon niveau de sécurité. Les différents certificats permettent non seulement d'identifier les clients auprès du serveur, mais assurent également les clients qu'ils s'adressent bien au bon serveur. Pour finir l'authentification des clients est réalisée en faisant directement appel à l'annuaire de l'ISIMA.
+
+En conclusion, OpenVPN est une solution mature et flexible qui rempli parfaitement le cahier des charges, tant du point de vue de la sécurité et de la méthode d'authentification que par son caractère multiplate-formes.
 
 
 % \begin{figure}[H]
