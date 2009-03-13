@@ -1,0 +1,6 @@
+
+Configuration IP de Windows
+Carte Ethernet Connexion au réseau local:
+        Suffixe DNS propre à la connexion : isima.fr        Adresse IP. . . . . . . . . . . . : 192.168.102.79        Masque de sous-réseau . . . . . . : 255.255.255.0        Passerelle par défaut . . . . . . : 
+Carte Ethernet Connexion au réseau local 3:
+        Suffixe DNS propre à la connexion : isima.fr        Adresse IP. . . . . . . . . . . . : 192.168.1.20        Masque de sous-réseau . . . . . . : 255.255.255.0        Passerelle par défaut . . . . . . : 192.168.1.20
