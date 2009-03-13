@@ -292,7 +292,14 @@ Il nous reste à planifier le lancement des services au démarrage :
 
 \verb|[root@centosvpn ~]# chkconfig --add openvpn|
 
-\subsubsection{Mise en place des clients}
+\subsubsection{Mise en place du client}
+
+Comme expliqué précédemment, il existe un client pour OpenVPN quelque soit la plate-forme utilisée. Le client pour Windows peut être récupéré depuis le site officiel d'OpenVPN et à l'installer comme n'importe quel autre logiciel. Pour ce qui est des systèmes Linux récents, ils possèdent tous un client OpenVPN intégré à la distribution. Concernant les autres systèmes, c'est à dire les Linux moins récents, MacOS, Solaris et BSD il est nécessaire de récupérer les sources du client (au format tar.gz) depuis le site officiel d'OpenVPN puis le compiler. De nombreux tutoriaux existent et couvrent tous les cas de figure pour ces différents systèmes.
+
+Une fois le client installé la configuration est extrêmement simple : il suffit de copier le fichier de paramètres ainsi que le certificat et la clef du client dans le bon répertoire : \verb|/etc/openvpn/| pour les systèmes UNIX, et généralement \verb|c:\Program Files\openvpn\config| sous Windows.
+
+à récupérer depuis une section spécifique de l'intranet
+
 
 
 \subsubsection{Bilan et limites de la solution}
