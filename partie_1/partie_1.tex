@@ -1,8 +1,12 @@
 \section{Introduction à l'étude}
 \subsection{Sujet de l'étude}
-L'objet de cette étude est d'évaluer différentes technologies permettant de mettre en place des connexions sécurisées via des Réseaux Privés Virtuels (VPN). L'objectif est de recenser plusieurs solutions fonctionnant sur divers systèmes d'exploitation et de les confronter entre-elles. Les différentes solutions seront d'abord évaluées en termes de complexité d'installation pour l'utilisateur final, puis en termes de performances et de facilité d'utilisation.
+L'objet de cette étude est d'évaluer différentes technologies permettant de mettre en place des connexions sécurisées via des Réseaux Privés Virtuels (VPN). L'objectif est de recenser plusieurs solutions fonctionnant sur divers systèmes d'exploitation et de les confronter entre-elles. Les différentes solutions seront d'abord évaluées en termes de complexité d'installation et d'administration, puis en termes de performances et de facilité d'utilisation.
 
-VPN, ou Réseau Privé Virtuel, est le nom donné à une technologie permettant de relier des machines de façon sécurisée à travers un réseau non sûr comme internet. Ce travail est effectué en vue de mettre en place une telle solution d'accès au sein de l'ISIMA. Les avantages d'une telle installation seraient multiples, de par la possibilité qui serait offerte d'accéder au réseau interne de l'école depuis l'extérieur dans les mêmes conditions que si l'on était à l'intérieur.
+VPN, ou Réseau Privé Virtuel, est le nom donné à une technologie permettant de relier des machines de façon sécurisée à travers un réseau non sûr comme Internet. Ce travail est effectué en vue de mettre en place une telle solution d'accès au sein de l'ISIMA. Les avantages d'une telle installation seraient multiples, du fait de la possibilité d'accéder au réseau interne de l'école depuis l'extérieur dans les mêmes conditions que si l'on était à l'intérieur.
+
+Deux catégories de solutions VPN existent. On distingue les plate-formes dédiées tels les concentrateurs que les grands équipementiers proposent, et les solutions logicielles disponibles sur les systèmes d'exploitation courants : Microsoft a sa solution, le monde de l'Open-Source également.
+
+Trois architecture ont donc été étudiées afin d'être en accord avec la diversité des solutions existantes : un routeur CISCO 2811XM configuré pour faire du VPN, un WindowsServer2K3 avec les services requis pour établir de connexions VPN, ainsi qu'un serveur Linux CentOS 5.1 avec le logiciel libre OpenVPN. La mise en place d'une plate-forme de test sera au coeur de cette étude.
 
 % \subsection{Contexte de travail}
 \subsection{Architecture étudiée}
@@ -34,9 +38,7 @@ Pour faire cohabiter physiquement les trois architectures ensembles nous avons d
 
 \subsubsection{Les différents types de VPN}
 
-Comme expliqué précédemment, un VPN est une technologie permettant de créer des connexions sécurisés à travers un réseau non sûr. Pour cela il existe deux types de mises en place, chacune ayant sa finalité : les VPN bridgés et les VPN routés. Les VPN bridgés sont généralement utilisés lors de connexions site-à-site, tandis que les VPN routés sont eux préférés pour connecter des clients nomades.
-
-
+Comme expliqué précédemment, un VPN est une technologie permettant de créer des connexions sécurisés à travers un réseau non sûr. Pour cela il existe deux types de mises en place, chacune ayant sa finalité : les VPN bridgés et les VPN routés. Les VPN bridgés sont généralement utilisés lors de connexions site-à-site, tandis que les VPN routés sont eux préférés pour connecter des clients nomades. La mise en place d'un VPN routé s'impose donc pour cette étude, car parfaitement adaptée à l'usage que l'ISIMA pourrait en faire.
 
 \subsubsection{Les classes de protocoles}
 \paragraph{IPsec}
