@@ -50,11 +50,19 @@ La première phase est une phase négociation au cours de laquelle les parties s
 
 La seconde phase est la phase de communication au cours de laquelle les données peuvent traverser le tunnel et sont chiffrées. Deux protocoles peuvent intervenir en fonction de la finalité du tunnel : ESP qui fournit à la fois intégrité et confidentialité des données, et AH qui fournit l'intégrité et l'authentification.
 
-\paragraph{PPTP}
+
+\paragraph{pptp}
 ~
+
+PPTP (Point to Point Tunneling Protocol) est un protocole dont le rôle consiste à construire des paquets PPP (Point to Point Protocole) pour les encapsuler dans des datagrammes IP. PPTP tire ainsi aventage des mécanismes d'authentification, de chiffrement et de compression déjà existants pour PPP (niveau 2) en les appliquant au niveau 3. Le principal aventage de ce protocole est son excellente intégration avec les systèmes Microsoft, au sein desquels la suite protocolaire de PPP a été réimplémentée pour accompagner PPTP.
+
+Ainsi on utilise Ms-Chap (Microsoft-Challenge Handshake Authentication Protocol) pour l'authentification, MPPe 'Microsoft Point to Point Encryption) pour le chiffrement, et enfin MPPc (Microsoft Point to Point Compression) pour la compression. Au cours d'une session VPN entre un client et le serveur, une connexion TCP est utilisée pour le contrôle de la liaison. Quand à l'échange de données, celui-ci requiert un canal UDP et s'appuie sur le protocole GRE (Generic Routing Encapsulation)..
+
 
 \paragraph{TLS}
 ~
+
+Le protocole TLS 
 
 \subsection{Objectifs fixés}
 Recenser les technologies de VPN, mettre en place une maquette de test, confronter les différentes solutions.
