@@ -10,6 +10,7 @@ Trois architecture ont donc été étudiées afin d'être en accord avec la dive
 
 % \subsection{Contexte de travail}
 \subsection{Architecture étudiée}
+\label{section_architecture_etudiee}
 \subsubsection{Schéma logique}
 
 Le travail a été intégralement réalisé dans la salle A214 de l'école. Nous avons pu mettre en place une maquette complète, permettant de simuler les accès depuis Internet vers un réseau interne. La figure \ref{schema-logique-maquette} présente un schéma logique de la maquette.
@@ -36,9 +37,13 @@ Pour faire cohabiter physiquement les trois architectures ensembles nous avons d
 
 \subsection{Etat de l'art}
 
+\subsubsection{Le problème de la sécurité}
+
+Comme expliqué précédemment, un VPN est une technologie permettant de créer des connexions sécurisés à travers un réseau non sûr.
+
 \subsubsection{Les différents types de VPN}
 
-Comme expliqué précédemment, un VPN est une technologie permettant de créer des connexions sécurisés à travers un réseau non sûr. Pour cela il existe deux types de mises en place, chacune ayant sa finalité : les VPN bridgés et les VPN routés. Les VPN bridgés sont généralement utilisés lors de connexions site-à-site, tandis que les VPN routés sont eux préférés pour connecter des clients nomades. La mise en place d'un VPN routé s'impose donc pour cette étude, car en plus d'être facilement intégrable à l'architecture existante, elle est parfaitement adaptée à l'usage que l'ISIMA pourrait en faire.
+ Il existe deux façons d'aborder la mise en place d'une technologie VPN, chacune ayant sa finalité : les VPN bridgés et les VPN routés. Les VPN bridgés sont généralement utilisés lors de connexions site-à-site, tandis que les VPN routés sont eux préférés pour connecter des clients nomades. La mise en place d'un VPN routé s'impose donc pour cette étude, car en plus d'être facilement intégrable à l'architecture existante, elle est parfaitement adaptée à l'usage que l'ISIMA pourrait en faire.
 
 \subsubsection{Les classes de protocoles}
 \paragraph{IPsec}
@@ -62,9 +67,17 @@ Ainsi on utilise Ms-Chap (Microsoft-Challenge Handshake Authentication Protocol)
 \paragraph{TLS}
 ~
 
-Le protocole TLS 
+Le protocole TLS est une évolution du protocole SSL qui, après s'être rendu extrêmement populaire dans le domaine des transaction sécurisées au niveau applicatif (notamment le web), a être utilisé dans le domaine des VPN. Le but de ces technologies VPN est de s'appuyer sur la maturité de TLS pour gérer la gestion du tunnel de données ainsi que tous les éléments cryptographiques nécessaires : authentification, confidentialité et intégrité.
+
+Une erreur commune est de penser que comme TLS n'est pas un protocole de niveau 3 les technologies s'appuyant sur lui ne répondent pas aux critères fondamentaux des VPN : il n'en est rien. Il s'agit simplement d'une approche différente du problème, issue d'une constatattion simple : Les systèmes complexes sont les plus difficiles à sécuriser. Là où la mise en place d'IPsec dépend d'une nouvelle pile IP et implique des intéractions à la fois très fortes et très sophistiquées avec le noyau du système, les technologies basées sur TLS s'appuient sur du code s'exécutant dans l'espace utilisateur : une simple interface réseau virtuelle est utilisée pour parvenir à ce résultat.
+
 
 \subsection{Objectifs fixés}
-Recenser les technologies de VPN, mettre en place une maquette de test, confronter les différentes solutions.
+
+Les objectifs de la suite de cette étude sont donc d'étudier la mise en place d'une plate-forme de test pour les différentes solutions qui ont été recensées conformément aux représentations logique et physique de l'architecture présentées en partie \ref{section_architecture_etudiee} page \pageref{section_architecture_etudiee}. Les différentes solutions seront finalement confrontées les uns aux autres dans une dernière partie.
+
+Nous commencerons par étudier la solution Microsoft, viendra ensuite le logiciel OpenVPN sous Linux, et enfin la technologie CISCO. Pour la mise en place de chacune de ces trois solutions, nous nous attarderons sur les problématiques de l'installation et de la configuration, que ce soit côté serveur ou côté client. Chacune de ces parties fera état des problèmes rencontrés au cours de l'étude ainsi que des limites de chaque solution.
+
+Les différentes solutions seront confrontées selon plusieurs critères prenant en compte les contraintes de sécurité des VPN. Elles seront d'abord évaluées en termes de complexité d'installation et d'administration, puis en termes de performances, de niveau de sécurité fourni et de facilité d'utilisation.
 
 \pagebreak
