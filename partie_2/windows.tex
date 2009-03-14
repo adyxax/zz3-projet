@@ -320,7 +320,7 @@ Il est à remarquer que sous Windows 2000 la taille de la clé ne dépasse pas l
 \subsubsection{Bilan et limites de la solution}
 ~
 
-Microsoft propose une solution VPN très intéressante et facile à mettre en place (côté serveur comme côte client). Cependant, elle est vraiment destiné à des petites structures réseaux. Dans le cas de l'ISIMA, la structure du réseau est plus complexe. En effet, le réseau se compose d'une branche PROFESSEUR et d'une branche ETUDIANT. L'inconvenient majeur de Microsoft est que chaque service doit se lier avec une seule carte réseau. Il est donc impossible de dissocier le trafic réseau sur les deux cartes, ce qui ne respecte pas le cachier des charges du projet.
+Microsoft propose une solution VPN très intéressante et facile à mettre en place (côté serveur comme côte client). Cependant, elle est vraiment destiné à des petites structures réseaux. Dans le cas de l'ISIMA, la structure du réseau est plus complexe. En effet, le réseau se compose d'une branche PROFESSEUR et d'une branche ETUDIANT. L'inconvenient majeur de Microsoft est que chaque service doit se lier avec une seule carte réseau. Il est donc impossible de dissocier le trafic réseau sur les deux cartes, ce qui ne respecte pas le cachier des charges du projet. La solution serait de virtualiser un serveur Windows 2003 et de lier la carte réseau virtuel à la carte réseau physique de la machine. Sous VMware par exemple, il faudrait utiliser le mode bridgé pour les cartes réseaux.
 
 Du point de vue client, nous n'avons pas réussi à nous connecter avec une plateforme LINUX à cause d'une mauvaise implementation du protocole PPTP.
 
