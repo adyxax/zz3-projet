@@ -3,7 +3,7 @@ img_extIsRegExp=false
 img_extensions=.eps .jpg .jpeg .png .pdf .ps .fig .gif
 kileprversion=2
 kileversion=2.0
-lastDocument=partie_2/cisco.tex
+lastDocument=bibliographie.tex
 masterDocument=
 name=rapport_projet_2009
 pkg_extIsRegExp=false
@@ -20,8 +20,8 @@ archive=true
 column=0
 encoding=UTF-8
 highlight=LaTeX
-line=8
-open=false
+line=16
+open=true
 order=4
 
 [item:conclusion.tex]
@@ -38,54 +38,63 @@ archive=true
 column=0
 encoding=UTF-8
 highlight=LaTeX
-line=0
+line=3
 open=false
 order=-1
 
 [item:lexique.tex]
 archive=true
-column=104
+column=0
 encoding=UTF-8
 highlight=LaTeX
-line=11
+line=15
 open=false
 order=-1
 
 [item:partie_1/partie_1.tex]
 archive=true
-column=219
+column=394
 encoding=UTF-8
 highlight=LaTeX
-line=9
+line=40
+open=true
+order=2
+
+[item:partie_2/cisco.tex]
+archive=true
+column=164
+encoding=UTF-8
+highlight=LaTeX
+line=82
 open=true
 order=1
 
-[item:partie_2/cisco.tex]
+[item:partie_2/openvpn.tex]
 archive=true
 column=0
 encoding=UTF-8
 highlight=LaTeX
-line=211
+line=365
 open=true
-order=4
-
-[item:partie_2/openvpn.tex]
-archive=true
-column=26
-encoding=UTF-8
-highlight=LaTeX
-line=49
-open=true
-order=3
+order=0
 
 [item:partie_2/partie_2.tex]
 archive=true
-column=23
+column=0
 encoding=UTF-8
 highlight=LaTeX
-line=20
+line=6
 open=true
-order=2
+order=3
+
+[item:partie_2/windows.tex]
+archive=true
+column=0
+encoding=UTF-8
+highlight=LaTeX
+line=181
+open=false
+order=-1
 
 [item:partie_3/partie_3.tex]
 archive=true
@@ -98,11 +107,11 @@ order=3
 
 [item:rapport.tex]
 archive=true
-column=21
+column=35
 encoding=UTF-8
 highlight=LaTeX
-line=46
-open=true
+line=25
+open=false
 order=0
 
 [item:rapport_projet_2009.kilepr]
@@ -119,7 +128,7 @@ archive=true
 column=11
 encoding=UTF-8
 highlight=LaTeX
-line=2
+line=7
 open=false
 order=-1
 
@@ -137,6 +146,6 @@ archive=true
 column=0
 encoding=UTF-8
 highlight=LaTeX
-line=7
-open=true
+line=11
+open=false
 order=5
