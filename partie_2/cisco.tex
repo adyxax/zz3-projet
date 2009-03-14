@@ -166,7 +166,6 @@ Ajoutons les pools DHCP qui fourniront leurs adresses IP aux étudiants et aux p
 	\label{configuration_pools_utilisateurs}
 \end{figure}
 
-% TODO certificats
 
 Configurons maintenant la police IPsec :
 \begin{itemize}
@@ -202,7 +201,13 @@ Configurons maintenant la police IPsec :
 	\label{configuration_police_ipsec}
 \end{figure}
 
-une seule crypto map, identification en fonction du group dans le client (appel direct au pool car la crypto map n'y est pas liée, ça marche). Le problème c'est qu'un étudiant peut facilement se faire passer pour un prof.
+La présence d'une seule crypto map et d'une identification en fonction du groupe dans le client peut provoquer des problème d'identification. En effet un étudiant peut facilement se faire passer pour un professeur et vice versa.
+Pour remédier à ce problème, nous avons utiliser l'autorité de certification afin de pouvoir générer un certificat. Il est à noter que pour pouvoir effectuer cette manipulation, il faut au préalable installer sur le serveur Windows 2003 SCEP qui est un protocole dévélopper par CISCO pour enregistrer les certificats.
+Voici les différents phases pour enregistrer un certificat.
+
+%  TODO mettre les commandes cisco utilisé 
+
+Lorsque le routeur envoie sa requête l'autorité de certification, celui-ci à le pouvoir d'accepter ou de refuser sa requête. Dès que le CA à accepter le routeur, un message sur la console du routeur nous avertit que le certificat a été validé.
 
 \begin{figure}[H]
 	\begin{center}
@@ -266,3 +271,5 @@ On peut refaire la même expérience en se connectant avec un utilisateur appart
 % TODO inserser le fichier students.txt
 
 On remarque bien que la solution CISCO est fonctionnelle, en fonction du groupe d'appartenance le routeur est capable de rediriger l'utilisateur sur le bon réseau.
+
+D'un point de vue sécurité, la solution CISCO est très performante. En effet, une fois le tunnel VPN crée toutes les informations sont cryptées y compris le login de l'utilisateur. Cependant, le fait de remplir dans le client VPN le groupe d'appartenance ainsi que la clé ne nous permet pas de réellement identifer l'utilisateur. Imaginons qu'un élève connaisse la clé PROFS, il pourra sans aucun problème se connecter avec son mot de passe tradionnel sur le réseau professeur. Afin d'éviter ce problème, la solution serait de mettre en place un système de certificat en utilisant l'autorité de certification installée sur le serveur Windows 2003. Nous avons réussi à fournir un certificat au routeur CISCO et à l'intégrer dans sa configuration. Du point de vue client, nous avons été capable d'en générer un. Par contre, en tant qu'utilisateur nous n'avons pas réussi à monter le VPN. Nous pensons que le problème provient du type de certificat créé.
