@@ -39,11 +39,23 @@ Pour faire cohabiter physiquement les trois architectures ensembles nous avons d
 
 \subsubsection{Le problème de la sécurité}
 
-Comme expliqué précédemment, un VPN est une technologie permettant de créer des connexions sécurisés à travers un réseau non sûr.
+Comme expliqué précédemment, un VPN est une technologie permettant de créer des connexions sécurisés à travers un réseau non sûr. Il y a plusieurs menaces dont une connexion VPN doit être capable de nous protéger : l'espionnage, l'altération des données et le rejeu de paquets.
+
+L'espionnage de données correspond à l'aspect le plus connu auquel sont confrontés les échanges, allant jusqu'à occulter (à tord) les deux autres. La parade contre l'espionnage consiste en la mise en place d'un chiffrement fort des données.
+
+L'interception de données correspond au cas où un attaquant est présent en tant qu'intermédiaire dans le flot de communication, capable d'insérer, de modifier ou de supprimer des paquets circulant dans ce flot. Cette problématique a été à la fois la plus importante et la plus difficile à résoudre, la parade consistant à une authentification systématique en signant chaque paquet émis afin de pouvoir identifier ceux qui sont frauduleux. Le mécanisme le plus répendu d'authentification de paquet est nommé construction HMAC (Hash Message Authentication Code).
+
+Le problème du rejeu est complémentaire de l'interception : il s'agit de réémettre des paquets valides ayant déjà circulé sur le réseau avec bien sûr de mauvaises intentions. La parade consiste ici à inclure un identifiant unique (ou un timestamp) pour chaque paquet dans sa signature. Lorsqu'une entité reçoit un paquet elle garde trace des identifiants unique déjà reçus et refuse un paquet qui serait déjà passé. Des implémentations d'algorithmes à glissement de fenêtre sont les protections les plus utilisées contre le rejeu.
+
+\subsubsection{Le problème de l'authentification}
+
+L'authentification des tiers est l'une des solutions clefs pour mettre en place des communications sécurisées. Néanmoins ce moyen de résoudre un problème ne fait que conduire à un autre plus gros encore : celui de la gestion des clefs. En effet les algorithmes utilisés pour le chiffrement des échanges réclament des clefs de session pour fonctionner, et pour que notre connexion puisse être considérée comme sécurisée ces clefs doivent changer régulièrement. Ainsi la mise en place d'une connexion sécurisée impose d'avoir un moyen d'échanger des clefs de session de façon sécurisée alors que notre connexion ne l'est pas encore : c'est la cryptographie à clefs privées qui va résout ce problème.
+
+
 
 \subsubsection{Les différents types de VPN}
 
- Il existe deux façons d'aborder la mise en place d'une technologie VPN, chacune ayant sa finalité : les VPN bridgés et les VPN routés. Les VPN bridgés sont généralement utilisés lors de connexions site-à-site, tandis que les VPN routés sont eux préférés pour connecter des clients nomades. La mise en place d'un VPN routé s'impose donc pour cette étude, car en plus d'être facilement intégrable à l'architecture existante, elle est parfaitement adaptée à l'usage que l'ISIMA pourrait en faire.
+Il existe deux façons d'aborder la mise en place d'une technologie VPN, chacune ayant sa finalité : les VPN bridgés et les VPN routés. Les VPN bridgés sont généralement utilisés lors de connexions site-à-site, tandis que les VPN routés sont eux préférés pour connecter des clients nomades. La mise en place d'un VPN routé s'impose donc pour cette étude, car en plus d'être facilement intégrable à l'architecture existante, elle est parfaitement adaptée à l'usage que l'ISIMA pourrait en faire.
 
 \subsubsection{Les classes de protocoles}
 \paragraph{IPsec}
