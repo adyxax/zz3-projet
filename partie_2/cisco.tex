@@ -3,7 +3,7 @@ ipsec esp-sha1
 
 \subsubsection{Mise en place côté serveur}
 
-
+% TODO ecrire le noyau du routeur : c2800mn-advsecurityk9-mz.124-24.T.bin
 \paragraph{Configuration de base}
 ~
 
@@ -164,7 +164,6 @@ Ajoutons les pools DHCP qui fourniront leurs adresses IP aux étudiants et aux p
 	\label{configuration_pools_utilisateurs}
 \end{figure}
 
-% TODO certificats
 
 Configurons maintenant la police IPsec :
 \begin{itemize}
@@ -200,7 +199,12 @@ Configurons maintenant la police IPsec :
 	\label{configuration_police_ipsec}
 \end{figure}
 
-une seule crypto map, identification en fonction du group dans le client (appel direct au pool car la crypto map n'y est pas liée, ça marche). Le problème c'est qu'un étudiant peut facilement se faire passer pour un prof.
+La présence d'une seule crypto map et d'une identification en fonction du groupe dans le client peut provoquer des problème d'identification. En effet un étudiant peut facilement se faire passer pour un professeur et vice versa.
+Pour remédier à ce problème, nous avons utiliser l'autorité de certification afin de pouvoir générer un certificat. Il est à noter que pour pouvoir effectuer cette manipulation, il faut au préalable installer sur le serveur Windows 2003 SCEP qui est un protocole dévélopper par CISCO pour enregistrer les certificats.
+Lors de l'enregistrement du certificat sur le routeur, le processus va demander un mot de passe afin de bien vérifier l'identité du CA et du routeur. Ce mot de passe se trouve à l'adresse suivante : \verb|http://192.168.102.250/certsrv/mscep/mscep.dll|
+
+Voici les différents phases pour enregistrer un certificat:
+
 
 \begin{figure}[H]
 	\begin{center}
@@ -224,6 +228,95 @@ http://192.168.102.250/certsrv/mscep/mscep.dll
 	\label{configuration_authentification_certificats}
 \end{figure}
 
+Lorsque le routeur envoie sa requête l'autorité de certification, celui-ci à le pouvoir d'accepter ou de refuser sa requête. Dès que le CA à accepter le routeur, un message sur la console du routeur nous avertit que le certificat a été validé. En exécutant la commande \verb|show running-config| on trouve le certificat que le CA lui a attribué.
+
+
 \subsubsection{Mise en place côté client}
 
+La mise en place du côté client necessite l'installation du client CISCO sur sa machine. Ce client a la particularité d'être compatible avec Linux.
 
+L'installation du client ne demande pas d'explication propre car celle-ci est relativement basique. Dans cette partie nous allons expliquer la configuration que le client doit faire lorsqu'il souhaite se connecter sur le serveur VPN.
+
+Tout d'abord la création d'une nouvelle connexion se fait grâce au bouton ``NEW''. Une nouvelle fenêtre s'ouvre et demande à l'utilisateur de remplir différentes informations comme son groupe, l'adresse IP du serveur et la clé partagé. Ici dans notre exemple, on souhaite se connecter sur le réseau PROFS. La clé partagée est \verb isimaprofs.
+
+\begin{figure}[H]
+	\begin{center}
+		\includegraphics[width=0.75\textwidth]{partie_2/screen_windows/client_cisco.png}\\
+	\end{center}
+	\caption{Client CISCO}
+	\label{VPN_CISCO}
+\end{figure}
+
+
+Une fois les informations remplie, le client va lancer la phase 1 d'ISAKMP afin de négocier la méthode d'authenrification avec le routeur CISCO. Si cette opération est réussite, une nouvelle fenêtre s'ouvre afin que l'utilisateur puisse entrer son login et son mot de passe et s'authentifier grâce au serveur NIS de l'ISIMA.
+
+\begin{figure}[H]
+	\begin{center}
+		\includegraphics[width=0.75\textwidth]{partie_2/screen_windows/fenetre_connexion.PNG}\\
+	\end{center}
+	\caption{Identification du client}
+	\label{VPN_CISCO_CLIENT}
+\end{figure}
+
+
+
+\subsubsection{Bilan et limites de la solution}
+
+Dans cette partie, nous ferons des brefs tests de connexion afin de vérifier le bon fonctionnement de la solution.
+
+
+\begin{figure}[H]
+	\begin{center}
+		\begin{minipage}{1\textwidth}
+			\begin{lstlisting}[frame=trBL]
+
+Configuration IP de Windows
+Carte Ethernet Connexion au réseau local:
+        Suffixe DNS propre à la connexion : isima.fr        
+	Adresse IP. . . . . . . . . . . . : 192.168.102.79        
+	Masque de sous-réseau . . . . . . : 255.255.255.0        
+	Passerelle par défaut . . . . . . : 192.168.102.60
+
+Carte Ethernet Connexion au réseau local 3:
+        Suffixe DNS propre à la connexion : isima.fr       
+	 Adresse IP. . . . . . . . . . .  : 10.0.1.22        
+	Masque de sous-réseau . . . . . . : 255.0.0.0        
+	Passerelle par défaut . . . . . . : 10.0.1.22
+
+			\end{lstlisting}
+		\end{minipage}
+	\end{center}
+	\caption{Adresse IP coté profs}
+	\label{Adresse_IP_cote_profs}
+\end{figure}
+
+
+On peut refaire la même expérience en se connectant avec un utilisateur appartenant au groupe STUDENTS.
+
+\begin{figure}[H]
+	\begin{center}
+		\begin{minipage}{1\textwidth}
+			\begin{lstlisting}[frame=trBL]
+
+Configuration IP de Windows
+Carte Ethernet Connexion au réseau local:
+        Suffixe DNS propre à la connexion : isima.fr        
+	Adresse IP. . . . . . . . . . . . : 192.168.102.79        
+	Masque de sous-réseau . . . . . . : 255.255.255.0        
+	Passerelle par défaut . . . . . . : 192.168.102.60
+
+Carte Ethernet Connexion au réseau local 3:
+        Suffixe DNS propre à la connexion : isima.fr       
+	 Adresse IP. . . . . . . . . . .  : 192.168.1.20        
+	Masque de sous-réseau . . . . . . : 255.255.255.0        
+	Passerelle par défaut . . . . . . : 192.168.1.20
+\end{lstlisting}
+		\end{minipage}
+	\end{center}
+	\caption{Adresse IP coté eleve}
+	\label{Adresse_IP_cote_eleve}
+\end{figure}
+
+On remarque bien que la solution CISCO est fonctionnelle, en fonction du groupe d'appartenance le routeur est capable de rediriger l'utilisateur sur le bon réseau.
+
+D'un point de vue sécurité, la solution CISCO est très performante. En effet, une fois le tunnel VPN crée toutes les informations sont cryptées y compris le login de l'utilisateur. Cependant, le fait de remplir dans le client VPN le groupe d'appartenance ainsi que la clé ne nous permet pas de réellement identifer l'utilisateur. Imaginons qu'un élève connaisse la clé PROFS, il pourra sans aucun problème se connecter avec son mot de passe tradionnel sur le réseau professeur. Afin d'éviter ce problème, la solution serait de mettre en place un système de certificat en utilisant l'autorité de certification installée sur le serveur Windows 2003. Nous avons réussi à fournir un certificat au routeur CISCO et à l'intégrer dans sa configuration. Du point de vue client, nous avons été capable d'en générer un. Par contre, en tant qu'utilisateur nous n'avons pas réussi à monter le VPN. Nous pensons que le problème provient du type de certificat créé.
