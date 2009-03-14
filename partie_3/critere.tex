@@ -11,10 +11,104 @@ Avant de définir les différents critères que lequelle nous nous sommes basé,
 \end{itemize}
 
 
+En fonction de ce cahier des charges, nous avons défini plusieurs critères, qui seront répartis dans trois sous parties. Commençons par les critères du côté client. 
 
 
 \subsubsection{Côte Client}
 
+Du point de vue du client, nous avons défini trois critères important:
+\begin{itemize}
+ 	\item La simplicité de la configuration du client
+	\item Le délai de connexion
+\end{itemize}
+
+\paragraph{Configuration du client}
+~
+
+
+Lors de la phase test de nos trois solutions, nous nous sommes intéressés à la manière dont l'utilisateur devait configurer son client VPN pour pouvoir se connecter aux différents serveurs. Dans cette partie, nous avons confronter les trois solutions en supposant que l'utilisateur est sous un système d'exploitation de type Windows 2000/XP. Les conclusions seront plus intéressantes sous windows, car sous Linux quelque soit le client VPN installé, l'utilisateur devra passer du temps à télécharger les différents paquets et à configurer sa connexion.
+
+Pour la solution Windows, le client VPN est déjà inclus dans le système d'exploitation. L'utilisateur doit seulement créer une nouvelle connexion et la paramètrer en mode VPN. On estime le temps de configuration à moins de 30 secondes.
+~
+
+
+Concernant OpenVPN, l'utilisateur doit dans un premier temps télécharger le client VPN qui est disponible sur le site officiel. Cependant, nous pensons qu'il faudrait inclure une version d'OpenVPN sur l'intranet de l'ISIMA. Le client est très léger il ne pèse que 978 Ko. L'utilisateur ne perdera pas de temps à le télécharger. Du point de vue installation, en fonction de la capacité de la machine, celle-ci peut prendre du temps. En effet, lors de l'installation le client VPN installe une nouvelle carte réseau qui sera destiné au tunnel VPN. Une fos installé, il faudra copier les différents fichiers de configuration ainsi que les certificats dans le dossier d'installation.
+On estime l'installation et la configuration à un bonne dizaine de minutes.
+~
+
+
+Pour la solution de CISCO, il faut télécharger comme OpenVPN leur client. Celui est plus conséquent, car il pèse environ 9 Mo. Nous recommandons de mettre une version de ce client sur l'intranet de l'ISIMA. D'un point de vue installation, le client CISCO est performant, il s'installe relativement rapidement (moins de 2 minutes). Pour la configuration du client, l'utilisateur a le choix. Soit il configure manuellement la connexion VPN, cela sous-entendant qu'il connaisse la clé partagé, soit il importe directement le fichier de configuration (environ 1Ko)
+Cependant le plus gros inconvénient du client CISCO est que l'école devra avoir un accès au site CISCO, car son téléchargement peut se faire lorsqu'on s'identifie sur le site. Pour la plupart des tests que nous avons pratiqués, nous avons trouvé le client CISCO sur différents sites Internet n'appartenant pas à CISCO.
+On estime l'installation et la configuration à un moins de dix minutes.
+
+D'un point de vue configuration du client VPN, la solution de Microsoft reste la plus avantageuse. 
+
+Voyons à présent le critère du délai de connexion  
+
+\paragraph{Délai de connexion}
+~\
+
+
+Tout comme la configuration du client VPN, nous nous sommes intéressés au délai avant que la connexion VPN s'établisse.
+Avec le client CISCO, le délai de connexion est assez long. En effet, la connexion s'effectue en deux phases. La première phase consiste aux différentes phases du protocole IKE et la deuxième phase consiste à l'interrogation du serveur RADIUS qui lui même interroge la base NIS. 
+Avec le client Windows, nous avons remarqué que le temps de connexion était plus rapide qu'avec le client CISCO. Cela provient du fait que la solution ne se base pas sur le protocole IPsec. Cependant, la phase de connexion qui peut-être longue se situe pendant la phase de challenge MD5 car en fonction de la charge réseau l'échange d'informations peut se révéler longue.
+Avec le client OpenVPN, l'utilisateur s'authentifie et s'identifie très rapidement en comparaison des deux autres solutions. Nous pensons que la présence d'un certificat signé sur le poste utilisateur accélère la phase de connexion.
+
+Concernant le délai de connexion, le client de OpenVPN s'avère être le plus performant.
+
+Il est à noter que nous n'avons pas souhaité mésurer le délai de connexion, car comme il s'agit d'une maquette sur un réseau local, on ne peut pas simuler le trafic réel d'Internet.
+
+Après avoir détailler les deux critères du côte client, intéressons nous au coté serveur.
+
+
+
 \subsubsection{Côté Serveur}
 
+Concernant le côté serveur, nous avons choisit deux critères:
+\begin{itemize}
+ 	\item Configuration du serveur
+	\item Coût de chaque solution 
+\end{itemize}
+
+Détaillons à présent ces différents critères
+
+\paragraph{Configuration du serveur}
+~\
+
+
+Tout comme la configuration du client, nous nous sommes intéressé à la complexité de l'installation des différents services nécessaires au bon fonctionnement 
+
+L'installation du serveur OpenVPN a été particulièrement longue. En effet, il a fallu dans un premier temps installer sur CentOS toute les dépendances nécessaires pour le bon fonctionnement du serveur. Une fois l'installation terminée, il nous a fallu générer les différents certificats pour les groupes PROFS et STUDENTS. Il nous a fallu aussi dans un troisième temps configurer le serveur OpenVPN pour qu'il puisse interroger la base NIS de l'ISIMA afin de valider les mots de passe utilisateur.
+On estime entre 3 à 4 jours de configuration pour que le serveur VPN soit fonctionnel.
+
+Pour Windows Server, nous avons dû installer quatre services différents. (DNS, DHCP, Active Directory, Service d'accès distant). Une fois terminé, la configuration de chacun de ses services s'est avéré rapide en comparaison à OpenVPN.
+On estime à 2 jours de configuration pour qu'un client puisse se connecter au serveur VPN.
+
+Enfin pour la solution CISCO, le serveur VPN est inclus dans le matériel. Toutefois nous avons dû installer un serveur RADIUS sur le serveur Linux afin que celui-ci consulte la base NIS pour authentifier l'utilisateur. L'avantage de la solution CISCO est que le fichier de configuration du routeur peut-être sauvegarder et réutilisable. Si un jour le routeur tombe en panne, il faudrait moins de cinq minutes pour que le nouveau routeur ait la configuration VPN par l'intermédiaire d'un serveur TFTP.
+On estime à une demi journée le temps de configuration de l'ensemble de la solution.
+
+
+On se rend compte rapidement que la solution CISCO est la plus adapté du point de vue temps d'installation mais aussi par rapport à l'administration du routeur.
+
+Cependant, l'inconvénient des ces trois solutions provient de leur dépendance. En effet, chaque solution a besoin d'un autre serveur pour fonctionner. Windows a besoin de se synchroniser avec le serveur ISIMA pour répliquer son Active Directory, OpenVPN fonctionne avec la base NIS, quant à CISCO, il dépend du serveur RADIUS mais aussi du serveur DNS.
+
+Voyons à présent le dernier critère que nous avons rétenu. Il s'agit du critère financier. 
+
+\paragraph{Coût de chaque solution}
+~\
+
+Il nous était impossible de proposer la meilleure solution VPN sans evoquer l'aspect financier. 
+
 \subsubsection{Securité}
+
+Concernant la partie sécurité, nous avons choisit trois critères:
+\begin{itemize}
+ 	\item Authentification
+	\item Login
+	\item Chiffrement
+
+\end{itemize}
+
+\paragraph{Authentification}
+\paragraph{Login}
+\paragraph{Chiffrement}
