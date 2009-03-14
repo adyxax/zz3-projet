@@ -1,13 +1,14 @@
 \subsubsection{Généralités}
 ipsec esp-sha1
+TODO ecrire le noyau du routeur : c2800mn-advsecurityk9-mz.124-24.T.bin
+
 
 \subsubsection{Mise en place côté serveur}
 
-% TODO ecrire le noyau du routeur : c2800mn-advsecurityk9-mz.124-24.T.bin
 \paragraph{Configuration de base}
 ~
 
-Commençons par configurer les interfaces du routeur. L'interface connectée au réseau de l'ISIMA récupère son adresse IP via DHCP. Cela :
+Commençons par configurer les interfaces du routeur. L'interface connectée au réseau de l'ISIMA récupère son adresse IP via DHCP ce qui ne serait pas le cas dans un environnement de production. En parallèle à cette configuration nous mettons en place deux ACL permettant de s'assurer sur seuls les clients du VPN pourront accéder au réseau interne.
 \begin{figure}[H]
 	\begin{center}
 		\begin{minipage}{0.90\textwidth}
@@ -15,6 +16,8 @@ Commençons par configurer les interfaces du routeur. L'interface connectée au 
 (config)# hostname CISCOVPN
 (config)# enable secret cisco
 (config)# no ip domain-lookup
+(config)# access-list 1 permit 10.0.1.0 0.0.0.255
+(config)# access-list 2 permit 192.168.1.0 0.0.0.255
 (config)# interface FastEthernet0/0
 (config-if)# description interface to the external network
 (config-if)# ip address dhcp
@@ -24,11 +27,13 @@ Commençons par configurer les interfaces du routeur. L'interface connectée au 
 (config-if)# description interface to the prof network
 (config-if)# encapsulation dot1Q 333
 (config-if)# ip address 10.0.0.1 255.255.255.0
+(config-if)# ip access-group 1 out
 (config-if)# exit
 (config)# interface FastEthernet0/1.2
 (config-if)# description interface to the student network
 (config-if)# encapsulation dot1Q 111
 (config-if)# ip address 192.168.0.1 255.255.255.0
+(config-if)# ip access-group 2 out
 (config-if)# exit
 (config)# interface FastEthernet0/1
 (config-if)# no shutdown
@@ -82,6 +87,7 @@ Ajouter quelques lignes pour autoriser le router à interroger la base RADIUS da
 
 ~
 
+Le protocole RADIUS étant parfaitement géré par les équipements CISCO la configuration qui en découle est relativement simple :
 
 \begin{figure}[H]
 	\begin{center}
@@ -188,7 +194,7 @@ Configurons maintenant la police IPsec :
 (config)# crypto map prof-map
 (config)# crypto map prof-map 1 ipsec-isakmp dynamic prof-map
 (config)# crypto map prof-map client authentication list RadiusServer
-(config)# cryto map prof-map client configuration address respond
+(config)# crypto map prof-map client configuration address respond
 (config)# crypto map prof-map isakmp authorization list 101
 
 (config)# aaa authorization network 101 local
