@@ -203,11 +203,10 @@ Configurons maintenant la police IPsec :
 
 La présence d'une seule crypto map et d'une identification en fonction du groupe dans le client peut provoquer des problème d'identification. En effet un étudiant peut facilement se faire passer pour un professeur et vice versa.
 Pour remédier à ce problème, nous avons utiliser l'autorité de certification afin de pouvoir générer un certificat. Il est à noter que pour pouvoir effectuer cette manipulation, il faut au préalable installer sur le serveur Windows 2003 SCEP qui est un protocole dévélopper par CISCO pour enregistrer les certificats.
-Voici les différents phases pour enregistrer un certificat.
+Lors de l'enregistrement du certificat sur le routeur, le processus va demander un mot de passe afin de bien vérifier l'identité du CA et du routeur. Ce mot de passe se trouve à l'adresse suivante : \verb|http://192.168.102.250/certsrv/mscep/mscep.dll|
 
-%  TODO mettre les commandes cisco utilisé 
+Voici les différents phases pour enregistrer un certificat:
 
-Lorsque le routeur envoie sa requête l'autorité de certification, celui-ci à le pouvoir d'accepter ou de refuser sa requête. Dès que le CA à accepter le routeur, un message sur la console du routeur nous avertit que le certificat a été validé.
 
 \begin{figure}[H]
 	\begin{center}
@@ -230,6 +229,9 @@ http://192.168.102.250/certsrv/mscep/mscep.dll
 	\caption{Configuration de l'authentification via certificats}
 	\label{configuration_authentification_certificats}
 \end{figure}
+
+Lorsque le routeur envoie sa requête l'autorité de certification, celui-ci à le pouvoir d'accepter ou de refuser sa requête. Dès que le CA à accepter le routeur, un message sur la console du routeur nous avertit que le certificat a été validé. En exécutant la commande \verb|show running-config| on trouve le certificat que le CA lui a attribué.
+
 
 \subsubsection{Mise en place côté client}
 
@@ -264,11 +266,58 @@ Une fois les informations remplie, le client va lancer la phase 1 d'ISAKMP afin 
 
 Dans cette partie, nous ferons des brefs tests de connexion afin de vérifier le bon fonctionnement de la solution.
 
-% TODO inserser le fichier profs.txt
+
+\begin{figure}[H]
+	\begin{center}
+		\begin{minipage}{1\textwidth}
+			\begin{lstlisting}[frame=trBL]
+
+Configuration IP de Windows
+Carte Ethernet Connexion au réseau local:
+        Suffixe DNS propre à la connexion : isima.fr        
+	Adresse IP. . . . . . . . . . . . : 192.168.102.79        
+	Masque de sous-réseau . . . . . . : 255.255.255.0        
+	Passerelle par défaut . . . . . . : 192.168.102.60
+
+Carte Ethernet Connexion au réseau local 3:
+        Suffixe DNS propre à la connexion : isima.fr       
+	 Adresse IP. . . . . . . . . . .  : 10.0.1.22        
+	Masque de sous-réseau . . . . . . : 255.0.0.0        
+	Passerelle par défaut . . . . . . : 10.0.1.22
+
+			\end{lstlisting}
+		\end{minipage}
+	\end{center}
+	\caption{Adresse IP coté profs}
+	\label{Adresse_IP_cote_profs}
+\end{figure}
+
 
 On peut refaire la même expérience en se connectant avec un utilisateur appartenant au groupe STUDENTS.
 
-% TODO inserser le fichier students.txt
+\begin{figure}[H]
+	\begin{center}
+		\begin{minipage}{1\textwidth}
+			\begin{lstlisting}[frame=trBL]
+
+Configuration IP de Windows
+Carte Ethernet Connexion au réseau local:
+        Suffixe DNS propre à la connexion : isima.fr        
+	Adresse IP. . . . . . . . . . . . : 192.168.102.79        
+	Masque de sous-réseau . . . . . . : 255.255.255.0        
+	Passerelle par défaut . . . . . . : 192.168.102.60
+
+Carte Ethernet Connexion au réseau local 3:
+        Suffixe DNS propre à la connexion : isima.fr       
+	 Adresse IP. . . . . . . . . . .  : 192.168.1.20        
+	Masque de sous-réseau . . . . . . : 255.255.255.0        
+	Passerelle par défaut . . . . . . : 192.168.1.20
+\end{lstlisting}
+		\end{minipage}
+	\end{center}
+	\caption{Adresse IP coté eleve}
+	\label{Adresse_IP_cote_eleve}
+\end{figure}
 
 On remarque bien que la solution CISCO est fonctionnelle, en fonction du groupe d'appartenance le routeur est capable de rediriger l'utilisateur sur le bon réseau.
 
