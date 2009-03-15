@@ -179,9 +179,9 @@ La stratégie d'accès distant permet de contrôler finement quelles sont les co
 % Afin d'améliorer la sécurité, nous avons décider de mettre en place une autorité de certification.
 
 \paragraph{Autorité de certification}
-~
+\label{autorité_certification}~
 
-La sécurité de la solution n'est pas complète sans une identification via certificats, nous allons donc configurer une autorité de certification sur le serveur. Cette autorité va notamment nous permettre de délivrer des certificats signés qui nous seront utile pour la solution Microsoft, mais aussi lors de la configuration du routeur CISCO. L'autorité racine autonome aura comme nom commun ISIMA et les certificats seront valides un an. D'un point de vue technique, l'autorité de certification utilise l'algorithme de hashage SHA-1 pour la signature, et un chiffrement de clefs de longueur 2048 bits par l'algorithme RSA.
+La sécurité de la solution n'est pas complète sans une identification via certificats, nous allons donc configurer une autorité de certification sur le serveur. Cette autorité va notamment nous permettre de délivrer des certificats signés qui nous seront utile pour la solution Microsoft, mais aussi lors de la configuration du routeur CISCO. L'autorité racine aura comme nom commun ISIMA et les certificats seront valides un an. L'ensemble correspond à la configuration du service Windows 2003 SCEP. D'un point de vue technique, l'autorité de certification utilise l'algorithme de hashage SHA-1 pour la signature, et un chiffrement de clefs de longueur 2048 bits par l'algorithme RSA.
 
 Pour effectuer une demande de certificat, les clients doivent se connecter sur l'URL suivante : \verb|http://192.168.102.250/certsrv|. Deux types de certificats sont proposés : WEB ou MESSAGERIE. L'interface de l'autorité de certification permet de répondre aux demanded de certificats en choisissant d'accepter ou non de les délivrer. Si la demande est validée, l'utilisateur doit se connecter à nouveau sur le site WEB afin d'installer le certificat sur sa machine.
 
