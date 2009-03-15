@@ -1,75 +1,58 @@
-\subsection{Benchmarks}
+\subsection{Analyse des performances}
 
-Afin de mesurer les performances de chaque solution, nous avons utilisé un logiciel libre qui se nomme IPPERF
+Dans cette section nous allons mener une analyse des performances de chaque solution, en termes de quantité de trafic que les machines sont capables de traiter. En raison de l'utilisation massive des algorithmes de chiffrement et déchiffrement, ce sont les capacités processeur des machines seront déterminantes.
+
+Nous avons utilisé un outil Open-Source afin de mener à bien cette évaluation des performances. Ce logiciel très simple nommé IPperf envoie simplement le plus de paquets d'un point à un autre.
 
 \subsubsection{Configuration d'IPperf}
 
-Le but de ce benchmark est de faire transiter du trafic dans le tunnel VPN. Pour pouvoir effectuer des mesures, IPperf doit être lancé sur une machine cliente et une machine serveur.
-Voici le schéma de principe expliquant nos tests de performances:
+Le but de ce benchmark est de générer du trafic et de forcer son passage à travers le tunnel VPN. Pour pouvoir effectuer des mesures, IPperf doit être lancé sur une machine cliente d'un côté du tunnel, ainsi que sur une machine serveur de l'autre côté :
 
 \begin{figure}[H]
 	\begin{center}
 		\includegraphics[width=0.75\textwidth]{partie_3/images/ipperf.png}\\
 	\end{center}
-	\caption{Protocole de test}
+	\caption{Protocole de bench}
 	\label{Protocole_de_test}
 \end{figure}
 
-Voici la configuration d'IPperf.
+Voici la configuration d'IPperf :
+En mode serveur : \verb|iperf.exe -s -i1|. L'option \verb|-s| correspond au mode serveur et le \verb|-i1| correpond à la fréquence de prise de mesure (ici une seconde).
 
-En mode serveur:
-\verb|iperf.exe -s -i1|
-
-L'option \verb|-s| correspond au mode serveur et le \verb|-i1| correpond à l'intervalle de la prise de mesure (ici notre intervalle est d'une seconde).
-
-En mode client : 
-\verb|iperf.exe -c 10.0.1.25 -i1 -t40 |
-L'option \verb|-c| correspond au mode client et le \verb|-i1| correpond à l'intervalle de la prise de mesure (ici notre intervalle est d'une seconde), l'option \verb|-t40| permet d'effectuer la mesure sur quarante secondes.
-
-A présent, confrontons les résultats qu'IPperf nous a fournit.
+En mode client : \verb|iperf.exe -c 10.0.1.25 -i1 -t40 |. L'option \verb|-c| correspond au mode client et l'option \verb|-t40| indique la durée pendant laquelle on va générer du trafic.
 
 \subsubsection{Confrontration des résultats}
 
-Voici les caractèristiques de la plateforme ayant fait office de serveur:
-
+Voici les caractéristiques de la plateforme ayant fait office de serveur :
 \begin{figure}[H]
 	\begin{center}
-\begin{tabular}{|l|c|c|}
-\hline
+\begin{tabular}{l|c}
 Caractéristiques & Machine \\
 \hline
 CPU & Intel Core 2 Duo T8100 2,10GHz \\
 RAM & 3 Go \\
 Carte réseau & Intel 82566MM Gigabit \\
-\hline
 \end{tabular}
 	\end{center}
-	\caption{Caractéristique de la plateforme serveur}
+	\caption{Caractéristiques de la plateforme serveur}
 	\label{Caractéristique_de_la_plateforme_serveur}
 \end{figure}
 
-Concernant les machines clientes, nous avons utilisés les machines présentes dans la salle A214.
-
-Voici les résultats que nous avons obtenus. Le débit trouvé correspond à une moyenne de quarante mesures.
+Les machines clientes utilisées sont celles présentes en salle A214. La figure \ref{Résultat_des_benchmarks} présente les résultats que nous avons obtenus. Le débit indiqué correspond à une moyenne sur quarante secondes :
 
 \begin{figure}[H]
 	\begin{center}
-\begin{tabular}{|l|c|c|c|}
-\hline
+\begin{tabular}{l|c|c|c}
 Solutions & WINDOWS & LINUX & CISCO \\
 \hline
 Bande Passante(moyenne) & 18Mbps & 50Mbps & 31Mbps \\
 Utilisation CPU & 100\% & 80\% & 100\% \\
-\hline
 \end{tabular}
 	\end{center}
-	\caption{Résultat des benchmarks}
+	\caption{Résultats des benchmarks}
 	\label{Résultat_des_benchmarks}
 \end{figure}
 
-Le critère correpondant à l'utilisation CPU n'est pas donné par IPperf. Nous avons seulement regarder les statistiques de la machine. Dès que du trafic passe par le tunnel, les serveurs VPN sont sollicités et il devient très difficile d'exécuter une tâche en parallèle. La surconsommation des ressources machines est dû au processeur.Ce dernier est responsable du traitement des packets transitant dans la carte réseau.
+Le taux d'utilisation processeur n'est pas fournit par IPperf. Cette valeur a été obtenue directement en visualisant la charge de la machine. Dès lors que du trafic traverse le tunnel, les serveurs VPN se trouvent fortement sollicités, et il devient rapidement très difficile d'exécuter une tâche en parallèle. Comme prévu, le taux d'occupation processeur est le facteur limitant pour chaque solution, ce dernier étant responsable du traitement des packets transitant sur le carte réseau.
 
-Concernant la bande passante, la solution d'OpenVPN est la plus performante.Cependant, nous avons remarqué des fluctuations durant les mesures, ce qui n'est pas le cas de routeur CISCO.
-
-Après avoir confronter les résultats, faisons le bilan de ces trois solutions.
-
+En terme de bande passante, la solution OpenVPN se révèle être la plus performante. Cependant, nous avons remarqué des fluctuations durant les mesures, ce qui n'est pas le cas de routeur CISCO dont le débit est extrêment stable.

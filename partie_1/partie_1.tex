@@ -71,7 +71,7 @@ La seconde phase est la phase de communication au cours de laquelle les données
 \paragraph{pptp}
 ~
 
-PPTP (Point to Point Tunneling Protocol) est un protocole dont le rôle consiste à construire des paquets PPP (Point to Point Protocole) pour les encapsuler dans des datagrammes IP. PPTP tire ainsi aventage des mécanismes d'authentification, de chiffrement et de compression déjà existants pour PPP (niveau 2) en les appliquant au niveau 3. Le principal aventage de ce protocole est son excellente intégration avec les systèmes Microsoft, au sein desquels la suite protocolaire de PPP a été réimplémentée pour accompagner PPTP.
+PPTP (Point to Point Tunneling Protocol) est un protocole dont le rôle consiste à construire des paquets PPP (Point to Point Protocole) pour les encapsuler dans des datagrammes IP. PPTP tire ainsi avantage des mécanismes d'authentification, de chiffrement et de compression déjà existants pour PPP (niveau 2) en les appliquant au niveau 3. Le principal avantage de ce protocole est son excellente intégration avec les systèmes Microsoft, au sein desquels la suite protocolaire de PPP a été réimplémentée pour accompagner PPTP.
 
 Ainsi on utilise MS-Chap v2 (Microsoft-Challenge Handshake Authentication Protocol) pour l'authentification, et MPPe 'Microsoft Point to Point Encryption) pour le chiffrement. Au cours d'une session VPN entre un client et le serveur, une connexion TCP est utilisée pour le contrôle de la liaison. Quand à l'échange de données, celui-ci requiert un canal UDP et s'appuie sur le protocole GRE (Generic Routing Encapsulation).
 
@@ -86,10 +86,10 @@ Une erreur commune est de penser que comme TLS n'est pas un protocole de niveau 
 
 \subsection{Objectifs fixés}
 
-Les objectifs de la suite de cette étude sont donc d'étudier la mise en place d'une plate-forme de test pour les différentes solutions qui ont été recensées conformément aux représentations logique et physique de l'architecture présentées en partie \ref{section_architecture_etudiee} page \pageref{section_architecture_etudiee}. Les différentes solutions seront finalement confrontées les uns aux autres dans une dernière partie.
+Les objectifs pour la suite du projet sont donc d'étudier la mise en place d'une plate-forme de test pour les différentes solutions qui ont été recensées conformément aux représentations logique et physique de l'architecture présentées en partie \ref{section_architecture_etudiee} page \pageref{section_architecture_etudiee}. Les différentes solutions seront finalement confrontées les unes aux autres dans une dernière partie.
 
 Nous commencerons par étudier la solution Microsoft, viendra ensuite le logiciel OpenVPN sous Linux, et enfin la technologie CISCO. Pour la mise en place de chacune de ces trois solutions, nous nous attarderons sur les problématiques de l'installation et de la configuration, que ce soit côté serveur ou côté client. Chacune de ces parties fera état des problèmes rencontrés au cours de l'étude ainsi que des limites de chaque solution.
 
-
+% Les différentes solutions seront confrontées selon des critères prenant en compte les contraintes liées à la sécurité inhérentes au domaine des VPN. Elles seront d'abord évaluées en termes de complexité d'installation et d'administration, puis en termes de performances, de niveau de sécurité fourni et de facilité d'utilisation.
 
 \pagebreak
