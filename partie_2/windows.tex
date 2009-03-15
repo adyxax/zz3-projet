@@ -1,190 +1,158 @@
-	Pour ce projet, nous avons décider d'installer Windows Server 2003 Entreprise Edition, afin d'avoir un sytème d'exploitation récent. Toutes les fonctionnalités utilisées pour la création d'un VPN sont incluses dans cette version. Il n'y a pas besoin d'installer une application tierce.
-	Voyons à présent les différents services nécessaires pour la mise en place du VPN de Microsoft.
+Le choix de Windows Server 2003 Entreprise Edition s'est imposé pour l'installation de la maquette. Cette version intégrant toutes les fonctionnalités nécessaires à la mise en place d'un VPN aucune application tierce ne sera à priori requise.
+
+Nous commencerons par détailler les différents services nécessaires au fonctionnement du VPN sur le serveur, ensuite nous verrons les méthodes de configuration d'un poste client et enfin nous effectuerons une synthèse des avantages et inconvénients de la solution Microsoft.
 
 \subsubsection{Côté serveur : les services installés}
 
-	Afin de pouvoir se mettre dans les conditions du réseau interne de l'ISIMA, nous avons décidé de configurer plusieurs services:
-~
-
-
+Dans cette section nous détaillerons tour à tour la configuration des nombreux services requis pour le bon fonctionnement du service VPN:
 \begin{itemize}
-	\item  DHCP,
-	\item  DNS, 
-	\item  Active Directory,
-	\item  Routage et accès distant (VPN),
-	\item  Autorité de certification (CA).
+	\item service DHCP.
+	\item service DNS.
+	\item Active Directory.
+	\item routage et accès distant (VPN).
+	\item autorité de certification (CA).
+	\item IIS (requis pour l'authorité de certification)
 \end{itemize}
 ~
-Il est à noter que pour pouvoir installer l'autorité de certification, il faut dans un premier temps installer le service IIS.	
 
-	Ces nombreux services sont nécessaires pour la création d'un VPN. A présent, détaillons la configuration de chacun de ces servives. 
-	Remarque : Sous windows on ne parle pas de serveur mais de service. Tout les fonctionnalités de la machine (DNS, DHCP ou autre) sont référencés comme des services.
+% Remarque : Sous windows on ne parle pas de serveur mais de service. Tout les fonctionnalités de la machine (DNS, DHCP ou autre) sont référencés comme des services.
 
 
-\paragraph{Caractéristique de la machine}
-~\
+\paragraph{Caractéristiques de la machine}
+~
 
-Le serveur windows est installé sur un DELL PowerEdge 1300. Il est doté d'un processeur INTEL de type Pentium II cadencé à 348 Mhz. Il possède 512 Mo de mémoire vive et un disque dur de 9 Go.
-Le serveur est composé de trois cartes réseaux, une pour le réseau extérieur et deux autres pour le réseau interne. 
-
-
-
-Voici leur adresse IP:
+Le serveur windows est installé sur un DELL PowerEdge 1300. Il est doté d'un processeur INTEL de type Pentium II cadencé à 348 Mhz, possède 512 Mo de mémoire vive ainsi qu'un disque dur de 9 Go. La machine est également équipée de trois cartes réseaux 100Mbps configurées comme suit :
 
 \begin{figure}[H]
 	\begin{center}
-\begin{tabular}{|l|c|c|}
-\hline
-Caractéristique & Réseau & Adresse IP \\
-\hline
-Realtek RTL 8139 Familly & réseau PROFS & 10.0.0.11/24 \\
-Realtek RTL 8139 Familly & réseau extérieur & 192.168.102.250/24 \\
-Fast Ethernet CNET PRO 200P & réseau STUDENTS & 192.168.0.11/24 \\
-\hline
-\end{tabular}
+		\begin{tabular}{l|c|c}
+		Référence & Réseau & Adresse IP \\
+		\hline
+		Realtek RTL 8139 Familly & réseau PROFS & 10.0.0.11/24 \\
+		Realtek RTL 8139 Familly & réseau extérieur & 192.168.102.250/24 \\
+		Fast Ethernet CNET PRO 200P & réseau STUDENTS & 192.168.0.11/24 \\
+	\end{tabular}
 	\end{center}
-	\caption{Caractéristique des cartes réseaux}
+	\caption{Configuration des cartes réseaux}
 	\label{IP_carte_reseau}
 \end{figure}
 
-Tout les cartes installés sont de type 100Mbit/s.
+\paragraph{Service DHCP}
 ~
 
-\paragraph{Service DHCP}
-~\
-
-
-Ce service est nécessaire pour l'attribution des adresses IP qui seront allouées aux différents clients lors de leurs connexion au serveur VPN. Nous avons configurer le service DHCP de la manière suivante. Sachant que le serveur VPN doit avoir deux cartes réseaux indépendantes (une sur le réseau STUDENTS et une sur le réseau PROFS) le DHCP peut fournir deux pools d'adresse différents. 
-Voici les caractéristiques des deux réseaux:
+Ce service est nécessaire pour l'attribution des adresses IP qui seront allouées à chaque client voulant se connecter. La configuration du service DHCP met en évidence les deux pools d'adresses nécessaires à l'adressage de chacun de nos réseaux internes :
 
 \begin{figure}[H]
 	\begin{center}
-\begin{tabular}{|l|c|c|}
-\hline
-Caractéristique & Réseau PROFS & Réseau STUDENTS \\
-\hline
-Désignation Carte réseau & DHCP\_PROFS & DHCP\_STUDENTS \\
-Adresse IP Carte réseau & 10.0.0.11 & 192.168.0.11 \\
-Pool d'adresse & 10.0.2.100 à 10.0.2.254 & 192.168.0.100 à 192.168.0.254 \\
-Masque réseau & 255.255.255.0 & 255.255.255.0 \\
-Serveur DNS/routeur & 10.0.0.11 & 192.168.0.11 \\
-Nom du domaine DNS & wvpn.isima.fr & wvpn.isima.fr \\
-\hline
-\end{tabular}
+		\begin{tabular}{l|c|c}
+			Caractéristique & Réseau PROFS & Réseau STUDENTS \\
+			\hline
+			Désignation Carte réseau & DHCP\_PROFS & DHCP\_STUDENTS \\
+			Adresse IP Carte réseau & 10.0.0.11 & 192.168.0.11 \\
+			Pool d'adresse & 10.0.2.100 à 10.0.2.254 & 192.168.2.100 à 192.168.2.254 \\
+			Masque réseau & 255.255.255.0 & 255.255.255.0 \\
+			Serveur DNS/routeur & 10.0.0.11 & 192.168.0.11 \\
+			Nom du domaine DNS & wvpn.isima.fr & wvpn.isima.fr \\
+		\end{tabular}
 	\end{center}
 	\caption{Caractéristique du service DHCP}
 	\label{service_DHCP}
 \end{figure}
 
-Il est à noter que lors de l'installation du service DHCP, et en dehors des différentes configurations des cartes, il n'y a pas d'options spécifiques. Ce sont les options par défaut.
-Il est à remarquer que le service DHCP se compose de deux étendues, une pour chaque carte. Cependant, le service DHCP s'attache à une seule carte réseau et non au deux. Dans la maquette, le service se lie avec la carte DHCP\_PROFS. Pour illustrer ces propos, voici un screenshot du service DHCP.
+L'installation du service DHCP ne requiert aucune modification des options par défaut, et ne nécessite que d'indiquer qu'elles sont les cartes réseau à adresser. La figure \ref{Screen_client_dhcp} illustre cette configuration :
 
 \begin{figure}[H]
 	\begin{center}
 	\includegraphics[width=\textwidth]{partie_2/screen_windows/dhcp.JPG}\\
 	\end{center}
-	\caption{Lien avec la carte réseau DHCP\_PROFS}
+	\caption{Etendue DHCP du réseau professeurs}
 	\label{Screen_client_dhcp}
 \end{figure}
+~
+
+Il est à noter que sous Windows le service DHCP est attaché à une seule carte réseau qui répondra aux demandes des clients, ici la carte \verb|DHCP_PROFS|
+% Cependant, le service DHCP s'attache à une seule carte réseau et non au deux. Dans la maquette, le service se lie avec la carte DHCP\_PROFS. Pour illustrer ces propos, voici un screenshot du service DHCP.
+
+% On remarque que bien que la présence des deux étendues et que la carte DHCP\_PROFS (10.0.0.11) s'attache au service DHCP.
+% ~\
 
 
-On remarque que bien que la présence des deux étendues et que la carte DHCP\_PROFS (10.0.0.11) s'attache au service DHCP.
-~\
-
-
-Voyons à présent la configuration du service DNS.
+% Voyons à présent la configuration du service DNS.
 
 \paragraph{Service DNS}
-~\
+~
 
+En préliminaire à l'installation de Active Directory, un service DNS est requis. Les caractéristiques de ce dernier sont les suivantes :
+\begin{itemize}
+	\item Nom de la machine : win2k3vpn.
+	\item Nom de domaine : wvpn.isima.fr.
+	\item Type de zone : zone principale.
+\end{itemize}
+~
 
-Afin de pouvoir utiliser l'active directory nous avons du installer ce service. Celui-ci nous permet de résoudre les différentes adresses IP qui seront nécessaire lorsq'un client VPN se connectera sur le réseau interne.
-Voici les caractèristiques du service DNS:
-~\
+% Il est à remarquer que lors de l'installation du service, nous avons décider d'incorporer la zone de recherche inversée. Le serveur windows étant composé de trois cartes réseaux, il y a trois zones.
 
+% Afin de vérifier que le service DNS est bien configurer, la commande NSLOOKUP nous permet de tester le DNS. 
+% L'illustration suivante montre la résolution DNS est correcte.
+% 
+% \begin{figure}[H]
+% 	\begin{center}
+% 		\includegraphics[width=\textwidth]{partie_2/screen_windows/nslookup.JPG}\\
+% 	\end{center}
+% 	\caption{Résolution DNS}
+% 	\label{NSLOOKUP}
+% \end{figure}
 
-\begin{figure}[H]
-	\begin{center}
-\begin{tabular}{|l|c|c|}
-\hline
-Caractéristique & Serveur Windows2003 \\
-\hline
-Nom de la machine &  win2k3vpn\\
-Nom du domaine & wvpn.isima.fr\\
-Type de zone &  zone principale\\
-\hline
-\end{tabular}
-	\end{center}
-	\caption{Caractéristique du service DNS}
-	\label{service_DNS}
-\end{figure}
+Tout comme pour le service DHCP, le service DNS est attaché à une seule carte réseau.
 
-~\
-
-Il est à remarquer que lors de l'installation du service, nous avons décider d'incorporer la zone de recherche inversée. Le serveur windows étant composé de trois cartes réseaux, il y a trois zones. Afin de vérifier que le service DNS est bien configurer, la commande NSLOOKUP nous permet de tester le DNS. 
-L'illustration suivante montre la résolution DNS est correcte.
-
-\begin{figure}[H]
-	\begin{center}
-		\includegraphics[width=\textwidth]{partie_2/screen_windows/nslookup.JPG}\\
-	\end{center}
-	\caption{Résolution DNS}
-	\label{NSLOOKUP}
-\end{figure}
-
-Tout comme le service DHCP, le service DNS se lie avec une seule carte réseau. 
-
-Intéressons nous à présent à la configuration de l'Active Directory.
+% Intéressons nous à présent à la configuration de l'Active Directory.
 
 \paragraph{Active Directory}
-~\
+~
 
-Ce service nous a permi de créer un annuaire afin d'indentifier les clients souhaitant se connecter sur le réseau interne. Afin de pouvoir effectuer des tests sur la connexion VPN, nous avons dans un premier temps créeer deux groupes: un groupe STUDENTS et un groupe PROFS.
-
-Il est à noter que lorsqu'on crée un utilisateur, on doit l'ajouter dans le groupe PROFS ou STUDENTS sans oublier de lui donner l'autorisation de pouvoir se connecter. 
+Ce service fournit le support d'un annuaire permettant l'identification des clients. Notre VPN proposant deux accès distincts, deux groupes doivent être créés : un groupe STUDENTS et un groupe PROFS. Lors de la configuration d'un nouvel utilisateur, celui-ci doit être ajouté dans l'un de ces groupes et doit être explicitement autorisé à pouvoir se connecter :
 
 \begin{figure}[H]
 	\begin{center}
 		\includegraphics[width=0.50\textwidth]{partie_2/screen_windows/vpn.JPG}\\
 	\end{center}
-	\caption{Autorisation de se connecter via VPN sur le serveur Windows 2k3}
+	\caption{Autorisation d'un utilisateur à se connecter au VPN}
 	\label{VPN_AUTORISATION}
 \end{figure}
 
-Du point de vue de la stratégie de groupe (GPO) nous avons décider de laisser la configuration par défaut.
+La stratégie de groupe (GPO) a été laissée à sa configuration par défaut.
 
-Une fois les services de base installé, voyons à présent la configuration du service de \textit{Routage et accès distant} .
+% Une fois les services de base installé, voyons à présent la configuration du service de \textit{Routage et accès distant} .
 
 \paragraph{Routage et accès distant}
 ~\
 
-
-Le service routage et accès distant est le service qui va nous permettre de monter un tunnel sécurisé. Lors de l'installation du service, l'administrateur doit choisir l'option ``routage pour réseaux locaux uniquement'' ainsi que l'option ``serveur d'accès distant''. Une fois le service installé, il faut configurer les options de sécurité qui sont propre au serveur (un clique droit sur le nom du serveur permet de modififer les propriétés). Cela correspond à la manière que les utilisateurs s'identifie. Le service propose deux choix : identification par l'annuaire ou bien en utilisant un serveur RADIUS.
+Le service routage et accès distant est le service qui va nous permettre de monter un tunnel sécurisé. Lors de son installation, l'administrateur doit choisir l'option ``routage pour réseaux locaux uniquement'' ainsi que l'option ``serveur d'accès distant''. Une fois le service installé, il faut configurer les options de sécurité qui sont propre au serveur (un clic droit sur le nom du serveur permet de modifier les propriétés) pour correspondre à la manière dont les utilisateurs s'identifient. Le service propose deux choix : identification par l'annuaire et identification via un serveur RADIUS.
 
 \begin{figure}[H]
 	\begin{center}
 		\includegraphics[width=0.50\textwidth]{partie_2/screen_windows/secu_vpn.PNG}\\
 	\end{center}
-	\caption{Choix de la méthode d'authentification}
+	\caption{Choix de la méthode d'identification}
 	\label{VPN_AUTHENTIFICATION}
 \end{figure}
 
-Nous avons essayer de tester la maquette en utilisant le serveur RADIUS afin que celui-ci authentifie l'utilisateur avec la base NIS. Cependant les essais n'ont pas été concluant, nous n'avons pas pu nous identifier en utilisant notre compte ISIMA. Afin de rendre la maquette fonctionnel, nous avons dû laisser l'authentification par l'intermédiaire de l'annuaire local.
+Nous avons testé la maquette en activant l'identification via un serveur RADIUS afin de pouvoir récupérer l'annuaire de l'ISIMA (comme présenté pour la configuration du routeur CICSO en 2.3.2.\ref{CONFIG_RADIUS} page \pageref{CONFIG_RADIUS}), mais cela n'a jamais fonctionné comme escompté. Afin de travailler avec une maquette fonctionnelle nous avons dû rétablir le mode d'authentification via annuaire local.
 
-Dans l'onglet IP, il faut configurer la manière dont le service va distribuer les adresses IP. Ici nous avons le choix, soit le système gère les adresses IP en utilisant le service DHCP, soit l'administrateur peut remplir manuellement la plage d'adresse IP. La dernière option ``carte'' qui correpond à un menu déroulant nous permettant de selectionner la carte réseau qui repondrera aux demandes de la création d'un tunnel sécurisé. 
+Dans l'onglet IP, il faut configurer la manière dont le service va attribuer les adresses IP aux clients : soit via le service DHCP (méthode la plus flexible, que nous avons retenue), soit en définissant manuellement une plage statique à adresser. L'option ``carte'' correspond à la carte réseau qui repondra aux demandes des clients.
 
 \begin{figure}[H]
 	\begin{center}
 		\includegraphics[width=0.50\textwidth]{partie_2/screen_windows/choix_carte.PNG}\\
 	\end{center}
-	\caption{Selection de l'interface réseau}
+	\caption{Configuration du routage IP}
 	\label{VPN_CARTE_ECOUTE}
 \end{figure}
 
-En naviguant dans les différentes options, on se rend rapidement compte que le service d'accès distant se lie avec une seule carte réseau. C'est la grande limitation. Il n'est pas possible que les deux cartes réseaux destinés pour le traffic interne redirige les différents flux réseaux.
+La problème est le même que pour les services DHCP et DNS : le service d'accès distant s'attache à une seule carte réseau.
+% En naviguant dans les différentes options, on se rend rapidement compte que le service d'accès distant se lie avec une seule carte réseau. C'est la grande limitation. Il n'est pas possible que les deux cartes réseaux destinés pour le traffic interne redirige les différents flux réseaux.
+L'aspect sécurité est géré par l'intermédiaire des stratégies d'accès distant. Il nous en falait une dont voici les spécifications :
 
-D'un point de vue sécurité, il est possible de créer des stratégies d'accès distant. Pour le projet, nous avons créer une stratégie avec les spécifications suivantes:
-~\
 \begin{itemize}
  	\item Appartenance à un groupe : PROFS ou STUDENTS
 	\item Type d'authentification : MS-CHAP V2
@@ -192,8 +160,7 @@ D'un point de vue sécurité, il est possible de créer des stratégies d'accès
 \end{itemize}
 ~
 
-
-Cette stratégie d'accès distant comporte une priorité de 1. Si un client respecte tous ces critères il pourra alors se connecter sur le serveur VPN.
+La stratégie d'accès distant permet de contrôler finement quelles sont les conditions que doit remplir un utilisateur pour pouvoir se connecter, par exemple en définissant une plage horraire de connexion, etc. L'authentification utilise le protocole propriétaire Ms-Chap v2 qui permet une authentification mutuelle du client et du serveur. L'inconvénient de ce protocole est qu'il laisse passer le login du client en clair sur le réseau, mais les mots de passes sont bien sûr hashés.
 
 \begin{figure}[H]
 	\begin{center}
@@ -203,110 +170,97 @@ Cette stratégie d'accès distant comporte une priorité de 1. Si un client resp
 	\label{VPN_STRAT}
 \end{figure}
 
-Dans la stratégie d'accès on peut rajouter un paramètre sur la date. En effet, on le paramétrant, on peut définir une plage horaire où l'utilisateur ne pourra pas se connecter.
+% Dans la stratégie d'accès on peut rajouter un paramètre sur la date. En effet, on le paramétrant, on peut définir une plage horaire où l'utilisateur ne pourra pas se connecter.
 
-Concernant le tyoe d'authentification, on utilise le protocole MS-CHAP V2 qui est un protocole propriétaire de Miscrosoft. En complement de cela, le serveur VPN fait un challenge de type MD5 afin d'authentifier le client.
+% Concernant le tyoe d'authentification, on utilise le protocole MS-CHAP V2 qui est un protocole propriétaire de Miscrosoft. En complement de cela, le serveur VPN fait un challenge de type MD5 afin d'authentifier le client.
 
-Le protocole MS-CHAP V2 utilise une authentification mutuelle. Cela permet au serveur d'authentification et à la machine distante de vérifier leurs identités respectives. L'inconvenient de cette méthode est que le login du client passe en clair sur le réseau. En sniffant la connexion par l'intermédiare de Wireshark, nous nous sommes rendu compte de cela. Par contre, le challenge MD5, et les mots de passe sont chiffrés.
+% Le protocole MS-CHAP V2 utilise une authentification mutuelle. Cela permet au serveur d'authentification et à la machine distante de vérifier leurs identités respectives. L'inconvenient de cette méthode est que le login du client passe en clair sur le réseau. En sniffant la connexion par l'intermédiare de Wireshark, nous nous sommes rendu compte de cela. Par contre, le challenge MD5, et les mots de passe sont chiffrés.
 
-
-
-Afin d'améliorer la sécurité, nous avons décider de mettre en place une autorité de certification.
+% Afin d'améliorer la sécurité, nous avons décider de mettre en place une autorité de certification.
 
 \paragraph{Autorité de certification}
-~
+\label{autorité_certification}~
 
+La sécurité de la solution n'est pas complète sans une identification via certificats, nous allons donc configurer une autorité de certification sur le serveur. Cette autorité va notamment nous permettre de délivrer des certificats signés qui nous seront utile pour la solution Microsoft, mais aussi lors de la configuration du routeur CISCO. L'autorité racine aura comme nom commun ISIMA et les certificats seront valides un an. L'ensemble correspond à la configuration du service Windows 2003 SCEP. D'un point de vue technique, l'autorité de certification utilise l'algorithme de hashage SHA-1 pour la signature, et un chiffrement de clefs de longueur 2048 bits par l'algorithme RSA.
 
-Cette autorité va nous permettre de délivrer des certificats qui nous seront utile par la suite dans la configuration du routeur CISCO. Pour la configuration de l'autorité nous avons choisi une autorité racine autonome ayant comme nom commun ISIMA. Les certificats ont une validité d'un an. D'un point de vue sécurité, l'autorité utilise l'algorithme de hashage SHA-1 et pour le cryptage on utilise Microsoft Strong Cryptographic Provider. La clé publique est chiffrée grâce à l'algorithme RSA sur 2048 bits.
-Pour récupérer un certificat, le client doit se connecter sur l'URL suivante : \verb|http://192.168.102.250/certsrv|
-Lorsqu'il se connecte sur cette page, il doit faire une demande de certificat. L'utilisateur a le choix entre un certificat de type WEB ou de type MESSAGERIE. Une fois le choix fait, l'autorité de certification recoit une demande de certificat. L'administrateur doit autoriser ou refuser cette demande. Dans le cas où la demande est validée, l'utilisateur doit se reconnecter à nouveau sur le site WEB afin de pouvoir installer ce certificat sur sa machine.
+Pour effectuer une demande de certificat, les clients doivent se connecter sur l'URL suivante : \verb|http://192.168.102.250/certsrv|. Deux types de certificats sont proposés : WEB ou MESSAGERIE. L'interface de l'autorité de certification permet de répondre aux demanded de certificats en choisissant d'accepter ou non de les délivrer. Si la demande est validée, l'utilisateur doit se connecter à nouveau sur le site WEB afin d'installer le certificat sur sa machine.
 
-Cependant, après avoir fait plusieurs essais, la connexion sur le serveur VPN Windows ne se produit pas. Nous pensons que le problème se situe dans la définition de la requête du certificat. Pour l'architecture du VPN Windows, ne nous utiliserons pas d'autorité de certification afin d'augmenter le niveau de sécurité. 
-
-Voyons à présent, la configuration du côté client
+Malheureusement, après plusieurs essais infructueux nous constatons que le système de certificats ne nous permet plus de se connecter au VPN. Le problème se situe probablement dans l'écriture des demandes de certificats mais nous ne sommes pas parvenus le résoudre, et cela est dommageable pour le niveau de sécurité de la solution.
 
 \subsubsection{Configuration du client}
-~
+\label{label_client_windows}
 
-
-L'un des avantages majeures de la solution Windows est que le client VPN est déjà intégrer dans le système d'exploitation de Microsoft. Voici les différentes étapes pour la création d'une connexion VPN.
-
-La 1ère étape consiste à configurer une nouvelle connexion. La connexion de type entreprise permet à l'utilisateur de se connecter au réseau privé. (VPN).
+L'un des avantages majeurs de la solution Windows est que le client VPN est déjà intégrer dans le système d'exploitation de Microsoft. L'un des inconvénients majeurs de la solution Windows est que malgré touts nos efforts nous ne sommes jamais parvenus à nous connecter au VPN Windows depuis un client Linux. Cette section présente les différentes étapes nécessaires à la création d'une connexion VPN sous Windows, et débute par la configuration d'une nouvelle connexion de type entreprise :
 
 \begin{figure}[H]
 	\begin{minipage}{0.5\textwidth}
 		\begin{flushleft} \large
-			\includegraphics[height=7cm]{partie_2/screen_windows/etape1.PNG}\\
+			\includegraphics[width=0.95\textwidth]{partie_2/screen_windows/etape1.PNG}\\
 		\end{flushleft}
 	\end{minipage}
-	\begin{minipage}{0.43\textwidth}
+	\begin{minipage}{0.49\textwidth}
 		\begin{flushright} \large
-			\includegraphics[height=7cm]{partie_2/screen_windows/etape2.PNG}\\
+			\includegraphics[width=0.95\textwidth]{partie_2/screen_windows/etape2.PNG}\\
 		\end{flushright}
 	\end{minipage}
-	\caption{Configuration nouvelle connexion}
+	\caption{1ère étape de la configuration d'une nouvelle connexion}
 	\label{VPN_ETAPE1}
 \end{figure}
 ~\
 
-La 2ème étape consiste à donner un nom à sa connexion VPN et spécifier si l'on souhaite effectuer une connexion initiale avant la connexion VPN.
+La 2ème étape consiste à nommer la connexion et à désactiver le mécanisme de connexion initiale automatique :
 
 \begin{figure}[H]
 	\begin{minipage}{0.5\textwidth}
 		\begin{flushleft} \large
-			\includegraphics[height=7cm]{partie_2/screen_windows/etape3.PNG}\\
+			\includegraphics[width=0.95\textwidth]{partie_2/screen_windows/etape3.PNG}\\
 		\end{flushleft}
 	\end{minipage}
-	\begin{minipage}{0.43\textwidth}
+	\begin{minipage}{0.49\textwidth}
 		\begin{flushright} \large
-			\includegraphics[height=7cm]{partie_2/screen_windows/etape4.PNG}\\
+			\includegraphics[width=0.95\textwidth]{partie_2/screen_windows/etape4.PNG}\\
 		\end{flushright}
 	\end{minipage}
-	\caption{Configuration nom connexion}
+	\caption{2ème étape de la configuration d'une nouvelle connexion}
 	\label{VPN_ETAPE2}
 \end{figure}
 ~\
 
 
-La dernière étape est importante car on spécifie l'adresse du serveur qui nous permettera de monter une liaison sécurié. L'utilisateur pourra pour augmenter la sécurité utiliser une carte à puce pour s'authentifier.
+La dernière étape permet de spécifier l'adresse IP du serveur distant : %. L'utilisateur pourra pour augmenter la sécurité utiliser une carte à puce pour s'authentifier.
 
 \begin{figure}[H]
 	\begin{minipage}{0.5\textwidth}
 		\begin{flushleft} \large
-			\includegraphics[height=7cm]{partie_2/screen_windows/etape5.PNG}\\
+			\includegraphics[width=0.95\textwidth]{partie_2/screen_windows/etape5.PNG}\\
 		\end{flushleft}
 	\end{minipage}
-	\begin{minipage}{0.43\textwidth}
+	\begin{minipage}{0.49\textwidth}
 		\begin{flushright} \large
-			\includegraphics[height=7cm]{partie_2/screen_windows/etape6.PNG}\\
+			\includegraphics[width=0.95\textwidth]{partie_2/screen_windows/etape6.PNG}\\
 		\end{flushright}
 	\end{minipage}
-	\caption{Configuration adresse IP du serveur VPN}
+	\caption{3ème étape de la configuration d'une nouvelle connexion}
 	\label{VPN_ETAPE3}
 \end{figure}
 
-~\
-
-Une fois la nouvelle connexion VPN crée le client va pouvoir désormais se connecter sur le serveur VPN en utilisant un login et un mot de passe qui ont été défini dans l'Active Directory. Nous avons laissé les configurations de sécurité par défaut pour le client.
-
-Pour notre exemple, nous utiliserons l'utilisateur \verb leo. Une fois la connexion accepté par le serveur, voici ce que l'utilisateur peut voir sur son sytème d'exploitation.
+Ceci achève la configuration de la nouvelle connexion, les paramètres de sécurité du client ont été laissés aux valeurs par défaut. Lorsqu'il tentera de se connecter, l'utilisateur devra entrer ses identifiant et mot de passe comme définis dans l'Active Directory. La figure \ref{VPN_ETAPE7} présente l'état de la connexion après authentification : le VPN utilise le protocole PPTP, nous avons reçu l'adresse IP 10.0.2.106, authentification Ms-Chap v2, chiffrement MPPe 128 bits.
 
 \begin{figure}[H]
 	\begin{center}
 		\includegraphics[width=0.50\textwidth]{partie_2/screen_windows/etape7.PNG}\\
 	\end{center}
-	\caption{Information VPN}
+	\caption{Informations d'état de la connexion}
 	\label{VPN_ETAPE7}
 \end{figure}
 
-~\
+% Cette image nous montre des informations importantes sur la nature du VPN. Tout d'abord, elle nous informe le protocole qu'elle utilise. Ici on utilise PPTP. Ensuite, le client nous donne le type de connexion : VPN ainsi que sa nouvelle adresse IP : 10.0.2.106
+% Du point de vue sécurité, l'authentification se fait par l'intermédiaire de MS-CHAP V2 et le chiffrement par le protocole MPPE.
 
-Cette image nous montre des informations importantes sur la nature du VPN. Tout d'abord, elle nous informe le protocole qu'elle utilise. Ici on utilise PPTP. Ensuite, le client nous donne le type de connexion : VPN ainsi que sa nouvelle adresse IP : 10.0.2.106
-Du point de vue sécurité, l'authentification se fait par l'intermédiaire de MS-CHAP V2 et le chiffrement par le protocole MPPE.
+% MPPE est le protocole de chiffrement de Microsoft. Il se base l'algorithme RSA RC4. MPPE supporte trois tailles de clés : 40 bits, 56 bits et 128 bits.
 
-MPPE est le protocole de chiffrement de Microsoft. Il se base l'algorithme RSA RC4. MPPE supporte trois tailles de clés : 40 bits, 56 bits et 128 bits.
-
-Il est à remarquer que sous Windows 2000 la taille de la clé ne dépasse pas les 40 bits. Il ne faut pas oublier d'activer sur le serveur VPN les différents tailles des clés sans quoi la connexion est refusée. 
+Une remarque sur le chiffrement MPPe : Windows 2000 ne permet pas l'utilisation de clefs de longueur supérieure à 40 bits. Il est possible de permettre l'utilisation de clefs plus faibles que 128 bits sur le serveur, afin de permettre à ces clients de se connecter, mais ce n'est pas recommandé.
+% Il est à noter que Windows 2000 ne permet pas l'utilisation de clefs de longueur supérieure à 40 bits. Il ne faut pas oublier d'activer sur le serveur VPN les différents tailles des clés sans quoi la connexion est refusée. 
 
 \begin{figure}[H]
 	\begin{center}
@@ -318,18 +272,16 @@ Il est à remarquer que sous Windows 2000 la taille de la clé ne dépasse pas l
 
 
 \subsubsection{Bilan et limites de la solution}
-~
 
-Microsoft propose une solution VPN très intéressante et facile à mettre en place (côté serveur comme côte client). Cependant, elle est vraiment destiné à des petites structures réseaux. Dans le cas de l'ISIMA, la structure du réseau est plus complexe. En effet, le réseau se compose d'une branche PROFESSEUR et d'une branche ETUDIANT. L'inconvenient majeur de Microsoft est que chaque service doit se lier avec une seule carte réseau. Il est donc impossible de dissocier le trafic réseau sur les deux cartes, ce qui ne respecte pas le cachier des charges du projet. La solution serait de virtualiser un serveur Windows 2003 et de lier la carte réseau virtuel à la carte réseau physique de la machine. Sous VMware par exemple, il faudrait utiliser le mode bridgé pour les cartes réseaux.
+Microsoft propose une solution VPN à la fois intéressante et facile à mettre en place (côté serveur comme côté client), mais demeure vraiment destinée à de petites structures. Dans le cas de l'ISIMA, la structure du réseau est plus complexe, avec la séparation des réseaux professeurs et étudiants.
 
-Du point de vue client, nous n'avons pas réussi à nous connecter avec une plateforme LINUX à cause d'une mauvaise implementation du protocole PPTP.
+L'inconvénient majeur de Windows Server est que chaque service doit se lier avec une seule carte réseau. Il est donc impossible de dissocier le trafic réseau sur des deux cartes, ce qui ne respecte pas le cachier des charges du projet. Une solution envisageable serait de virtualiser un serveur Windows 2003 et de lier les cartes réseau virtuelles aux cartes réseaux physiques de la machine. Rappelons également que côté client nous n'avons pas réussi à nous connecter depuis une une machine Linux à cause d'une mauvaise implémentation du protocole PPTP.
 
+La récupération des identifiants et mots de passe depuis l'annuaire de l'ISIMA n'a pas pu être effectuée et nous avons choisi de ne pas tenter d'interfacer notre maquette avec le réseau de l'école. Comme nous l'avons expliqué, le service VPN est attaché à une seule carte réseau, et ceci nous empêche de savoir quel type d'utilisateur est connecté (professeur ou étudiant). La procédure à suivre serait d'intégrer le serveur VPN Windows sur le domaine de l'ISIMA et de lancer une réplication de la base Active Directory.
 
-Concernant la récupération des login et des mots de passe de l'ISIMA, nous avons décider de ne pas interfacer notre maquette, car le service VPN se lie avec une seule carte réseau. Ceci nous empeche de gérer le réseau et de savoir quelle type d'utilisateur est connecté (PROF ou ELEVE). Cependant, la procédure à suivre serait de rajouter sur le domaine de l'ISIMA le serveur Windows et de lancer une réplication de la base Active Directory. 
-Si l'on souhaite utiliser la base NIS de l'ISIMA Microsoft propose une suite d'outil \verb| Windows Service for UNIX| téléchargeable directement sur le site. Cette suite propose d'intégrer à Windows les commandes d'UNIX. On pourra par exemple utiliser les commandes YPCAT. Une des améliorations possible de la maquette serait de récuperer toutes les informations des personnes de l'ISIMA via ces outils. L'interopérabilité serait complète.
+Nous avons également suivi une autre piste pour tenter de s'interfacer avec la base NIS de l'ISIMA. Microsoft propose une suite d'outil \verb|Windows Service for UNIX| téléchargeable directement depuis leur site. Cette suite propose d'intégrer à Windows des commandes et services généralement spécifiques aux systèmes UNIX, parmis lesquels un client NIS. Une amélioration possible de la maquette serait de récupérer les informations utilisateurs de l'ISIMA via ces outils : l'interopérabilité serait alors complète.
 
-D'un point de vue sécurité, sans l'utilisation de certificats, le mot de passe du client est crypté. Par contre le login du client et le nom de la machine est en clair sur le réseau pendant la phase du challenge MD5. 
-Voici une trace issue de Wireshark qui montre ce problème de sécurité.
+L'absence de certificats signés pour l'authentification des pairs pose un réel probléme de sécurité. De plus bien que les mots de passes clients soient hashés, les identifiants et le nom d'hôte de la machine circulent en clair sur le réseau au cours de la phase d'authentification. La figure \ref{VPN_CONNEXION} illustre ce problème :
 
 \begin{figure}[H]
 	\begin{center}
@@ -340,9 +292,8 @@ Voici une trace issue de Wireshark qui montre ce problème de sécurité.
 \end{figure}
 
 
-Par rapport à l'autorité de certifications, nous avons été capable de générer des certificats et les installer sur les machines tests. Par contre, la connexion avec le serveur VPN n'a pas pu s'établir. A l'heure actuel nous ne savons toujours pas d'où provient le problème. Nous soupçonnons un problème de communication entre l'autorité de certification et la machine test.
+% Par rapport à l'autorité de certifications, nous avons été capable de générer des certificats et les installer sur les machines tests. Par contre, la connexion avec le serveur VPN n'a pas pu s'établir. A l'heure actuel nous ne savons toujours pas d'où provient le problème. Nous soupçonnons un problème de communication entre l'autorité de certification et la machine test.
 
-Après avoir expliquer la configuration du serveur Windows 2003 et ses limitations, intéressons nous à la solution VPN sous Linux avec le logiciel OpenVPN.
- 
+% Après avoir expliquer la configuration du serveur Windows 2003 et ses limitations, intéressons nous à la solution VPN sous Linux avec le logiciel OpenVPN.
 
-
+En conclusion, la solution Microsoft bien que simple à mettre en place demeure incomplète, ne répond pas à notre cahier des charges en termes de sécurité et n'est pas multiplates-formes.
