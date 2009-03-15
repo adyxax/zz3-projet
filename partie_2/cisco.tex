@@ -1,7 +1,8 @@
 \subsubsection{Généralités}
-ipsec esp-sha1
-TODO ecrire le noyau du routeur : c2800mn-advsecurityk9-mz.124-24.T.bin
 
+Les grands équipementiers comme CISCO proposent tous des solutions matérielles pour mettre en oeuvre des connexions VPN. Pour cette étude nous avons utilisé un routeur 2811XM adjoint des fonctionnalités de sécurité avancées fournies par la version \verb|c2800mn-advsecurityk9-mz.124-24.T.bin| de l'IOS.
+
+Le choix d'IPsec s'est imposé comme solution naturelle, car très bien intégrée aux technologies CISCO. Ils proposent de plus un client IPsec multiplate-formes, permettent de gérer le processus d'authentification via certificats, et de s'interfacer à un annuaire d'identification en RADIUS.
 
 \subsubsection{Mise en place côté serveur}
 
@@ -9,7 +10,7 @@ TODO ecrire le noyau du routeur : c2800mn-advsecurityk9-mz.124-24.T.bin
 ~
 
 Commençons par configurer les interfaces du routeur. L'interface connectée au réseau de l'ISIMA récupère son adresse IP via DHCP ce qui ne serait pas le cas dans un environnement de production. En parallèle à cette configuration nous mettons en place deux ACL permettant de s'assurer sur seuls les clients du VPN pourront accéder au réseau interne.
-\begin{figure}[H]
+% \begin{figure}[H]
 	\begin{center}
 		\begin{minipage}{0.90\textwidth}
 			\begin{lstlisting}[frame=trBL]
@@ -22,6 +23,13 @@ Commençons par configurer les interfaces du routeur. L'interface connectée au 
 (config-if)# description interface to the external network
 (config-if)# ip address dhcp
 (config-if)# no shutdown
+			\end{lstlisting}
+		\end{minipage}
+	\end{center}
+\begin{figure}[H]
+	\begin{center}
+		\begin{minipage}{0.90\textwidth}
+			\begin{lstlisting}[frame=trBL]
 (config-if)# exit
 (config)# interface FastEthernet0/1.1
 (config-if)# description interface to the prof network
@@ -81,14 +89,34 @@ Thank you if you read this till the end.#
 \label{CONFIG_RADIUS}
 ~
 
-Tout d'abord le serveur FreeRadius.
-Authentication PAP entre radius server and cisco router :
-Ajouter \verb|ciscovpn User-Password := "isima"|  au début du fichier \verb|/etc/raddb/users|, où ciscovpn est le hostname du routeur et isima le mot de passe qui lui sera associé.
-Ajouter quelques lignes pour autoriser le router à interroger la base RADIUS dans le fichier /etc/raddb/clients.conf, et commenter la ligne shadow dans radiusd.conf
+Dans cette section nous allons interfacer le routeur avec un serveur RADIUS. Pour installer ce serveur nous allons tirer parti du serveur \verb|Linux CentOS 5.1| qui est déjà capable de récupérer les identifiants via l'annuaire NIS de l'ISIMA.
+
+Le serveur à installer est FreeRadius, qui est disponible dans les paquets de la distribution :
+
+\verb|[root@centosvpn ~]# yum install freeradius|
 
 ~
 
-Le protocole RADIUS étant parfaitement géré par les équipements CISCO la configuration qui en découle est relativement simple :
+La configuration de base de FreeRadius étant déjà fonctionnelle nous n'auront que très peu de modifications à lui apporter. Tout d'abord nous allons configurer une authentification PAP entre le routeur et le serveur Radius, en ajoutant \verb|ciscovpn User-Password := "isima"|  au début du fichier \verb|/etc/raddb/users|, où ciscovpn est le hostname du routeur et isima le mot de passe qui lui sera associé.
+
+Nous allons ensuite autoriser le routeur à se connecter en ajoutant les lignes suivantes dans le fichier \verb|/etc/raddb/clients.conf|, en supposant que \verb|192.168.102.86| est l'adresse IP du routeur sur le réseau de l'ISIMA :
+\begin{center}
+		\begin{minipage}{0.9\textwidth}
+			\begin{lstlisting}[frame=trBL]
+client 192.168.102.86 {
+	secret = isima
+	shortname = isima
+}
+			\end{lstlisting}
+		\end{minipage}
+\end{center}
+~
+
+Il reste à indiquer au Radius qu'il doit interroger la base NIS pour obtenir les identifiants et mots de passes utilisateurs. Cela se fait en commentant la ligne indiquant à FreeRadius le chemin vers le fichier \verb|shadow| dans le fichier \verb|/etc/raddb/radiusd.conf|. En effet, en l'absence de fichier \verb|shadow|, FreeRadius se rabat sur les mécanismes d'authentification PAM standarts dont nous avons besoin.
+
+~
+
+Du point de vue du routeur, le protocole RADIUS étant parfaitement géré par les équipements CISCO la configuration qui en découle est relativement simple :
 
 \begin{figure}[H]
 	\begin{center}
@@ -114,7 +142,7 @@ acct-port 1813 key isima
 \paragraph{Configuration d'IPsec}
 ~
 
-Les lignes qui suivent permettent de configurer la cryptographie isakmp :
+Les lignes qui suivent permettent de configurer la cryptographie isakmp comme suit :
 \begin{itemize}
 	\item algorithme de chiffrement triple DES.
 	\item algorithme de hashage sha-1.
@@ -176,7 +204,7 @@ Configurons maintenant la police IPsec :
 \begin{itemize}
 	\item Mise en place de l'ACL pour indiquer que l'on veut filtrer l'ensemble du trafic IP.
 	\item Encapsulation ESP, chiffrement 3des, intégrité sha-1.
-	\item Mode tunnel (ie au niveau 3, par opposition au mode transport au niveau 4).
+% 	\item Mode tunnel (ie au niveau 3, par opposition au mode transport au niveau 4).
 	\item Configuration de l'authentification des profs et des étudiants via le serveur radius.
 \end{itemize}
 
@@ -186,7 +214,6 @@ Configurons maintenant la police IPsec :
 			\begin{lstlisting}[frame=trBL]
 (config)# access-list 101 permit ip any any
 (config)# crypto ipsec transform-set policy esp-3des esp-sha-hmac
-(cfg-crypto-trans)# mode tunnel
 (cfg-crypto-trans)# exit
 (config)# crypto dynamic-map prof-map 1
 (config-crypto-map)# set transform-set policy
@@ -206,12 +233,9 @@ Configurons maintenant la police IPsec :
 	\label{configuration_police_ipsec}
 \end{figure}
 
-La présence d'une seule crypto map et d'une identification en fonction du groupe dans le client peut provoquer des problème d'identification. En effet un étudiant peut facilement se faire passer pour un professeur et vice versa.
-Pour remédier à ce problème, nous avons utiliser l'autorité de certification afin de pouvoir générer un certificat. Il est à noter que pour pouvoir effectuer cette manipulation, il faut au préalable installer sur le serveur Windows 2003 SCEP qui est un protocole dévélopper par CISCO pour enregistrer les certificats.
-Lors de l'enregistrement du certificat sur le routeur, le processus va demander un mot de passe afin de bien vérifier l'identité du CA et du routeur. Ce mot de passe se trouve à l'adresse suivante : \verb|http://192.168.102.250/certsrv/mscep/mscep.dll|
+La présence d'une authentification en fonction de groupes protégés via une clef partagée est une lacune sécuritaire de notre solution. En effet un étudiant pourrait ``facilement'' se faire passer pour un professeur. Pour remédier à ce problème un mécanisme d'authentification via certificats est nécessaire.
 
-Voici les différents phases pour enregistrer un certificat:
-
+Nous allons utiliser le service Windows 2003 SCEP installé dans la partie 2.1.1.\ref{autorité_certification} page \pageref{autorité_certification}. La figure \ref{configuration_authentification_certificats} détaille la configuration d'une authentification par certificats sur le routeur. Lors de la requête de certificat, un mot de passe permettant de vérifier la validité de la demande est demandé : il se trouve à l'adresse \verb|http://192.168.102.250/certsrv/mscep/mscep.dll|
 
 \begin{figure}[H]
 	\begin{center}
@@ -235,108 +259,104 @@ http://192.168.102.250/certsrv/mscep/mscep.dll
 	\label{configuration_authentification_certificats}
 \end{figure}
 
-Lorsque le routeur envoie sa requête l'autorité de certification, celui-ci à le pouvoir d'accepter ou de refuser sa requête. Dès que le CA à accepter le routeur, un message sur la console du routeur nous avertit que le certificat a été validé. En exécutant la commande \verb|show running-config| on trouve le certificat que le CA lui a attribué.
-
+Il ne reste plus qu'à attendre la validation (manuelle!) de la demande de certificat par l'administrateur du serveur jouant le rôle de l'autorité de certification.
 
 \subsubsection{Mise en place côté client}
 
-La mise en place du côté client necessite l'installation du client CISCO sur sa machine. Ce client a la particularité d'être compatible avec Linux.
+Cette partie présente l'installation du client CISCO sur une machine Windows. Bien que ce client aie la particularité d'être compatible avec Linux nous ne sommes pas parvenus, ni à la compiler (il réclame la compilation d'un module noyau), ni à nous en servir.
 
-L'installation du client ne demande pas d'explication propre car celle-ci est relativement basique. Dans cette partie nous allons expliquer la configuration que le client doit faire lorsqu'il souhaite se connecter sur le serveur VPN.
-
-Tout d'abord la création d'une nouvelle connexion se fait grâce au bouton ``NEW''. Une nouvelle fenêtre s'ouvre et demande à l'utilisateur de remplir différentes informations comme son groupe, l'adresse IP du serveur et la clé partagé. Ici dans notre exemple, on souhaite se connecter sur le réseau PROFS. La clé partagée est \verb|isimaprofs|.
+L'installation du client est comme pour n'importe quel logiciel sous Windows. Une fois lancé il faut établir une nouvelle connexion (bouton ``new''). La figure \ref{VPN_CISCO} présente les informations nécessaires à la connexion : legroupe d'appartenance du client, l'adresse IP du serveur et la clé partagé.
 
 \begin{figure}[H]
 	\begin{center}
-		\includegraphics[width=0.75\textwidth]{partie_2/screen_windows/client_cisco.png}\\
+		\includegraphics[width=0.6\textwidth]{partie_2/screen_windows/client_cisco.png}\\
 	\end{center}
 	\caption{Client CISCO}
 	\label{VPN_CISCO}
 \end{figure}
 
-
-Une fois les informations remplie, le client va lancer la phase 1 d'ISAKMP afin de négocier la méthode d'authenrification avec le routeur CISCO. Si cette opération est réussite, une nouvelle fenêtre s'ouvre afin que l'utilisateur puisse entrer son login et son mot de passe et s'authentifier grâce au serveur NIS de l'ISIMA.
+Si la configuration est correcte, lorsque l'utilisateur tentera de se connecter au VPN il se verra demander ses identifiant et mot de passe, correspondant à ceux inscrits dans l'annuaire de l'ISIMA :
 
 \begin{figure}[H]
 	\begin{center}
-		\includegraphics[width=0.75\textwidth]{partie_2/screen_windows/fenetre_connexion.PNG}\\
+		\includegraphics[width=0.5\textwidth]{partie_2/screen_windows/fenetre_connexion.PNG}\\
 	\end{center}
 	\caption{Identification du client}
 	\label{VPN_CISCO_CLIENT}
 \end{figure}
 
-
-
 \subsubsection{Bilan et limites de la solution}
 
-Dans cette partie, nous ferons des brefs tests de connexion afin de vérifier le bon fonctionnement de la solution.
+% Dans cette partie, nous ferons des brefs tests de connexion afin de vérifier le bon fonctionnement de la solution.
+% 
+% 
+% \begin{figure}[H]
+% 	\begin{center}
+% 		\begin{minipage}{1\textwidth}
+% 			\begin{lstlisting}[frame=trBL]
+% 
+% 
+% Configuration IP de Windows
+% 
+% Carte Ethernet Connexion au réseau local:
+% 
+%         Suffixe DNS propre à la connexion : isima.fr
+% 	Adresse IP. . . . . . . . . . . . : 192.168.102.79
+% 	Masque de sous-réseau . . . . . . : 255.255.255.0
+% 	Passerelle par défaut . . . . . . : 192.168.102.60
+% 
+% 
+% Carte Ethernet Connexion au réseau local 3:
+% 
+%         Suffixe DNS propre à la connexion : isima.fr
+% 	 Adresse IP. . . . . . . . . . .  : 10.0.1.22
+% 	Masque de sous-réseau . . . . . . : 255.0.0.0
+% 	Passerelle par défaut . . . . . . : 10.0.1.22
+% 
+% 
+% 			\end{lstlisting}
+% 		\end{minipage}
+% 	\end{center}
+% 	\caption{Adresse IP coté profs}
+% 	\label{Adresse_IP_cote_profs}
+% \end{figure}
+% 
+% 
+% On peut refaire la même expérience en se connectant avec un utilisateur appartenant au groupe STUDENTS.
+% 
+% \begin{figure}[H]
+% 	\begin{center}
+% 		\begin{minipage}{1\textwidth}
+% 			\begin{lstlisting}[frame=trBL]
+% 
+% 
+% Configuration IP de Windows
+% 
+% Carte Ethernet Connexion au réseau local:
+% 
+%         Suffixe DNS propre à la connexion : isima.fr
+% 	Adresse IP. . . . . . . . . . . . : 192.168.102.79
+% 	Masque de sous-réseau . . . . . . : 255.255.255.0
+% 	Passerelle par défaut . . . . . . : 192.168.102.60
+% 
+% 
+% Carte Ethernet Connexion au réseau local 3:
+% 
+%         Suffixe DNS propre à la connexion : isima.fr
+%        
+% 	 Adresse IP. . . . . . . . . . .  : 192.168.1.20
+% 	Masque de sous-réseau . . . . . . : 255.255.255.0
+% 	Passerelle par défaut . . . . . . : 192.168.1.20
+% 
+% \end{lstlisting}
+% 		\end{minipage}
+% 	\end{center}
+% 	\caption{Adresse IP coté eleve}
+% 	\label{Adresse_IP_cote_eleve}
+% \end{figure}
 
+% On remarque bien que la solution CISCO est fonctionnelle, en fonction du groupe d'appartenance le routeur est capable de rediriger l'utilisateur sur le bon réseau.
 
-\begin{figure}[H]
-	\begin{center}
-		\begin{minipage}{1\textwidth}
-			\begin{lstlisting}[frame=trBL]
+La phase de configuration du routeur a tiré sa difficulté de la complexité inhérente à IPsec. Cette complexité impose de suivre l'ensemble des étapes qui nous avons détaillées ``à la lettre'' afin de valider par étapes les paramètres de chaque élément constitutif d'IPsec.
 
-
-Configuration IP de Windows
-
-Carte Ethernet Connexion au réseau local:
-
-        Suffixe DNS propre à la connexion : isima.fr
-	Adresse IP. . . . . . . . . . . . : 192.168.102.79
-	Masque de sous-réseau . . . . . . : 255.255.255.0
-	Passerelle par défaut . . . . . . : 192.168.102.60
-
-
-Carte Ethernet Connexion au réseau local 3:
-
-        Suffixe DNS propre à la connexion : isima.fr
-	 Adresse IP. . . . . . . . . . .  : 10.0.1.22
-	Masque de sous-réseau . . . . . . : 255.0.0.0
-	Passerelle par défaut . . . . . . : 10.0.1.22
-
-
-			\end{lstlisting}
-		\end{minipage}
-	\end{center}
-	\caption{Adresse IP coté profs}
-	\label{Adresse_IP_cote_profs}
-\end{figure}
-
-
-On peut refaire la même expérience en se connectant avec un utilisateur appartenant au groupe STUDENTS.
-
-\begin{figure}[H]
-	\begin{center}
-		\begin{minipage}{1\textwidth}
-			\begin{lstlisting}[frame=trBL]
-
-
-Configuration IP de Windows
-
-Carte Ethernet Connexion au réseau local:
-
-        Suffixe DNS propre à la connexion : isima.fr
-	Adresse IP. . . . . . . . . . . . : 192.168.102.79
-	Masque de sous-réseau . . . . . . : 255.255.255.0
-	Passerelle par défaut . . . . . . : 192.168.102.60
-
-
-Carte Ethernet Connexion au réseau local 3:
-
-        Suffixe DNS propre à la connexion : isima.fr
-       
-	 Adresse IP. . . . . . . . . . .  : 192.168.1.20
-	Masque de sous-réseau . . . . . . : 255.255.255.0
-	Passerelle par défaut . . . . . . : 192.168.1.20
-
-\end{lstlisting}
-		\end{minipage}
-	\end{center}
-	\caption{Adresse IP coté eleve}
-	\label{Adresse_IP_cote_eleve}
-\end{figure}
-
-On remarque bien que la solution CISCO est fonctionnelle, en fonction du groupe d'appartenance le routeur est capable de rediriger l'utilisateur sur le bon réseau.
-
-D'un point de vue sécurité, la solution CISCO est très performante. En effet, une fois le tunnel VPN crée toutes les informations sont cryptées y compris le login de l'utilisateur. Cependant, le fait de remplir dans le client VPN le groupe d'appartenance ainsi que la clé ne nous permet pas de réellement identifer l'utilisateur. Imaginons qu'un élève connaisse la clé PROFS, il pourra sans aucun problème se connecter avec son mot de passe tradionnel sur le réseau professeur. Afin d'éviter ce problème, la solution serait de mettre en place un système de certificat en utilisant l'autorité de certification installée sur le serveur Windows 2003. Nous avons réussi à fournir un certificat au routeur CISCO et à l'intégrer dans sa configuration. Du point de vue client, nous avons été capable d'en générer un. Par contre, en tant qu'utilisateur nous n'avons pas réussi à monter le VPN. Nous pensons que le problème provient du type de certificat créé.
+L'aspect sécurité est très présent, étant la raison d'être d'IPsec. En effet, dès le début de la phase d'authentification, l'ensemble des échanges est chiffré. Le principal problème que nous avons rencontré concerne le mécanisme d'authentification. En effet, le système en place sur la solution n'est qu'un système à clef partagée car nous ne sommes pas parvenus à aller au bout de la mise en place des certificats. En effet nous avons été capables de fournir des certificats signés par notre autorité au routeur comme au client, néanmoins la connexion n'a jamais pu être établie.
