@@ -26,7 +26,7 @@ En fonction de ce cahier des charges, nous avons défini plusieurs critères, qu
 
 Du point de vue du client, nous avons défini trois critères important:
 \begin{itemize}
- 	\item La simplicité de la configuration du client
+ 	\item Le déploiement du client
 	\item Le délai de connexion
 \end{itemize}
 
@@ -49,7 +49,7 @@ Pour la solution de CISCO, il faut télécharger comme OpenVPN leur client. Celu
 Cependant le plus gros inconvénient du client CISCO est que l'école devra avoir un accès au site CISCO, car son téléchargement peut se faire lorsqu'on s'identifie sur le site. Pour la plupart des tests que nous avons pratiqués, nous avons trouvé le client CISCO sur différents sites Internet n'appartenant pas à CISCO.
 On estime l'installation et la configuration à un moins de dix minutes.
 
-D'un point de vue configuration du client VPN, la solution de Microsoft reste la plus avantageuse. 
+D'un point de vue déploiement du client VPN, la solution de Microsoft reste la plus avantageuse. 
 
 Voyons à présent le critère du délai de connexion  
 
@@ -74,13 +74,13 @@ Après avoir détailler les deux critères du côte client, intéressons nous au
 
 Concernant le côté serveur, nous avons choisit deux critères:
 \begin{itemize}
- 	\item Configuration du serveur
+ 	\item Déploiement du serveur
 	\item Coût de chaque solution 
 \end{itemize}
 
 Détaillons à présent ces différents critères
 
-\paragraph{Configuration du serveur}
+\paragraph{Déploiement du serveur}
 ~\
 
 
@@ -145,4 +145,9 @@ Le dernier critère concerne le chiffrement.
 \paragraph{Chiffrement}
 
 Lors de l'implémentation des trois solutions, nous avons remarqué une différence sur le type de chiffrement qu'utilise les solutions.
-Microsoft utilile un chiffrement symétrique de type MPPE avec une clé sur 128 bits. L'incovénient majeure est que les systèmes d'exploitation antérieur à Windows XP ne peuvent pas gérer ce type de chiffrement.
+Microsoft utilile un chiffrement symétrique de type MPPE avec une clé sur 128 bits. L'incovénient majeur est que les systèmes d'exploitation antérieur à Windows XP ne peuvent pas gérer ce type de chiffrement. CISCO utilise lui aussi un chiffrement symétrique mais sur 168 bits. 
+OpenVPN quant à lui utilise un chiffrement asymétrique. C'est à dire qu'on va utiliser une clé public et une clé privée. Ici les clés sont de taille 1024 bits.
+
+Pour le chiffrement, nous avons exclu la solution de Microsoft car il y a une dépendance vis à vis du système d'exploitation. Nous n'avons pas pu départager OpenVPN et CISCO car les deux types de chiffrements se valent.
+
+Voyons à présent les performances de chaque solution.
