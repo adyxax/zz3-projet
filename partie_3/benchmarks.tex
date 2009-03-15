@@ -67,4 +67,9 @@ Utilisation CPU & 100\% & 80\% & 100\% \\
 	\label{Résultat_des_benchmarks}
 \end{figure}
 
-Le critère correpondant à l'utilisation CPU n'est pas donné par IPperf. Nous avons seulement regarder les statistiques de la machine. On se rend compte que
+Le critère correpondant à l'utilisation CPU n'est pas donné par IPperf. Nous avons seulement regarder les statistiques de la machine. Dès que du trafic passe par le tunnel, les serveurs VPN sont sollicités et il devient très difficile d'exécuter une tâche en parallèle. La surconsommation des ressources machines est dû au processeur.Ce dernier est responsable du traitement des packets transitant dans la carte réseau.
+
+Concernant la bande passante, la solution d'OpenVPN est la plus performante.Cependant, nous avons remarqué des fluctuations durant les mesures, ce qui n'est pas le cas de routeur CISCO.
+
+Après avoir confronter les résultats, faisons le bilan de ces trois solutions.
+
