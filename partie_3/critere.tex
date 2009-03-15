@@ -1,6 +1,6 @@
 \subsection{Critères d'évaluation}
 
-Nous avons établit la liste des critères d'évaluation à partir du cahier des charges que nous nous sommes fixé en première partie de ce rapport. Ce cahier des charges comprenait les 5 axes suivants :
+Nous avons établi la liste des critères d'évaluation à partir du cahier des charges que nous nous sommes fixé en première partie de ce rapport. Ce cahier des charges comprenait les 5 axes suivants :
 \begin{itemize}
  	\item Facilité de déploiement du serveur.
 	\item Client VPN multiplate-forme.
@@ -23,9 +23,9 @@ Lors de la mise en place de chacune des solutions, nous avons présenté le proc
 
 Pour la solution VPN de Microsoft, le client étant intégré au système d'exploitation, l'utilisateur a juste à créer une nouvelle connexion et la paramètrer en mode VPN qui prend plus ou moins 30 secondes en suivant les directives présentées en \ref{label_client_windows} page \pageref{label_client_windows}.
 
-Concernant OpenVPN, l'utilisateur doit dans un premier temps télécharger le client VPN depuis le site officiel (qui aurait éventuellement sa place sur l'Intranet de l'ISIMA). Le client est très léger (978 Ko), mais la durée nécessaire à l'installationdépend des capacité de la machine, le client devat installer une carte réseau virtuelle pour son bon fonctionnement. Néanmoins, une fois installé il suffit de copier le fichier de configuration ainsi que le certificat et la clef utilisateur dans le dossier d'installation. L'ensemble prend 5 à 10 minutes.
+Concernant OpenVPN, l'utilisateur doit dans un premier temps télécharger le client VPN depuis le site officiel (qui aurait éventuellement sa place sur l'Intranet de l'ISIMA). Le client est très léger (978 Ko), mais la durée nécessaire à l'installation dépend des capacités de la machine, celui-ci devant installer une carte réseau virtuelle pour son bon fonctionnement. Néanmoins, une fois installé il suffit de copier le fichier de configuration ainsi que le certificat et la clef utilisateur dans le dossier d'installation. L'ensemble prend 5 à 10 minutes.
 
-La solution CISCO impose, de même que pour OpenVPN, de télécharger leur client. Celui-ci est plus conséquent (9 Mo) et aurait également sa place sur l'intranet de l'ISIMA. L'installation est par contre rapide (moins de 2 minutes). Pour la configuration du client, l'utilisateur a le choix. Soit il configure manuellement la connexion VPN, cela sous-entendant qu'il en connaisse les paramètres, soit il importe directement un fichier de configuration (environ 1Ko). La procédure prend en tout de 5 à 10 minutes.
+La solution CISCO impose, de même que pour OpenVPN, de télécharger leur client. Celui-ci est plus conséquent (9 Mo) et aurait également sa place sur l'intranet de l'ISIMA. L'installation est par contre rapide (moins de 2 minutes). Pour la configuration du client, l'utilisateur a le choix. Soit il configure manuellement la connexion VPN, cela sous-entend qu'il en connaisse les paramètres, soit il importe directement un fichier de configuration (environ 1Ko). La procédure prend en tout de 5 à 10 minutes.
 
 ~
 
@@ -42,18 +42,18 @@ Avec le client OpenVPN, l'utilisateur s'authentifie et s'identifie très rapidem
 
 ~
 
-Concernant le délai de connexion, le client de OpenVPN s'avère être le plus performant. Il est à noter que nous n'avons pas souhaité mésurer avec précision le délai de connexion, car ne s'agissant que d'une maquette sur un réseau local une telle mesure n'aurait pas été représentative.
+Concernant le délai de connexion, le client de OpenVPN s'avère être le plus performant. Il est à noter que nous n'avons pas souhaité mesurer avec précision le délai de connexion, car ne s'agissant que d'une maquette sur un réseau local une telle mesure n'aurait pas été représentative.
 
 \subsubsection{Côté Serveur}
 
 \paragraph{Déploiement du serveur}
 ~
 
-L'installation du serveur OpenVPN a été particulièrement longue. En effet, il a fallu dans un premier temps installer sur le serveur CentOS l'ensemble des dépendances nécessairesà la compilation d'OpenVPN, à le compiler, puis enfin à installer le logiciel. Une fois l'installation terminée, il nous a fallu générer les différents certificats pour les groupes PROFS et STUDENTS. En dernier temps il a fallu interfacer le serveur avec la base NIS de l'ISIMA pour récupérer les identifiants et mots de passes des utilisateurs.
+L'installation du serveur OpenVPN a été particulièrement longue. En effet, il a fallu dans un premier temps installer sur le serveur CentOS l'ensemble des dépendances nécessaires à la compilation d'OpenVPN, à le compiler, puis enfin à installer le logiciel. Une fois l'installation terminée, il nous a fallu générer les différents certificats pour les groupes PROFS et STUDENTS. En dernier temps il a fallu interfacer le serveur avec la base NIS de l'ISIMA pour récupérer les identifiants et mots de passes des utilisateurs.
 
 Pour Windows Server, nous avons dû installer quatre services différents : DNS, DHCP, Active Directory, Service d'accès distant. Une fois cette phase achevée, la configuration de chacun de ses services a été effectuée rapidement en comparaison d'OpenVPN.
 
-Enfin pour la solution CISCO, le serveur VPN est inclus dans le matériel. Toutefois nous avons dû installer un serveur RADIUS sur le serveur Linux afin que celui-ci consulte la base NIS pour authentifier l'utilisateur. L'avantage de la solution CISCO est que le fichier de configuration du routeur peut-être sauvegardé et réutilisé. Si un jour le routeur tombe en panne, il faudrait moins de dix minutes pour que le nouveau routeur démarre et récupère la configurationvia TFTP.
+Enfin pour la solution CISCO, le serveur VPN est inclus dans le matériel, à condition d'utiliser la version \textit{advance security} de l'IOS. Toutefois nous avons dû installer un serveur RADIUS sur la machine Linux afin que celui-ci consulte la base NIS pour authentifier l'utilisateur. L'avantage de la solution CISCO est que le fichier de configuration du routeur peut-être sauvegardé et réutilisé. Si un jour le routeur tombe en panne, il faudrait moins de dix minutes pour que le nouveau routeur démarre et récupère la configuration via TFTP.
 
 ~
 
@@ -64,7 +64,7 @@ Rappelons qu'aucune des trois solutions n'est indépendante et autonome. En effe
 \paragraph{Coût de chaque solution}
 ~
 
-Il nous était impossible de proposer la meilleure solution VPN sans évoquer l'aspect financier. En effet chacune des ces solutions a un coût, à commencer par la solution CISCO qui est la plus onéreuse des trois, à cause de l'investissement matériel nécessaire. Pour Microsoft, la coût de la solution est à imputer à la licence, tandis que OpenVPN étant Open-Source le coût est nul.
+Il nous était impossible de proposer la meilleure solution VPN sans évoquer l'aspect financier. En effet chacune des ces solutions a un coût, à commencer par la solution CISCO qui et la plus onéreuse des trois du fait de l'investissement matériel nécessaire. Pour Microsoft, le coût de la solution est à imputer à la licence, tandis que OpenVPN étant Open-Source le coût est nul.
 
 ~
 
@@ -75,9 +75,9 @@ D'un point de vue coût on se rend compte que la solution OpenVPN est la plus av
 \paragraph{Authentification et identification}
 ~
 
-Ce critère concerne la manière dont un client est authentifié et identifié. Pour la solution Microsoft, Le système d'authentification en place est un système faible à base de clefs partagées. L'identification passe par un annuaire Active Directory local référençant les identifiants et mots de passes. Rappelons que l'une des faiblesses de l'identification avec MS-Chap v2 était que l'identifiant utilisateur ciscule en clair sur le réseau.
+Ce critère concerne la manière dont un client est authentifié et identifié. Pour la solution Microsoft, le système d'authentification en place est un système faible à base de clefs partagées. L'identification passe par un annuaire Active Directory local référençant les identifiants et mots de passes. Rappelons que l'une des faiblesses de l'identification avec MS-Chap v2 était que l'identifiant utilisateur ciscule en clair sur le réseau.
 
-La solution CISCO utilise également une authentification via clefs partagées. Par contre l'identification faitintervenir un serveur RADIUS qui lui même consulte la base NIS de l'école afin de récupérer les identifiants de l'ISIMA.
+La solution CISCO utilise également une authentification via clefs partagées. Par contre l'identification fait intervenir un serveur RADIUS qui lui même consulte la base NIS de l'école afin de récupérer les identifiants de l'ISIMA.
 
 Quant à OpenVPN l'authentification se fait par l'intermédiaire de certificats signés. Il s'agit du moyen le plus sûr mis en place sur la plate-forme. L'identification passe par une consultation de la base NIS.
 

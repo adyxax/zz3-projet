@@ -1,8 +1,8 @@
 \subsection{Analyse des performances}
 
-Dans cette section nous allons mener une analyse des performances de chaque solution, en termes de quantité de trafic que les machines sont capables de traiter. En raison de l'utilisation massive des algorithmes de chiffrement et déchiffrement, ce sont les capacités processeur des machines seront déterminantes.
+Dans cette section nous allons mener une analyse des performances de chaque solution, en termes de quantité de trafic que les machines sont capables de traiter. En raison de l'utilisation massive des algorithmes de chiffrement et déchiffrement, c'est la capacité processeur des machines qui sera déterminante.
 
-Nous avons utilisé un outil Open-Source afin de mener à bien cette évaluation des performances. Ce logiciel très simple nommé IPperf envoie simplement le plus de paquets d'un point à un autre.
+Nous avons utilisé un outil Open-Source afin de mener à bien cette évaluation des performances. Ce logiciel très simple nommé IPperf envoie simplement la quantité désirée de paquets d'un point à un autre.
 
 \subsubsection{Configuration d'IPperf}
 
@@ -38,14 +38,14 @@ Carte réseau & Intel 82566MM Gigabit \\
 	\label{Caractéristique_de_la_plateforme_serveur}
 \end{figure}
 
-Les machines clientes utilisées sont celles présentes en salle A214. La figure \ref{Résultat_des_benchmarks} présente les résultats que nous avons obtenus. Le débit indiqué correspond à une moyenne sur quarante secondes :
+Les machines clientes utilisées sont celles présentes en salle A214. La figure \ref{Résultat_des_benchmarks} présente les résultats que nous avons obtenus. La bande passante indiqué correspond à une moyenne sur quarante secondes :
 
 \begin{figure}[H]
 	\begin{center}
 \begin{tabular}{l|c|c|c}
-Solutions & WINDOWS & LINUX & CISCO \\
+Solution & WINDOWS & LINUX & CISCO \\
 \hline
-Bande Passante(moyenne) & 18Mbps & 50Mbps & 31Mbps \\
+Bande Passante & 18Mbps & 50Mbps & 31Mbps \\
 Utilisation CPU & 100\% & 80\% & 100\% \\
 \end{tabular}
 	\end{center}
@@ -53,6 +53,6 @@ Utilisation CPU & 100\% & 80\% & 100\% \\
 	\label{Résultat_des_benchmarks}
 \end{figure}
 
-Le taux d'utilisation processeur n'est pas fournit par IPperf. Cette valeur a été obtenue directement en visualisant la charge de la machine. Dès lors que du trafic traverse le tunnel, les serveurs VPN se trouvent fortement sollicités, et il devient rapidement très difficile d'exécuter une tâche en parallèle. Comme prévu, le taux d'occupation processeur est le facteur limitant pour chaque solution, ce dernier étant responsable du traitement des packets transitant sur le carte réseau.
+Le taux d'utilisation processeur n'est pas fournit par IPperf. Cette valeur a été obtenue directement en visualisant la charge de la machine. Dès lors que du trafic traverse le tunnel, les serveurs VPN se trouvent fortement sollicités, et il devient rapidement très difficile d'exécuter une autre tâche en parallèle. Comme prévu, le taux d'occupation processeur est le facteur limitant pour chaque solution, ce dernier étant responsable du traitement des packets transitant sur réseau.
 
-En terme de bande passante, la solution OpenVPN se révèle être la plus performante. Cependant, nous avons remarqué des fluctuations durant les mesures, ce qui n'est pas le cas de routeur CISCO dont le débit est extrêment stable.
+En terme de bande passante, la solution OpenVPN se révèle être la plus performante. Cependant, nous avons remarqué des fluctuations durant les mesures, ce qui n'est pas le cas du routeur CISCO dont le débit est extrêment stable.

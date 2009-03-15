@@ -6,7 +6,7 @@ VPN, ou Réseau Privé Virtuel, est le nom donné à une technologie permettant 
 
 Deux catégories de solutions VPN existent. On distingue les plate-formes dédiées tels les concentrateurs que les grands équipementiers proposent, et les solutions logicielles disponibles sur les systèmes d'exploitation courants : Microsoft a sa solution, le monde de l'Open-Source également.
 
-Trois architecture ont donc été étudiées afin d'être en accord avec la diversité des solutions existantes : un routeur CISCO 2811XM configuré pour faire du VPN, un WindowsServer2K3 avec les services requis pour établir de connexions VPN, ainsi qu'un serveur Linux CentOS 5.1 avec le logiciel libre OpenVPN. La mise en place d'une plate-forme de test sera au coeur de cette étude.
+Trois architectures ont donc été étudiées afin d'être en accord avec la diversité des solutions existantes : un routeur CISCO 2811XM configuré pour faire du VPN, un WindowsServer2K3 avec les services requis pour établir de connexions VPN, ainsi qu'un serveur Linux CentOS 5.1 avec le logiciel libre OpenVPN. La mise en place d'une plate-forme de test sera au coeur de cette étude.
 
 % \subsection{Contexte de travail}
 \subsection{Architecture étudiée}
@@ -25,7 +25,7 @@ Le travail a été intégralement réalisé dans la salle A214 de l'école. Nous
 
 \subsubsection{Schéma physique}
 
-Pour faire cohabiter physiquement les trois architectures ensembles nous avons dû faire des conscessions. La plus importante a consisté à récupérer en DHCP les adresses IP des interfaces connectées au réseau de l'ISIMA, dans un coucis d'interropérabilité. La figure \ref{schema-physique-maquette} illustre l'architecture mise en place :
+Pour faire cohabiter physiquement les trois architectures ensembles nous avons dû faire des conscessions. La plus importante a consisté à récupérer en DHCP les adresses IP des interfaces connectées au réseau de l'ISIMA, dans un soucis d'interropérabilité. La figure \ref{schema-physique-maquette} illustre l'architecture mise en place :
 
 \begin{figure}[H]
 	\begin{center}
@@ -39,17 +39,17 @@ Pour faire cohabiter physiquement les trois architectures ensembles nous avons d
 
 \subsubsection{Le problème de la sécurité}
 
-Comme expliqué précédemment, un VPN est une technologie permettant de créer des connexions sécurisés à travers un réseau non sûr. Il y a plusieurs menaces dont une connexion VPN doit être capable de nous protéger : l'espionnage, l'altération des données et le rejeu de paquets.
+Comme expliqué précédemment, un VPN est une technologie permettant de créer des connexions sécurisées à travers un réseau non sûr. Il y a plusieurs menaces dont une connexion VPN doit être capable de nous protéger : l'espionnage, l'altération des données et le rejeu de paquets.
 
 L'espionnage de données correspond à l'aspect le plus connu auquel sont confrontés les échanges, allant jusqu'à occulter (à tord) les deux autres. La parade contre l'espionnage consiste en la mise en place d'un chiffrement fort des données.
 
 L'interception de données correspond au cas où un attaquant est présent en tant qu'intermédiaire dans le flot de communication, capable d'insérer, de modifier ou de supprimer des paquets circulant dans ce flot. Cette problématique a été à la fois la plus importante et la plus difficile à résoudre, la parade consistant à une authentification systématique en signant chaque paquet émis afin de pouvoir identifier ceux qui sont frauduleux. Le mécanisme le plus répendu d'authentification de paquet est nommé construction HMAC (Hash Message Authentication Code).
 
-Le problème du rejeu est complémentaire de l'interception : il s'agit de réémettre des paquets valides ayant déjà circulé sur le réseau avec bien sûr de mauvaises intentions. La parade consiste ici à inclure un identifiant unique (ou un timestamp) pour chaque paquet dans sa signature. Lorsqu'une entité reçoit un paquet elle garde trace des identifiants unique déjà reçus et refuse un paquet qui serait déjà passé. Des implémentations d'algorithmes à glissement de fenêtre sont les protections les plus utilisées contre le rejeu.
+Le problème du rejeu est complémentaire de l'interception : il s'agit de réémettre des paquets valides ayant déjà circulé sur le réseau avec bien sûr de mauvaises intentions. La parade consiste ici à inclure un identifiant uniques (ou un timestamp) pour chaque paquet dans sa signature. Lorsqu'une entité reçoit un paquet elle garde trace des identifiants unique déjà reçus et refuse un paquet qui serait déjà passé. Des implémentations d'algorithmes à glissement de fenêtre sont les protections les plus utilisées contre le rejeu.
 
 \subsubsection{Le problème de l'authentification}
 
-L'authentification des tiers est l'une des solutions clefs pour mettre en place des communications sécurisées. Néanmoins ce moyen de résoudre un problème ne fait que conduire à un autre plus gros encore : celui de la gestion des clefs. En effet les algorithmes utilisés pour le chiffrement des échanges réclament des clefs de session pour fonctionner, et pour que notre connexion puisse être considérée comme sécurisée ces clefs doivent changer régulièrement. Ainsi la mise en place d'une connexion sécurisée impose d'avoir un moyen d'échanger des clefs de session de façon sécurisée alors que notre connexion ne l'est pas encore : c'est la cryptographie à clefs privées qui va résout ce problème.
+L'authentification des tiers est l'une des solutions clefs pour mettre en place des communications sécurisées. Néanmoins ce moyen de résoudre un problème ne fait que conduire à un autre plus gros encore : celui de la gestion des clefs. En effet les algorithmes utilisés pour le chiffrement des échanges réclament des clefs de session pour fonctionner, et pour que notre connexion puisse être considérée comme sécurisée ces clefs doivent changer régulièrement. Ainsi la mise en place d'une connexion sécurisée impose d'avoir un moyen d'échanger des clefs de session de façon sécurisée alors que notre connexion ne l'est pas encore : c'est la cryptographie à clefs privées qui va résoudre ce problème.
 
 
 
@@ -65,23 +65,23 @@ IPsec est une suite protocolaire de niveau 3, visant à apporter la sécurité m
 
 La première phase est une phase négociation au cours de laquelle les parties se mettent d'accord sur les algorithmes de chiffrement à utiliser et échangent des clefs de session via le protocole ISAKMP (Internet Security Association and Key Management Protocol). Au cours de cette phase le protocole IKE (Internet Key Exchange) intervient également pour générer ces clefs de session soit grâce à une clef partagée soit à l'aide de certificats RSA.
 
-La seconde phase est la phase de communication au cours de laquelle les données peuvent traverser le tunnel et sont chiffrées. Deux protocoles peuvent intervenir en fonction de la finalité du tunnel : ESP qui fournit à la fois intégrité et confidentialité des données, et AH qui fournit l'intégrité et l'authentification.
+La seconde phase est la phase de communication au cours de laquelle les données peuvent traverser le tunnel et sont chiffrées. Deux protocoles peuvent intervenir en fonction de la finalité du tunnel : ESP (Encapsulating Security Payload) qui fournit à la fois intégrité et confidentialité des données, et AH (Authentication Header) qui fournit l'intégrité et l'authentification.
 
 
 \paragraph{pptp}
 ~
 
-PPTP (Point to Point Tunneling Protocol) est un protocole dont le rôle consiste à construire des paquets PPP (Point to Point Protocole) pour les encapsuler dans des datagrammes IP. PPTP tire ainsi avantage des mécanismes d'authentification, de chiffrement et de compression déjà existants pour PPP (niveau 2) en les appliquant au niveau 3. Le principal avantage de ce protocole est son excellente intégration avec les systèmes Microsoft, au sein desquels la suite protocolaire de PPP a été réimplémentée pour accompagner PPTP.
+PPTP (Point to Point Tunneling Protocol) est un protocole dont le rôle consiste à construire des paquets PPP (Point to Point Protocol) pour les encapsuler dans des datagrammes IP. PPTP tire ainsi avantage des mécanismes d'authentification, de chiffrement et de compression déjà existants pour PPP (niveau 2) en les appliquant au niveau 3. Le principal avantage de ce protocole est son excellente intégration avec les systèmes Microsoft, au sein desquels la suite protocolaire de PPP a été réimplémentée pour accompagner PPTP.
 
-Ainsi on utilise MS-Chap v2 (Microsoft-Challenge Handshake Authentication Protocol) pour l'authentification, et MPPe 'Microsoft Point to Point Encryption) pour le chiffrement. Au cours d'une session VPN entre un client et le serveur, une connexion TCP est utilisée pour le contrôle de la liaison. Quand à l'échange de données, celui-ci requiert un canal UDP et s'appuie sur le protocole GRE (Generic Routing Encapsulation).
+Ainsi on utilise MS-Chap v2 (Microsoft-Challenge Handshake Authentication Protocol) pour l'authentification, et MPPe (Microsoft Point to Point Encryption) pour le chiffrement. Au cours d'une session VPN entre un client et le serveur, une connexion TCP est utilisée pour le contrôle de la liaison. Quand à l'échange de données, celui-ci requiert un canal UDP et s'appuie sur le protocole GRE (Generic Routing Encapsulation).
 
 
 \paragraph{TLS}
 ~
 
-Le protocole TLS est une évolution du protocole SSL qui, après s'être rendu extrêmement populaire dans le domaine des transaction sécurisées au niveau applicatif (notamment le web), a être utilisé dans le domaine des VPN. Le but de ces technologies VPN est de s'appuyer sur la maturité de TLS pour gérer la gestion du tunnel de données ainsi que tous les éléments cryptographiques nécessaires : authentification, confidentialité et intégrité.
+Le protocole TLS (Transport Layer Security) est une évolution du protocole SSL (Secure Socket Layer) qui, après s'être rendu extrêmement populaire dans le domaine des transactions sécurisées au niveau applicatif (notamment le web), a être utilisé dans le domaine des VPN. Le but de ces technologies VPN est de s'appuyer sur la maturité de TLS pour gérer l'établissement du tunnel de données ainsi que tous les éléments cryptographiques nécessaires : authentification, confidentialité et intégrité.
 
-Une erreur commune est de penser que comme TLS n'est pas un protocole de niveau 3 les technologies s'appuyant sur lui ne répondent pas aux critères fondamentaux des VPN : il n'en est rien. Il s'agit simplement d'une approche différente du problème, issue d'une constatattion simple : Les systèmes complexes sont les plus difficiles à sécuriser. Là où la mise en place d'IPsec dépend d'une nouvelle pile IP et implique des intéractions à la fois très fortes et très sophistiquées avec le noyau du système, les technologies basées sur TLS s'appuient sur du code s'exécutant dans l'espace utilisateur : une simple interface réseau virtuelle est utilisée pour parvenir à ce résultat.
+Une erreur commune est de penser que comme TLS n'est pas un protocole de niveau 3 les technologies s'appuyant sur lui ne répondent pas aux critères fondamentaux des VPN : il n'en est rien. Il s'agit simplement d'une approche différente du problème, issue d'une constatation simple : Les systèmes complexes sont plus difficiles à sécuriser. Là où la mise en place d'IPsec dépend d'une nouvelle pile IP et implique des intéractions à la fois très fortes et très sophistiquées avec le noyau du système, les technologies basées sur TLS s'appuient sur du code s'exécutant dans l'espace utilisateur : une simple interface réseau virtuelle est utilisée pour parvenir à ce résultat.
 
 
 \subsection{Objectifs fixés}

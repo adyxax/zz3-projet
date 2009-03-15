@@ -9,7 +9,7 @@ Le choix d'IPsec s'est imposé comme solution naturelle, car très bien intégr�
 \paragraph{Configuration de base}
 ~
 
-Commençons par configurer les interfaces du routeur. L'interface connectée au réseau de l'ISIMA récupère son adresse IP via DHCP ce qui ne serait pas le cas dans un environnement de production. En parallèle à cette configuration nous mettons en place deux ACL permettant de s'assurer sur seuls les clients du VPN pourront accéder au réseau interne.
+Commençons par configurer les interfaces du routeur. L'interface connectée au réseau de l'ISIMA récupère son adresse IP via DHCP ce qui ne serait pas le cas dans un environnement de production. En parallèle à cette configuration nous mettons en place deux ACL permettant de s'assurer que seuls les clients du VPN pourront accéder au réseau interne.
 % \begin{figure}[H]
 	\begin{center}
 		\begin{minipage}{0.90\textwidth}
@@ -263,13 +263,13 @@ Il ne reste plus qu'à attendre la validation (manuelle!) de la demande de certi
 
 \subsubsection{Mise en place côté client}
 
-Cette partie présente l'installation du client CISCO sur une machine Windows. Bien que ce client aie la particularité d'être compatible avec Linux nous ne sommes pas parvenus, ni à la compiler (il réclame la compilation d'un module noyau), ni à nous en servir.
+Cette partie présente l'installation du client CISCO sur une machine Windows. Bien que ce client ait la particularité d'être compatible avec Linux nous ne sommes pas parvenus à faire fonctionner le client officiel CISCO, ni à le compiler (il réclame la compilation d'un module noyau), ni à nous en servir. Néanmoins il en existe une implémentation libre nommée \verb|vpnc|, qui n'implémente malheureusement pas la gestion des certificats.
 
-L'installation du client est comme pour n'importe quel logiciel sous Windows. Une fois lancé il faut établir une nouvelle connexion (bouton ``new''). La figure \ref{VPN_CISCO} présente les informations nécessaires à la connexion : legroupe d'appartenance du client, l'adresse IP du serveur et la clé partagé.
+L'installation du client est aussi simple que pour n'importe quel logiciel sous Windows. Une fois lancé il faut établir une nouvelle connexion (bouton ``new''). La figure \ref{VPN_CISCO} présente les informations nécessaires à la connexion : le groupe d'appartenance du client, l'adresse IP du serveur et la clé partagé.
 
 \begin{figure}[H]
 	\begin{center}
-		\includegraphics[width=0.6\textwidth]{partie_2/screen_windows/client_cisco.png}\\
+		\includegraphics[width=0.5\textwidth]{partie_2/screen_windows/client_cisco.png}\\
 	\end{center}
 	\caption{Client CISCO}
 	\label{VPN_CISCO}
@@ -359,4 +359,4 @@ Si la configuration est correcte, lorsque l'utilisateur tentera de se connecter 
 
 La phase de configuration du routeur a tiré sa difficulté de la complexité inhérente à IPsec. Cette complexité impose de suivre l'ensemble des étapes qui nous avons détaillées ``à la lettre'' afin de valider par étapes les paramètres de chaque élément constitutif d'IPsec.
 
-L'aspect sécurité est très présent, étant la raison d'être d'IPsec. En effet, dès le début de la phase d'authentification, l'ensemble des échanges est chiffré. Le principal problème que nous avons rencontré concerne le mécanisme d'authentification. En effet, le système en place sur la solution n'est qu'un système à clef partagée car nous ne sommes pas parvenus à aller au bout de la mise en place des certificats. En effet nous avons été capables de fournir des certificats signés par notre autorité au routeur comme au client, néanmoins la connexion n'a jamais pu être établie.
+L'aspect sécurité est très présent, étant la raison d'être d'IPsec. En effet, dès le début de la phase d'authentification, l'ensemble des échanges est chiffré. Le principal problème que nous avons rencontré concerne le mécanisme d'authentification. En effet, le système en place sur la solution n'est qu'un système à clef partagée car nous ne sommes pas parvenus à aller au bout de la mise en place des certificats. Bien que nous avons été capables de fournir des certificats signés par notre autorité au routeur comme au client, la connexion n'a jamais pu être établie.

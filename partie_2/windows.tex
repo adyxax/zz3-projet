@@ -139,7 +139,7 @@ Le service routage et accès distant est le service qui va nous permettre de mon
 
 Nous avons testé la maquette en activant l'identification via un serveur RADIUS afin de pouvoir récupérer l'annuaire de l'ISIMA (comme présenté pour la configuration du routeur CICSO en 2.3.2.\ref{CONFIG_RADIUS} page \pageref{CONFIG_RADIUS}), mais cela n'a jamais fonctionné comme escompté. Afin de travailler avec une maquette fonctionnelle nous avons dû rétablir le mode d'authentification via annuaire local.
 
-Dans l'onglet IP, il faut configurer la manière dont le service va attribuer les adresses IP aux clients : soit via le service DHCP (méthode la plus flexible, que nous avons retenue), soit en définissant manuellement une plage statique à adresser. L'option ``carte'' correspond à la carte réseau qui repondra aux demandes des clients.
+Dans l'onglet IP, il faut configurer la manière dont le service va attribuer les adresses IP aux clients : soit via le service DHCP (méthode la plus flexible, que nous avons retenue), soit en définissant manuellement une plage statique à adresser. L'option ``carte'' correspond à la carte réseau qui répondra aux demandes des clients.
 
 \begin{figure}[H]
 	\begin{center}
@@ -149,9 +149,9 @@ Dans l'onglet IP, il faut configurer la manière dont le service va attribuer le
 	\label{VPN_CARTE_ECOUTE}
 \end{figure}
 
-La problème est le même que pour les services DHCP et DNS : le service d'accès distant s'attache à une seule carte réseau.
+Le problème est le même que pour les services DHCP et DNS : le service d'accès distant s'attache à une seule carte réseau.
 % En naviguant dans les différentes options, on se rend rapidement compte que le service d'accès distant se lie avec une seule carte réseau. C'est la grande limitation. Il n'est pas possible que les deux cartes réseaux destinés pour le traffic interne redirige les différents flux réseaux.
-L'aspect sécurité est géré par l'intermédiaire des stratégies d'accès distant. Il nous en falait une dont voici les spécifications :
+L'aspect sécurité est géré par l'intermédiaire des stratégies d'accès distant, dont voiciun exemple de spécifications :
 
 \begin{itemize}
  	\item Appartenance à un groupe : PROFS ou STUDENTS
@@ -160,7 +160,7 @@ L'aspect sécurité est géré par l'intermédiaire des stratégies d'accès dis
 \end{itemize}
 ~
 
-La stratégie d'accès distant permet de contrôler finement quelles sont les conditions que doit remplir un utilisateur pour pouvoir se connecter, par exemple en définissant une plage horraire de connexion, etc. L'authentification utilise le protocole propriétaire Ms-Chap v2 qui permet une authentification mutuelle du client et du serveur. L'inconvénient de ce protocole est qu'il laisse passer le login du client en clair sur le réseau, mais les mots de passes sont bien sûr hashés.
+La stratégie d'accès distant permet de contrôler finement quelles sont les conditions que doit remplir un utilisateur pour pouvoir se connecter, par exemple en définissant une plage horraire de connexion, etc. L'authentification utilise le protocole propriétaire MS-Chap v2 qui permet une authentification mutuelle du client et du serveur. L'inconvénient de ce protocole est qu'il laisse passer le login du client en clair sur le réseau, mais les mots de passes sont bien sûr hashés.
 
 \begin{figure}[H]
 	\begin{center}
@@ -183,14 +183,14 @@ La stratégie d'accès distant permet de contrôler finement quelles sont les co
 
 La sécurité de la solution n'est pas complète sans une identification via certificats, nous allons donc configurer une autorité de certification sur le serveur. Cette autorité va notamment nous permettre de délivrer des certificats signés qui nous seront utile pour la solution Microsoft, mais aussi lors de la configuration du routeur CISCO. L'autorité racine aura comme nom commun ISIMA et les certificats seront valides un an. L'ensemble correspond à la configuration du service Windows 2003 SCEP. D'un point de vue technique, l'autorité de certification utilise l'algorithme de hashage SHA-1 pour la signature, et un chiffrement de clefs de longueur 2048 bits par l'algorithme RSA.
 
-Pour effectuer une demande de certificat, les clients doivent se connecter sur l'URL suivante : \verb|http://192.168.102.250/certsrv|. Deux types de certificats sont proposés : WEB ou MESSAGERIE. L'interface de l'autorité de certification permet de répondre aux demanded de certificats en choisissant d'accepter ou non de les délivrer. Si la demande est validée, l'utilisateur doit se connecter à nouveau sur le site WEB afin d'installer le certificat sur sa machine.
+Pour effectuer une demande de certificat, les clients doivent se connecter sur l'URL suivante : \verb|http://192.168.102.250/certsrv|. Deux types de certificats sont proposés : WEB ou MESSAGERIE. L'interface de l'autorité de certification permet de répondre aux demandes en choisissant d'accepter ou non de délivrer les certificats. Si la demande est validée, l'utilisateur doit se connecter à nouveau sur le site WEB afin d'installer le certificat sur sa machine.
 
-Malheureusement, après plusieurs essais infructueux nous constatons que le système de certificats ne nous permet plus de se connecter au VPN. Le problème se situe probablement dans l'écriture des demandes de certificats mais nous ne sommes pas parvenus le résoudre, et cela est dommageable pour le niveau de sécurité de la solution.
+Malheureusement, après plusieurs essais infructueux nous constatons que le système de certificats ne nous permet plus de nous connecter au VPN. Le problème se situe probablement dans l'écriture des demandes de certificats mais nous ne sommes pas parvenus le résoudre, et cela est dommageable pour le niveau de sécurité de la solution.
 
 \subsubsection{Configuration du client}
 \label{label_client_windows}
 
-L'un des avantages majeurs de la solution Windows est que le client VPN est déjà intégrer dans le système d'exploitation de Microsoft. L'un des inconvénients majeurs de la solution Windows est que malgré touts nos efforts nous ne sommes jamais parvenus à nous connecter au VPN Windows depuis un client Linux. Cette section présente les différentes étapes nécessaires à la création d'une connexion VPN sous Windows, et débute par la configuration d'une nouvelle connexion de type entreprise :
+L'un des avantages majeurs de la solution Windows est que le client VPN est déjà intégré dans le système d'exploitation de Microsoft. L'un des inconvénients majeurs de la solution Windows est que malgré touts nos efforts nous ne sommes jamais parvenus à nous connecter au VPN Windows depuis un client Linux. Cette section présente les différentes étapes nécessaires à la création d'une connexion VPN sous Windows, et débute par la configuration d'une nouvelle connexion de type entreprise :
 
 \begin{figure}[H]
 	\begin{minipage}{0.5\textwidth}
@@ -244,7 +244,7 @@ La dernière étape permet de spécifier l'adresse IP du serveur distant : %. L'
 	\label{VPN_ETAPE3}
 \end{figure}
 
-Ceci achève la configuration de la nouvelle connexion, les paramètres de sécurité du client ont été laissés aux valeurs par défaut. Lorsqu'il tentera de se connecter, l'utilisateur devra entrer ses identifiant et mot de passe comme définis dans l'Active Directory. La figure \ref{VPN_ETAPE7} présente l'état de la connexion après authentification : le VPN utilise le protocole PPTP, nous avons reçu l'adresse IP 10.0.2.106, authentification Ms-Chap v2, chiffrement MPPe 128 bits.
+Ceci achève la configuration de la nouvelle connexion, les paramètres de sécurité du client ont été laissés aux valeurs par défaut. Lorsqu'il tentera de se connecter, l'utilisateur devra entrer ses identifiant et mot de passe comme définis dans l'Active Directory. La figure \ref{VPN_ETAPE7} présente l'état de la connexion après authentification : le VPN utilise le protocole PPTP, nous avons reçu l'adresse IP 10.0.2.106, authentification MS-Chap v2, chiffrement MPPe 128 bits.
 
 \begin{figure}[H]
 	\begin{center}
@@ -275,11 +275,11 @@ Une remarque sur le chiffrement MPPe : Windows 2000 ne permet pas l'utilisation 
 
 Microsoft propose une solution VPN à la fois intéressante et facile à mettre en place (côté serveur comme côté client), mais demeure vraiment destinée à de petites structures. Dans le cas de l'ISIMA, la structure du réseau est plus complexe, avec la séparation des réseaux professeurs et étudiants.
 
-L'inconvénient majeur de Windows Server est que chaque service doit se lier avec une seule carte réseau. Il est donc impossible de dissocier le trafic réseau sur des deux cartes, ce qui ne respecte pas le cachier des charges du projet. Une solution envisageable serait de virtualiser un serveur Windows 2003 et de lier les cartes réseau virtuelles aux cartes réseaux physiques de la machine. Rappelons également que côté client nous n'avons pas réussi à nous connecter depuis une une machine Linux à cause d'une mauvaise implémentation du protocole PPTP.
+L'inconvénient majeur de Windows Server est que chaque service doit se lier avec une seule carte réseau. Il est donc impossible de dissocier le trafic réseau des deux cartes, ce qui ne respecte pas le cachier des charges du projet. Une solution envisageable serait de virtualiser un serveur Windows 2003 et de lier les cartes réseau virtuelles aux cartes réseaux physiques de la machine (exemple du mode bridgé sous VMware). Rappelons également que côté client nous n'avons pas réussi à nous connecter depuis une une machine Linux à cause d'une mauvaise implémentation du protocole PPTP.
 
 La récupération des identifiants et mots de passe depuis l'annuaire de l'ISIMA n'a pas pu être effectuée et nous avons choisi de ne pas tenter d'interfacer notre maquette avec le réseau de l'école. Comme nous l'avons expliqué, le service VPN est attaché à une seule carte réseau, et ceci nous empêche de savoir quel type d'utilisateur est connecté (professeur ou étudiant). La procédure à suivre serait d'intégrer le serveur VPN Windows sur le domaine de l'ISIMA et de lancer une réplication de la base Active Directory.
 
-Nous avons également suivi une autre piste pour tenter de s'interfacer avec la base NIS de l'ISIMA. Microsoft propose une suite d'outil \verb|Windows Service for UNIX| téléchargeable directement depuis leur site. Cette suite propose d'intégrer à Windows des commandes et services généralement spécifiques aux systèmes UNIX, parmis lesquels un client NIS. Une amélioration possible de la maquette serait de récupérer les informations utilisateurs de l'ISIMA via ces outils : l'interopérabilité serait alors complète.
+Nous avons également suivi une autre piste pour tenter de nous interfacer avec la base NIS de l'ISIMA. En effet, Microsoft propose une suite d'outil \verb|Windows Service for UNIX| téléchargeable directement depuis leur site. Cette suite propose d'intégrer à Windows des commandes et services généralement spécifiques aux systèmes UNIX, parmis lesquels un client NIS. Une amélioration possible de la maquette serait de récupérer les informations utilisateurs de l'ISIMA via ces outils : l'interopérabilité serait alors complète.
 
 L'absence de certificats signés pour l'authentification des pairs pose un réel probléme de sécurité. De plus bien que les mots de passes clients soient hashés, les identifiants et le nom d'hôte de la machine circulent en clair sur le réseau au cours de la phase d'authentification. La figure \ref{VPN_CONNEXION} illustre ce problème :
 

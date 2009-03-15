@@ -31,7 +31,7 @@ OpenVPN est un outil Open-Source permettant de créer des tunnels sécurisés ut
 
 \subsubsection{Mise en place du serveur}
 
-La mise en place de l'infrastructure s'effectue en plusieures étapes. Tout d'abord nous installerons et configurerons OpenVPN sur le serveur, ensuite nous générerons les clefs et certificats de sécurité nécessaires, et enfin nous mettrons en place les outils nécessaires pour authentifier les utilisateurs via l'annuaire NIS de l'ISIMA.
+La mise en place de l'infrastructure s'effectue en plusieures étapes. Tout d'abord nous installerons et configurerons OpenVPN sur le serveur, ensuite nous générerons les clefs et certificats de sécurité nécessaires, et enfin nous mettrons en place les outils requis pour authentifier les utilisateurs via l'annuaire NIS de l'ISIMA.
 
 Les interfaces de la machine sont configurées comme indiqué figure \ref{schema-physique-maquette} page \ref{schema-physique-maquette}, et résumé dans le tableau figure \ref{linux_interfaces} :
 
@@ -76,7 +76,7 @@ La version d'OpenVPN utilisée pour le projet est la 2.0.9 disponible sur \verb|
 \subparagraph{Compiler OpenVPN}
 ~
 
-Lors de la configuration de notre maquette la version courante d'OpenVPN était la 2.0.9; adaptez les numéros de version avec celui de la dernière release stable d'OpenVPN. Les commandes suivantes permettent à la fois de la récupérer, de la compiler, et de l'installer :
+Lors de la configuration de notre maquette la version courante d'OpenVPN était la 2.0.9; Les commandes suivantes permettent à la fois de la récupérer, de la compiler, et de l'installer :
 
 \verb|[root@centosvpn ~]# wget http://openvpn.net/release/openvpn-2.0.9.tar.gz|
 
@@ -87,7 +87,7 @@ Lors de la configuration de notre maquette la version courante d'OpenVPN était 
 \subparagraph{Configuration de base}
 ~
 
-Une instance d'OpenVPN ne peut gérer qu'un seul pool d'adresses à la fois, et donc un seul type de clients pour le VPN. La solution pour gérer à la fois les professeurs et les étudiants grâce à une même machine est donc de lancer deux instances du serveur en écoute sur un port différent. Nous allons donc utiliser deux fichiers de configuration distincts dont la figure \ref{configuration_base_openvpn} présente les paramètres qui leurs sont communs : Interface d'écoute, protocole de transport, etc.
+Une instance d'OpenVPN ne peut gérer qu'un seul pool d'adresses à la fois, et donc un seul type de clients pour le VPN. La solution pour gérer à la fois les professeurs et les étudiants grâce à une même machine est donc de lancer deux instances du serveur en écoute sur des ports différents. Nous allons donc utiliser deux fichiers de configuration distincts dont la figure \ref{configuration_base_openvpn} présente les paramètres qui leurs sont communs : Interface d'écoute, protocole de transport, etc.
 
 Pour toute la suite nous considérerons que ces fichiers se trouvent dans le dossier \texttt{/etc/openvpn/} et portent les noms \texttt{server-prof.conf} et \texttt{server-student.conf} :
 
@@ -251,13 +251,13 @@ tls-auth /etc/openvpn/ta.key        0
 
 OpenVPN étant capable de réaliser une authentification PAM (méthode standart sur les systèmes de type UNIX), c'est la solution que nous avons retenue. Nous allons donc configurer un client NIS sur la machine de test, et indiquer à OpenVPN comment l'utiliser.
 
-La première étape consiste à installer le client NIS si ce n'est pas déjà fait (paquet \texttt{ypserv}) et à faire entrer la machine dans le domaine NIS de l'ISIMA en ajoutant la ligne suivante au fichier \verb|/etc/yp.conf|. Il va de soie que glouglou doit être référencé dans le fichier \verb|/etc/hosts| de la machine.
+La première étape consiste à installer le client NIS si ce n'est pas déjà fait (paquet \texttt{ypserv}) et à faire entrer la machine dans le domaine NIS de l'ISIMA en ajoutant la ligne suivante au fichier \verb|/etc/yp.conf|. Il va de soi que glouglou doit être référencé dans le fichier \verb|/etc/hosts| de la machine.
 
 \verb|domain glouglou.isima.fr server glouglou|
 
 ~
 
-La deuxième étape consiste à indiquer au système qu'il doit intérroger la base NIS lorsqu'un utilisateur tente de s'authentifier. Pour cela il faut modifier trois lignes dans le fichier \verb|/etc/nsswitch.conf| de façon à avoir :
+La deuxième étape consiste à indiquer au système qu'il doit interroger la base NIS lorsqu'un utilisateur tente de s'authentifier. Pour cela il faut modifier trois lignes dans le fichier \verb|/etc/nsswitch.conf| de façon à avoir :
 
 \begin{figure}[H]
 	\begin{center}
@@ -295,7 +295,7 @@ Il nous reste à planifier le lancement des services au démarrage :
 
 \subsubsection{Mise en place du client}
 
-Comme expliqué précédemment, il existe un client pour OpenVPN quelque soit la plate-forme utilisée. Le client pour Windows peut être récupéré depuis le site officiel d'OpenVPN et à l'installer comme n'importe quel autre logiciel. Pour ce qui est des systèmes Linux récents, ils possèdent tous un client OpenVPN intégré à la distribution. Concernant les autres systèmes, c'est à dire les Linux moins récents, MacOS, Solaris et BSD il est nécessaire de récupérer les sources du client (au format tar.gz) depuis le site officiel d'OpenVPN et de les compiler. De nombreux tutoriaux existent et couvrent tous les cas de figure pour ces différents systèmes.
+Comme expliqué précédemment, il existe un client pour OpenVPN quelque soit la plate-forme utilisée. Le client pour Windows peut être récupéré depuis le site officiel d'OpenVPN et installé comme n'importe quel autre logiciel. Pour ce qui est des systèmes Linux récents, ils possèdent tous un client OpenVPN intégré à la distribution. Concernant les autres systèmes, c'est à dire les Linux moins récents, MacOS, Solaris et BSD il est nécessaire de récupérer les sources du client (au format tar.gz) depuis le site officiel d'OpenVPN et de les compiler. De nombreux tutoriaux existent et couvrent tous les cas de figure pour ces différents systèmes.
 
 Une fois le client installé la configuration est extrêmement simple : il suffit de copier le fichier de paramètres ainsi que le certificat et la clef du client dans le bon répertoire : \verb|/etc/openvpn/| pour les systèmes UNIX, et généralement \verb|c:\Program Files\openvpn\config| sous Windows. Les différents fichiers pourrait typiquement être récupérés depuis l'intranet.
 
