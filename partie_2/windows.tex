@@ -1,175 +1,142 @@
-	Pour ce projet, nous avons décider d'installer Windows Server 2003 Entreprise Edition, afin d'avoir un sytème d'exploitation récent. Toutes les fonctionnalités utilisées pour la création d'un VPN sont incluses dans cette version. Il n'y a pas besoin d'installer une application tierce.
-	Voyons à présent les différents services nécessaires pour la mise en place du VPN de Microsoft.
+Le choix de Windows Server 2003 Entreprise Edition s'est imposé pour l'installation de la maquette. Cette version intégrant toutes les fonctionnalités nécessaires à la mise en place d'un VPN aucune application tierce ne sera à priori requise.
+
+Nous commencerons par détailler les différents services nécessaires au fonctionnement du VPN sur le serveur, ensuite nous verrons les méthodes de configuration d'un poste client et enfin nous effectuerons une synthèse des avantages et inconvénients de la solution Microsoft.
 
 \subsubsection{Côté serveur : les services installés}
 
-	Afin de pouvoir se mettre dans les conditions du réseau interne de l'ISIMA, nous avons décidé de configurer plusieurs services:
-~
-
-
+Dans cette section nous détaillerons tour à tour la configuration des nombreux services requis pour le bon fonctionnement du service VPN:
 \begin{itemize}
-	\item  DHCP,
-	\item  DNS, 
-	\item  Active Directory,
-	\item  Routage et accès distant (VPN),
-	\item  Autorité de certification (CA).
+	\item service DHCP.
+	\item service DNS.
+	\item Active Directory.
+	\item routage et accès distant (VPN).
+	\item autorité de certification (CA).
+	\item IIS (requis pour l'authorité de certification)
 \end{itemize}
 ~
-Il est à noter que pour pouvoir installer l'autorité de certification, il faut dans un premier temps installer le service IIS.	
 
-	Ces nombreux services sont nécessaires pour la création d'un VPN. A présent, détaillons la configuration de chacun de ces servives. 
-	Remarque : Sous windows on ne parle pas de serveur mais de service. Tout les fonctionnalités de la machine (DNS, DHCP ou autre) sont référencés comme des services.
+% Remarque : Sous windows on ne parle pas de serveur mais de service. Tout les fonctionnalités de la machine (DNS, DHCP ou autre) sont référencés comme des services.
 
 
-\paragraph{Caractéristique de la machine}
-~\
+\paragraph{Caractéristiques de la machine}
+~
 
-Le serveur windows est installé sur un DELL PowerEdge 1300. Il est doté d'un processeur INTEL de type Pentium II cadencé à 348 Mhz. Il possède 512 Mo de mémoire vive et un disque dur de 9 Go.
-Le serveur est composé de trois cartes réseaux, une pour le réseau extérieur et deux autres pour le réseau interne. 
-
-
-
-Voici leur adresse IP:
+Le serveur windows est installé sur un DELL PowerEdge 1300. Il est doté d'un processeur INTEL de type Pentium II cadencé à 348 Mhz, possède 512 Mo de mémoire vive ainsi qu'un disque dur de 9 Go. La machine est également équipée de trois cartes réseaux 100Mbps configurées comme suit :
 
 \begin{figure}[H]
 	\begin{center}
-\begin{tabular}{|l|c|c|}
-\hline
-Caractéristique & Réseau & Adresse IP \\
-\hline
-Realtek RTL 8139 Familly & réseau PROFS & 10.0.0.11/24 \\
-Realtek RTL 8139 Familly & réseau extérieur & 192.168.102.250/24 \\
-Fast Ethernet CNET PRO 200P & réseau STUDENTS & 192.168.0.11/24 \\
-\hline
-\end{tabular}
+		\begin{tabular}{l|c|c}
+		Référence & Réseau & Adresse IP \\
+		\hline
+		Realtek RTL 8139 Familly & réseau PROFS & 10.0.0.11/24 \\
+		Realtek RTL 8139 Familly & réseau extérieur & 192.168.102.250/24 \\
+		Fast Ethernet CNET PRO 200P & réseau STUDENTS & 192.168.0.11/24 \\
+	\end{tabular}
 	\end{center}
-	\caption{Caractéristique des cartes réseaux}
+	\caption{Configuration des cartes réseaux}
 	\label{IP_carte_reseau}
 \end{figure}
 
-Tout les cartes installés sont de type 100Mbit/s.
+\paragraph{Service DHCP}
 ~
 
-\paragraph{Service DHCP}
-~\
-
-
-Ce service est nécessaire pour l'attribution des adresses IP qui seront allouées aux différents clients lors de leurs connexion au serveur VPN. Nous avons configurer le service DHCP de la manière suivante. Sachant que le serveur VPN doit avoir deux cartes réseaux indépendantes (une sur le réseau STUDENTS et une sur le réseau PROFS) le DHCP peut fournir deux pools d'adresse différents. 
-Voici les caractéristiques des deux réseaux:
+Ce service est nécessaire pour l'attribution des adresses IP qui seront allouées à chaque client voulant se connecter. La configuration du service DHCP met en évidence les deux pools d'adresses nécessaires à l'adressage de chacun de nos réseaux internes :
 
 \begin{figure}[H]
 	\begin{center}
-\begin{tabular}{|l|c|c|}
-\hline
-Caractéristique & Réseau PROFS & Réseau STUDENTS \\
-\hline
-Désignation Carte réseau & DHCP\_PROFS & DHCP\_STUDENTS \\
-Adresse IP Carte réseau & 10.0.0.11 & 192.168.0.11 \\
-Pool d'adresse & 10.0.2.100 à 10.0.2.254 & 192.168.0.100 à 192.168.0.254 \\
-Masque réseau & 255.255.255.0 & 255.255.255.0 \\
-Serveur DNS/routeur & 10.0.0.11 & 192.168.0.11 \\
-Nom du domaine DNS & wvpn.isima.fr & wvpn.isima.fr \\
-\hline
-\end{tabular}
+		\begin{tabular}{l|c|c}
+			Caractéristique & Réseau PROFS & Réseau STUDENTS \\
+			\hline
+			Désignation Carte réseau & DHCP\_PROFS & DHCP\_STUDENTS \\
+			Adresse IP Carte réseau & 10.0.0.11 & 192.168.0.11 \\
+			Pool d'adresse & 10.0.2.100 à 10.0.2.254 & 192.168.0.100 à 192.168.0.254 \\
+			Masque réseau & 255.255.255.0 & 255.255.255.0 \\
+			Serveur DNS/routeur & 10.0.0.11 & 192.168.0.11 \\
+			Nom du domaine DNS & wvpn.isima.fr & wvpn.isima.fr \\
+		\end{tabular}
 	\end{center}
 	\caption{Caractéristique du service DHCP}
 	\label{service_DHCP}
 \end{figure}
 
-Il est à noter que lors de l'installation du service DHCP, et en dehors des différentes configurations des cartes, il n'y a pas d'options spécifiques. Ce sont les options par défaut.
-Il est à remarquer que le service DHCP se compose de deux étendues, une pour chaque carte. Cependant, le service DHCP s'attache à une seule carte réseau et non au deux. Dans la maquette, le service se lie avec la carte DHCP\_PROFS. Pour illustrer ces propos, voici un screenshot du service DHCP.
+L'installation du service DHCP ne requiert aucune modification des options par défaut, et ne nécessite que d'indiquer qu'elles sont les cartes réseau à adresser. La figure \ref{Screen_client_dhcp} illustre cette configuration :
+
+% Cependant, le service DHCP s'attache à une seule carte réseau et non au deux. Dans la maquette, le service se lie avec la carte DHCP\_PROFS. Pour illustrer ces propos, voici un screenshot du service DHCP.
 
 \begin{figure}[H]
 	\begin{center}
 	\includegraphics[width=\textwidth]{partie_2/screen_windows/dhcp.JPG}\\
 	\end{center}
-	\caption{Lien avec la carte réseau DHCP\_PROFS}
+	\caption{Etendue DHCP du réseau professeurs}
 	\label{Screen_client_dhcp}
 \end{figure}
 
 
-On remarque que bien que la présence des deux étendues et que la carte DHCP\_PROFS (10.0.0.11) s'attache au service DHCP.
-~\
+% On remarque que bien que la présence des deux étendues et que la carte DHCP\_PROFS (10.0.0.11) s'attache au service DHCP.
+% ~\
 
 
-Voyons à présent la configuration du service DNS.
+% Voyons à présent la configuration du service DNS.
 
 \paragraph{Service DNS}
-~\
+~
 
+En préliminaire à l'installation de Active Directory, un service DNS est requis. Les caractéristiques de ce dernier sont les suivantes :
+\begin{itemize}
+	\item Nom de la machine : win2k3vpn.
+	\item Nom de domaine : wvpn.isima.fr.
+	\item Type de zone : zone principale.
+\end{itemize}
 
-Afin de pouvoir utiliser l'active directory nous avons du installer ce service. Celui-ci nous permet de résoudre les différentes adresses IP qui seront nécessaire lorsq'un client VPN se connectera sur le réseau interne.
-Voici les caractèristiques du service DNS:
-~\
+% Il est à remarquer que lors de l'installation du service, nous avons décider d'incorporer la zone de recherche inversée. Le serveur windows étant composé de trois cartes réseaux, il y a trois zones.
 
+% Afin de vérifier que le service DNS est bien configurer, la commande NSLOOKUP nous permet de tester le DNS. 
+% L'illustration suivante montre la résolution DNS est correcte.
+% 
+% \begin{figure}[H]
+% 	\begin{center}
+% 		\includegraphics[width=\textwidth]{partie_2/screen_windows/nslookup.JPG}\\
+% 	\end{center}
+% 	\caption{Résolution DNS}
+% 	\label{NSLOOKUP}
+% \end{figure}
 
-\begin{figure}[H]
-	\begin{center}
-\begin{tabular}{|l|c|c|}
-\hline
-Caractéristique & Serveur Windows2003 \\
-\hline
-Nom de la machine &  win2k3vpn\\
-Nom du domaine & wvpn.isima.fr\\
-Type de zone &  zone principale\\
-\hline
-\end{tabular}
-	\end{center}
-	\caption{Caractéristique du service DNS}
-	\label{service_DNS}
-\end{figure}
+% Tout comme le service DHCP, le service DNS se lie avec une seule carte réseau. 
 
-~\
-
-Il est à remarquer que lors de l'installation du service, nous avons décider d'incorporer la zone de recherche inversée. Le serveur windows étant composé de trois cartes réseaux, il y a trois zones. Afin de vérifier que le service DNS est bien configurer, la commande NSLOOKUP nous permet de tester le DNS. 
-L'illustration suivante montre la résolution DNS est correcte.
-
-\begin{figure}[H]
-	\begin{center}
-		\includegraphics[width=\textwidth]{partie_2/screen_windows/nslookup.JPG}\\
-	\end{center}
-	\caption{Résolution DNS}
-	\label{NSLOOKUP}
-\end{figure}
-
-Tout comme le service DHCP, le service DNS se lie avec une seule carte réseau. 
-
-Intéressons nous à présent à la configuration de l'Active Directory.
+% Intéressons nous à présent à la configuration de l'Active Directory.
 
 \paragraph{Active Directory}
-~\
+~
 
-Ce service nous a permi de créer un annuaire afin d'indentifier les clients souhaitant se connecter sur le réseau interne. Afin de pouvoir effectuer des tests sur la connexion VPN, nous avons dans un premier temps créeer deux groupes: un groupe STUDENTS et un groupe PROFS.
-
-Il est à noter que lorsqu'on crée un utilisateur, on doit l'ajouter dans le groupe PROFS ou STUDENTS sans oublier de lui donner l'autorisation de pouvoir se connecter. 
+Ce service fournit le support d'un annuaire permettant l'identification des clients. Notre VPN proposant deux accès distincts, deux groupes doivent être créés : un groupe STUDENTS et un groupe PROFS. Lors de la configuration d'un nouvel utilisateur, celui-ci doit être ajouté dans l'un de ces groupes et doit être explicitement autorisé à pouvoir se connecter :
 
 \begin{figure}[H]
 	\begin{center}
 		\includegraphics[width=0.50\textwidth]{partie_2/screen_windows/vpn.JPG}\\
 	\end{center}
-	\caption{Autorisation de se connecter via VPN sur le serveur Windows 2k3}
+	\caption{Autorisation d'un utilisateur à se connecter au VPN}
 	\label{VPN_AUTORISATION}
 \end{figure}
 
-Du point de vue de la stratégie de groupe (GPO) nous avons décider de laisser la configuration par défaut.
+La stratégie de groupe (GPO) a été laissée à sa configuration par défaut.
 
-Une fois les services de base installé, voyons à présent la configuration du service de \textit{Routage et accès distant} .
+% Une fois les services de base installé, voyons à présent la configuration du service de \textit{Routage et accès distant} .
 
 \paragraph{Routage et accès distant}
 ~\
 
 
-Le service routage et accès distant est le service qui va nous permettre de monter un tunnel sécurisé. Lors de l'installation du service, l'administrateur doit choisir l'option ``routage pour réseaux locaux uniquement'' ainsi que l'option ``serveur d'accès distant''. Une fois le service installé, il faut configurer les options de sécurité qui sont propre au serveur (un clique droit sur le nom du serveur permet de modififer les propriétés). Cela correspond à la manière que les utilisateurs s'identifie. Le service propose deux choix : identification par l'annuaire ou bien en utilisant un serveur RADIUS.
+Le service routage et accès distant est le service qui va nous permettre de monter un tunnel sécurisé. Lors de son installation, l'administrateur doit choisir l'option ``routage pour réseaux locaux uniquement'' ainsi que l'option ``serveur d'accès distant''. Une fois le service installé, il faut configurer les options de sécurité qui sont propre au serveur (un clic droit sur le nom du serveur permet de modifier les propriétés) pour correspondre à la manière dont les utilisateurs s'identifient. Le service propose deux choix : identification par l'annuaire et identification via un serveur RADIUS.
 
 \begin{figure}[H]
 	\begin{center}
 		\includegraphics[width=0.50\textwidth]{partie_2/screen_windows/secu_vpn.PNG}\\
 	\end{center}
-	\caption{Choix de la méthode d'authentification}
+	\caption{Choix de la méthode d'identification}
 	\label{VPN_AUTHENTIFICATION}
 \end{figure}
 
-Nous avons essayer de tester la maquette en utilisant le serveur RADIUS afin que celui-ci authentifie l'utilisateur avec la base NIS. Cependant les essais n'ont pas été concluant, nous n'avons pas pu nous identifier en utilisant notre compte ISIMA. Afin de rendre la maquette fonctionnel, nous avons dû laisser l'authentification par l'intermédiaire de l'annuaire local.
+Nous avons testé la maquette en activant l'identification via un serveur RADIUS afin de pouvoir récupérer l'annuaire de l'ISIMA (comme présenté pour la configuration du routeur CICSO en 2.3.2.\ref{CONFIG_RADIUS} page \pageref{CONFIG_RADIUS}), mais cela n'a jamais fonctionné comme escompté. Afin de travailler avec une maquette fonctionnelle nous avons dû rétablir le mode d'authentification via annuaire local.
 
 Dans l'onglet IP, il faut configurer la manière dont le service va distribuer les adresses IP. Ici nous avons le choix, soit le système gère les adresses IP en utilisant le service DHCP, soit l'administrateur peut remplir manuellement la plage d'adresse IP. La dernière option ``carte'' qui correpond à un menu déroulant nous permettant de selectionner la carte réseau qui repondrera aux demandes de la création d'un tunnel sécurisé. 
 
