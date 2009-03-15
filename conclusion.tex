@@ -1,16 +1,25 @@
 \section*{Conclusion}
 \addcontentsline{toc}{section}{Conclusion}
 
-L'objectif de ce projet est d'étudier la mise en place de trois solutions VPN. Nous avons commencé par étudier la solution de Microsoft, puis le logiciel OpenVPN sous CentOS 5.1 enfin la solution de CISCO. L'étude de ces solutions c'est basé sur plusieurs critères, comme le deploiement rapide d'un client VPN chez l'utilisateur, la sécurité du tunnel et enfin l'administration du serveur VPN.
- 
-Au cours de ce projet, nous avons rencontré trois grandes difficultés. La première concerne la problèmatique de la sécurité, en effet, même si nous avons une formation théorique sur les différents protocoles et mécanismes, cela reste insuffisant pour comprendre les enjeux de la sécurité. Ce projet a été pour nous l'opportunité d'appliquer nos bagages théoriques à un problème concret.
-La deuxième difficulté concerne l'absence de documentation sur ce sujet. En effet, dès que l'on commence à chercher des informations spécifiques, comme par exemple la configuration d'un service en particulier ou sur la génération de clés on ne trouve rien de concluant. Même sur les sites des différents constructeurs, l'informations n'est pas assez explicite.
-La dernière difficulté, concerne la limitation du système d'exploitation de Microsoft. En effet, il nous a fallu du temps pour comprendre que les services se lient à une seule carte réseau. Nous avons essayer de trouver une manière pour détourner ce problème mais sans aucun succès.
+~
 
-Dans un futur proche, nous pensons que nos différentes maquettes peuvent être améliorer. En effet, pour la solution CISCO, il faudrait mettre en place une identification par certificat pour améliorer les sécurités. Concernant OpenVPN, il faudrait implementer un générateur de certificats automatiques qui aurait pour rôle de les renouveller tous les ans et de les publier sur l'intranet de l'ISIMA. 
+L'objectif de ce projet était d'étudier la mise en place de trois solutions VPN. Nous avons commencé par étudier la solution de Microsoft, puis le logiciel OpenVPN sous Linux, et enfin la solution de CISCO. L'étude de ces solutions a été guidée par plusieurs critères constituant notre cahier des charges, comme la facilité de déploiement des clients et du serveur, le niveau de sécurité de l'accès et enfin la complexité de l'administration du serveur VPN.
 
+~
 
-Si l'ISIMA souhaite monter une solution VPN, nous recommanderions l'implémentation d'OpenVPN car il est performant, sécurisé et compatible avec n'importe quel type de système d'exploitation.
+Au cours de ce projet, nous avons rencontré trois grandes difficultés. La première concerne la problématique de la sécurité, car même si nous avons une formation théorique sur les différents protocoles et mécanismes qui y sont liés, cela reste insuffisant pour comprendre les enjeux de la sécurité. Ce projet a été pour nous l'opportunité d'appliquer nos bagages théoriques à un problème concret.
 
+~
+
+Une seconde difficulté concerne le peu de documentation sur ce sujet. En effet, dès que l'on commence à chercher des informations spécifiques, comme par exemple la configuration d'un service en particulier, ou sur la génération de clefs on ne trouve rien de concluant. Même sur les sites des différents constructeurs, l'informations n'est pas explicitement présentée.
+Une dernière difficulté, concerne les limitations du système d'exploitation de Microsoft. En effet, il nous a fallu du temps pour comprendre que les services réseau se lient à une seule carte, même si leur fonctionnement doit en impacter plusieurs. Nous avons essayer de trouver divers moyens pour contourner ce problème mais sans aucun succès.
+
+~
+
+Dans un futur proche, nous pensons que nos différentes maquettes peuvent être améliorées. En effet, pour la solution CISCO il faudrait achever de mettre en place une authentification par certificats pour améliorer le niveau de sécurité. Concernant OpenVPN, on pourrait envisager d'implementer un renouvellement automatique des certificats chaque année, qui les publierait directement sur l'intranet de l'ISIMA.
+
+~
+
+Si l'ISIMA souhaite monter une solution VPN, nous recommanderions l'implémentation d'OpenVPN car il est a parfaitement répondu au cahier des charges, se révélant à la fois performant, sécurisé et compatible avec n'importe quel type de système d'exploitation.
 
 \pagebreak
