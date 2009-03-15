@@ -31,9 +31,9 @@ OpenVPN est un outil Open-Source permettant de créer des tunnels sécurisés ut
 
 \subsubsection{Mise en place du serveur}
 
-La mise en place de l'infrastructure s'effectue en plusieures étapes. Tout d'abord nous installerons et configurerons OpenVPN sur le serveur, ensuite nous génèrerons les clefs et certificats de sécurité nécessaires, et enfin nous mettrons en place les outils nécessaires pour authentifier les utilisateurs via l'annuaire NIS de l'ISIMA.
+La mise en place de l'infrastructure s'effectue en plusieures étapes. Tout d'abord nous installerons et configurerons OpenVPN sur le serveur, ensuite nous générerons les clefs et certificats de sécurité nécessaires, et enfin nous mettrons en place les outils nécessaires pour authentifier les utilisateurs via l'annuaire NIS de l'ISIMA.
 
-Les interfaces de la machine sont configurées comme indiqué sur le schéma ref{TODO}, et résumé dans le tableau figure \ref{linux_interfaces} :
+Les interfaces de la machine sont configurées comme indiqué figure \ref{schema-physique-maquette} page \ref{schema-physique-maquette}, et résumé dans le tableau figure \ref{linux_interfaces} :
 
 \begin{figure}[H]
 	\begin{center}
@@ -55,7 +55,7 @@ Les interfaces de la machine sont configurées comme indiqué sur le schéma ref
 \subparagraph{Résolution des dépendances}
 ~
 
-La machine fonctionne sous \texttt{Linux CentOS 5.1}. OpenVPN n'étant pas disponible directement dans les paquets de cette distribution (datant d'il y a presque deux ans à l'écriture de ces lignes), nous allons construire notre propre rpm. Les paquets requis pour mener à bien cette étape sont à installer grâce à la commande suivante :
+La machine fonctionne sous \texttt{Linux CentOS 5.1}. OpenVPN n'étant pas disponible directement dans les paquets de cette distribution (vieille de deux ans à l'écriture de ces lignes), nous allons construire notre propre rpm. Les paquets requis pour mener à bien cette étape sont à installer grâce à la commande suivante :
 
 \verb|[root@centosvpn ~]# yum install openssl-devel pam-devel rpm-build gcc-c++|
 
@@ -63,9 +63,13 @@ La machine fonctionne sous \texttt{Linux CentOS 5.1}. OpenVPN n'étant pas dispo
 
 La version d'OpenVPN utilisée pour le projet est la 2.0.9 disponible sur \verb|http://openvpn.net/|. Celle-ci dépend des paquets \verb|lzo-devel-1.08-fr2.i386| et \verb|lzo-1.08-fr2.i386|, disponibles par exemple sur \verb|http://rpmfind.net/|.
 
-\verb|[root@centosvpn ~]# wget ftp://rpmfind.net/linux/freshrpms/redhat/9/|
+\verb|[root@centosvpn ~]# wget ftp://rpmfind.net/linux/freshrpms/redhat/9/lzo/lzo-deve|
 
-\verb|[root@centosvpn ~]# lzo/lzo-devel-1.08-fr2.i386.rpm|
+\verb|l-1.08-fr2.i386.rpm|
+
+\verb|[root@centosvpn ~]# wget ftp://rpmfind.net/linux/freshrpms/redhat/9/lzo/lzo-1.08|
+
+\verb|-fr2.i386.rpm|
 
 \verb|[root@centosvpn ~]# rpm -ivh lzo-1.08-fr2.i386 lzo-devel-1.08-fr2.i386.rpm|
 
@@ -113,7 +117,7 @@ verb 3
 
 ~
 
-Pour configurer correctement deux instances qui puissent cohabiter, celles-ci doivent se mettre en écoute sur un port différent. Nous avons choisi le port 1194 (port par défaut d'OpenVPN) pour le serveur profs, ainsi que le port 1195 pour le serveur étudiant. Les figures \ref{configuration_base_prof} et \ref{configuration_base_student} détaillent également la configuration des pool d'adresses à affecter aux clients, ainsi que les informations de routage à leur transmettre :
+Pour configurer correctement deux instances qui puissent cohabiter, celles-ci doivent se mettre en écoute sur un port différent. Nous avons choisi le port 1194 (port par défaut d'OpenVPN) pour le serveur profs, ainsi que le port 1195 pour le serveur étudiant. Les figures \ref{configuration_base_prof} et \ref{configuration_base_student} détaillent également la configuration des pools d'adresses à affecter aux clients, ainsi que les informations de routage à leur transmettre :
 
 \begin{figure}[H]
 	\begin{lstlisting}[frame=trBL]
@@ -144,9 +148,7 @@ Dans cette section nous allons voir comment générer les clefs et certificats q
 
 ~
 
-Commençons par récupérer les outils. Si OpenVPN a été compilé suivant les étapes ci-dessus, ceux-ci se trouve dans le répertoire \verb|/usr/share/openvpn/easy-rsa|. Il faut copier ce répertoire dans un lieu sûr puis ouvrir un shell à cet endroit.
-
-L'étape suivante consiste à éditer le fichier \verb|vars| pour configurer les paramètres globaux des scripts : KEY\_COUNTRY, KEY\_PROVINCE, KEY\_CITY, KEY\_ORG, et KEY\_EMAIL comme indiqué en exemple par la figure \ref{easy-rsa-globals} :
+Commençons par récupérer les outils. Si OpenVPN a été compilé suivant les étapes ci-dessus, ceux-ci se trouve dans le répertoire \verb|/usr/share/openvpn/easy-rsa|. Il faut copier ce répertoire dans un lieu sûr puis ouvrir un shell à cet endroit. L'étape suivante consiste à éditer le fichier \verb|vars| pour configurer les paramètres globaux des scripts, comme indiqué figure \ref{easy-rsa-globals} :
 
 \begin{figure}[H]
 	\begin{center}
@@ -164,41 +166,41 @@ export KEY_EMAIL=``nobody@nowhere.com''
 	\label{easy-rsa-globals}
 \end{figure}
 
-Initialiser ensuite l'environnement du shell en important le contenu du fichier var :
+L'environnement du shell doit ensuite être initialisé en important le contenu du fichier vars :
 
-\verb|[root@centosvpn ~]# . ./vars|
+\verb|[root@centosvpn easy-rsa]# . ./vars|
 
 Comme c'est notre premier lancement on s'assure que tout est propre :
 
-\verb|[root@centosvpn ~]# ./clean-all|
+\verb|[root@centosvpn easy-rsa]# ./clean-all|
 
 ~
 
 Nous créons ensuite nos clef et certificat de CA (Certificate Authority) afin de pouvoir signer les certificats de nos clients. Seule l'entrée ``COMMON NAME'' n'est pas tirée du fichier \verb|vars|, la valeur \verb|ISIMA CA| fera très bien l'affaire :
 
-\verb|[root@centosvpn ~]# ./build-ca|
+\verb|[root@centosvpn easy-rsa]# ./build-ca|
 
 ~
 
 Nous allons maintenant générer les clefs et certificats pour le serveur et les deux types de clients. L'entrée ``COMMON NAME'' devra être précisée de façon à prendre respectivement les valeurs ``ISIMA SERVER'', ``ISIMA PROF'' et ``ISIMA STUDENT''. De plus il faut signer chaque certificat avec notre CA et commiter le résultat dans la base OpenSSL du serveur :
 
-\verb|[root@centosvpn ~]# ./build-key-server server|
+\verb|[root@centosvpn easy-rsa]# ./build-key-server server|
 
-\verb|[root@centosvpn ~]# ./build-key prof|
+\verb|[root@centosvpn easy-rsa]# ./build-key prof|
 
-\verb|[root@centosvpn ~]# ./build-key student|
+\verb|[root@centosvpn easy-rsa]# ./build-key student|
 
 ~
 
 Ensuite nous initialisons un générateur de grand nombres premiers pour le procédé d'échange de clefs via la méthode Diffie Hellman :
 
-\verb|[root@centosvpn ~]# ./build-dh|
+\verb|[root@centosvpn easy-rsa]# ./build-dh|
 
 ~
 
 Pour finir, il nous reste à générer une dernière clef qui sera utilisée pour signer chaque paquet échangé entre les clients et le serveur et augmenter encore le niveau de sécurité du serveur VPN :
 
-\verb|[root@centosvpn ~]# (cd keys ; openvpn --genkey --secret ta.key)|
+\verb|[root@centosvpn easy-rsa]# (cd keys ; openvpn --genkey --secret ta.key)|
 
 ~
 
@@ -210,7 +212,7 @@ Dans cette section nous avons généré de nombreuses clefs et certificats dans 
 			Fichier		& Requis par	& Rôle							& Secret\\
 			\hline
 			ta.key		& Tous			& clef de signature				& OUI\\
-			ca.crt		& Tous			& certificat root CA			& non\\
+			ca.crt		& Tous			& certificat Root CA			& non\\
 			ca.key		& serveur		& clef privée Root CA			& OUI\\
 			dh{n}.pem	& serveur		& paramètres Diffie Hellman		& non\\
 			server.crt	& serveur		& certificat serveur			& non\\
@@ -225,17 +227,17 @@ Dans cette section nous avons généré de nombreuses clefs et certificats dans 
 	\label{easy-rsa-clefs}
 \end{figure}
 
-Il reste donc à copier les clefs et certificats du serveur dans le dossier \verb|/etc/openvpn| et à indiquer dans nos deux fichiers de configuration du serveur d'utiliser ces fichiers en leur ajoutant les lignes suivantes :
+Il reste donc à copier les clefs et certificats du serveur dans le dossier \verb|/etc/openvpn| et à indiquer à nos deux fichiers de configuration d'utiliser ces clefs et certificats en leur ajoutant les lignes suivantes :
 
 \begin{figure}[H]
 	\begin{center}
 		\begin{minipage}{0.90\textwidth}
 			\begin{lstlisting}[frame=trBL]
-ca /etc/openvpn/ca.crt
-cert /etc/openvpn/server.crt
-key /etc/openvpn/server.key
-dh /etc/openvpn/dh1024.pem
-tls-auth /etc/openvpn/ta.key 0
+ca       /etc/openvpn/ca.crt
+cert     /etc/openvpn/server.crt
+key      /etc/openvpn/server.key
+dh       /etc/openvpn/dh1024.pem
+tls-auth /etc/openvpn/ta.key        0
 			\end{lstlisting}
 		\end{minipage}
 	\end{center}
@@ -255,7 +257,7 @@ La première étape consiste à installer le client NIS si ce n'est pas déjà f
 
 ~
 
-La deuxième étape consiste à indiquer au système qu'il doit intérroger la base NIS lorsqu'un utilisateur tente de s'authentifier. Pour cela il faut modifier 3 des lignes du fichier \verb|/etc/nsswitch.conf| pour obtenir :
+La deuxième étape consiste à indiquer au système qu'il doit intérroger la base NIS lorsqu'un utilisateur tente de s'authentifier. Pour cela il faut modifier trois lignes dans le fichier \verb|/etc/nsswitch.conf| de façon à avoir :
 
 \begin{figure}[H]
 	\begin{center}
@@ -279,7 +281,7 @@ Le dernier point consiste à indiquer aux instances d'OpenVPN qu'elles doivent c
 \paragraph{Finalisation du serveur}
 ~
 
-La configuration du serveur touche à sa fin, il nous reste à protéger nos fichiers de configurations, clefs et certificats des regards indiscrets. Il est également judicieux de supprimer les clefs privées du répertoire \verb|easy-rsa|.
+La configuration du serveur touche à sa fin, il faut encore protéger nos fichiers de configurations, clefs et certificats des regards indiscrets. Il est également judicieux de supprimer les clefs privées du répertoire \verb|easy-rsa|.
 
 \verb|[root@centosvpn ~]# chmod -R 600 /etc/openvpn|
 
@@ -293,11 +295,11 @@ Il nous reste à planifier le lancement des services au démarrage :
 
 \subsubsection{Mise en place du client}
 
-Comme expliqué précédemment, il existe un client pour OpenVPN quelque soit la plate-forme utilisée. Le client pour Windows peut être récupéré depuis le site officiel d'OpenVPN et à l'installer comme n'importe quel autre logiciel. Pour ce qui est des systèmes Linux récents, ils possèdent tous un client OpenVPN intégré à la distribution. Concernant les autres systèmes, c'est à dire les Linux moins récents, MacOS, Solaris et BSD il est nécessaire de récupérer les sources du client (au format tar.gz) depuis le site officiel d'OpenVPN puis le compiler. De nombreux tutoriaux existent et couvrent tous les cas de figure pour ces différents systèmes.
+Comme expliqué précédemment, il existe un client pour OpenVPN quelque soit la plate-forme utilisée. Le client pour Windows peut être récupéré depuis le site officiel d'OpenVPN et à l'installer comme n'importe quel autre logiciel. Pour ce qui est des systèmes Linux récents, ils possèdent tous un client OpenVPN intégré à la distribution. Concernant les autres systèmes, c'est à dire les Linux moins récents, MacOS, Solaris et BSD il est nécessaire de récupérer les sources du client (au format tar.gz) depuis le site officiel d'OpenVPN et de les compiler. De nombreux tutoriaux existent et couvrent tous les cas de figure pour ces différents systèmes.
 
 Une fois le client installé la configuration est extrêmement simple : il suffit de copier le fichier de paramètres ainsi que le certificat et la clef du client dans le bon répertoire : \verb|/etc/openvpn/| pour les systèmes UNIX, et généralement \verb|c:\Program Files\openvpn\config| sous Windows. Les différents fichiers pourrait typiquement être récupérés depuis l'intranet.
 
-La figure \ref{config_openvpn_client_student} présente le contenu des fichiers de configuration pour les clients professeur et étudiant :
+La figure \ref{config_openvpn_client_student} présente le contenu des fichiers de configuration pour les clients étudiant et professeur :
 
 \begin{figure}[H]
 	\begin{minipage}{0.50\textwidth}
@@ -356,7 +358,7 @@ Une fois installé et lancé, le client est très discret, comme le montre la fi
 
 \begin{figure}[H]
 	\begin{center}
-		\includegraphics[width=0.50\textwidth]{partie_2/images/openvpn-client-connect.png}\\
+		\includegraphics[width=0.47\textwidth]{partie_2/images/openvpn-client-connect.png}\\
 	\end{center}
 	\caption{Client OpenVPN sous windows}
 	\label{openvpn_screen_windows}
@@ -365,9 +367,9 @@ Une fois installé et lancé, le client est très discret, comme le montre la fi
 
 \subsubsection{Bilan et limites de la solution}
 
-Une fois passée la phase un peu fastidieuse de mise en place et de configuration du serveur, OpenVPN se révèle facile à installer et à utiliser. Côté serveur, une fois les phases de compilation, installation, configuration, génération des certificats et lien avec la base NIS accomplies, le travail d'administration du serveur est quasi nul et n'impose plus que de regénérer les certificats une fois de temps en temps.
+Une fois passée la phase un peu fastidieuse de mise en place et de configuration du serveur, OpenVPN se révèle facile à installer et à utiliser. Côté serveur, une fois les phases de compilation, installation, configuration, génération des certificats et lien avec la base NIS accomplies, le travail d'administration est quasi nul et n'impose plus que de regénérer les certificats une fois de temps en temps.
 
-Côté client, la tâche est aisée, tout du moins sous Linux et Windows. Pour les autres systèmes la tâche peut se révéler complexe, mais le client a au moins le mérite d'exister et de fonctionner parfaitement.
+Côté client la tâche est aisée, tout du moins sous Linux et Windows. Pour les autres systèmes la tâche peut se révéler complexe, mais le client a au moins le mérite d'exister et de fonctionner parfaitement.
 
 La solution en elle même fournit un très bon niveau de sécurité. Les différents certificats permettent non seulement d'identifier les clients auprès du serveur, mais assurent également les clients qu'ils s'adressent bien au bon serveur. Pour finir l'authentification des clients est réalisée en faisant directement appel à l'annuaire de l'ISIMA.
 
