@@ -1,153 +1,97 @@
-\subsection{Critères retenus}
+\subsection{Critères d'évaluation}
 
-Avant de définir les différents critères que lequelle nous nous sommes basé, un petit rappel du cahier des charges nous semble judicieux.
-
-
+Nous avons établit la liste des critères d'évaluation à partir du cahier des charges que nous nous sommes fixé en première partie de ce rapport. Ce cahier des charges comprenait les 5 axes suivants :
 \begin{itemize}
- 	\item implémentation rapide côté serveur,
-	\item le client VPN doit être utilisable sur n'importe quelle plateforme,
-	\item la configuration du client VPN doit être simple et rapide,
-	\item s'adapter aux différents serveurs de l'ISIMA.
+ 	\item Facilité de déploiement du serveur.
+	\item Client VPN multiplate-forme.
+	\item Facilité d'installation, de configuration de d'utilisation du client.
+	\item Intégration au sein du réseau de l'ISIMA.
+	\item Niveau de sécurité fourni par la solution.
 \end{itemize}
+~
 
-
-En fonction de ce cahier des charges, nous avons défini plusieurs critères, qui seront répartis dans trois thèmes différents:
-
-\begin{itemize}
- 	\item Côté client 
- 	\item Côté serveur
- 	\item Sécurité
-\end{itemize}
-
- Commençons par les critères du côté client. 
-
+De ce cahier des charges on dégage rapidement trois catégories de critères à étudier : l'aspect client, le côté serveur, ainsi que le niveau de sécurité.
 
 \subsubsection{Côte Client}
 
-Du point de vue du client, nous avons défini trois critères important:
-\begin{itemize}
- 	\item Le déploiement du client
-	\item Le délai de connexion
-\end{itemize}
-
-\paragraph{Configuration du client}
+\paragraph{Déploiement du client}
 ~
 
+Lors de la mise en place de chacune des solutions, nous avons présenté le processus d'installation et de mise en place du client pour l'utilisateur. Nous nous limiterons à un comparatif des clients sous Windows car c'est le seul système pour lequel les clients de chaque solution sont fonctionnels.
 
-Lors de la phase test de nos trois solutions, nous nous sommes intéressés à la manière dont l'utilisateur devait configurer son client VPN pour pouvoir se connecter aux différents serveurs. Dans cette partie, nous avons confronter les trois solutions en supposant que l'utilisateur est sous un système d'exploitation de type Windows 2000/XP. Les conclusions seront plus intéressantes sous windows, car sous Linux quelque soit le client VPN installé, l'utilisateur devra passer du temps à télécharger les différents paquets et à configurer sa connexion.
-
-Pour la solution Windows, le client VPN est déjà inclus dans le système d'exploitation. L'utilisateur doit seulement créer une nouvelle connexion et la paramètrer en mode VPN. On estime le temps de configuration à moins de 30 secondes.
 ~
 
+Pour la solution VPN de Microsoft, le client étant intégré au système d'exploitation, l'utilisateur a juste à créer une nouvelle connexion et la paramètrer en mode VPN qui prend plus ou moins 30 secondes en suivant les directives présentées en \ref{label_client_windows} page \pageref{label_client_windows}.
 
-Concernant OpenVPN, l'utilisateur doit dans un premier temps télécharger le client VPN qui est disponible sur le site officiel. Cependant, nous pensons qu'il faudrait inclure une version d'OpenVPN sur l'intranet de l'ISIMA. Le client est très léger il ne pèse que 978 Ko. L'utilisateur ne perdera pas de temps à le télécharger. Du point de vue installation, en fonction de la capacité de la machine, celle-ci peut prendre du temps. En effet, lors de l'installation le client VPN installe une nouvelle carte réseau qui sera destiné au tunnel VPN. Une fos installé, il faudra copier les différents fichiers de configuration ainsi que les certificats dans le dossier d'installation.
-On estime l'installation et la configuration à un bonne dizaine de minutes.
+Concernant OpenVPN, l'utilisateur doit dans un premier temps télécharger le client VPN depuis le site officiel (qui aurait éventuellement sa place sur l'Intranet de l'ISIMA). Le client est très léger (978 Ko), mais la durée nécessaire à l'installationdépend des capacité de la machine, le client devat installer une carte réseau virtuelle pour son bon fonctionnement. Néanmoins, une fois installé il suffit de copier le fichier de configuration ainsi que le certificat et la clef utilisateur dans le dossier d'installation. L'ensemble prend 5 à 10 minutes.
+
+La solution CISCO impose, de même que pour OpenVPN, de télécharger leur client. Celui-ci est plus conséquent (9 Mo) et aurait également sa place sur l'intranet de l'ISIMA. L'installation est par contre rapide (moins de 2 minutes). Pour la configuration du client, l'utilisateur a le choix. Soit il configure manuellement la connexion VPN, cela sous-entendant qu'il en connaisse les paramètres, soit il importe directement un fichier de configuration (environ 1Ko). La procédure prend en tout de 5 à 10 minutes.
+
 ~
 
-
-Pour la solution de CISCO, il faut télécharger comme OpenVPN leur client. Celui est plus conséquent, car il pèse environ 9 Mo. Nous recommandons de mettre une version de ce client sur l'intranet de l'ISIMA. D'un point de vue installation, le client CISCO est performant, il s'installe relativement rapidement (moins de 2 minutes). Pour la configuration du client, l'utilisateur a le choix. Soit il configure manuellement la connexion VPN, cela sous-entendant qu'il connaisse la clé partagé, soit il importe directement le fichier de configuration (environ 1Ko)
-Cependant le plus gros inconvénient du client CISCO est que l'école devra avoir un accès au site CISCO, car son téléchargement peut se faire lorsqu'on s'identifie sur le site. Pour la plupart des tests que nous avons pratiqués, nous avons trouvé le client CISCO sur différents sites Internet n'appartenant pas à CISCO.
-On estime l'installation et la configuration à un moins de dix minutes.
-
-D'un point de vue déploiement du client VPN, la solution de Microsoft reste la plus avantageuse. 
-
-Voyons à présent le critère du délai de connexion  
+D'un point de vue déploiement du client VPN, la solution de Microsoft reste donc la plus avantageuse sous Windows.
 
 \paragraph{Délai de connexion}
 ~\
 
+Nous nous sommes intéressés à évaluer la durée nécessaire à l'établissement de la connexion VPN. Avec le client CISCO, le délai de connexion est assez long. En effet, la connexion s'effectue en deux phases, avec tout d'abord l'authentification IKE, et ensuite l'identification en interrogeant le serveur RADIUS qui lui même interroge la base NIS.
 
-Tout comme la configuration du client VPN, nous nous sommes intéressés au délai avant que la connexion VPN s'établisse.
-Avec le client CISCO, le délai de connexion est assez long. En effet, la connexion s'effectue en deux phases. La première phase consiste aux différentes phases du protocole IKE et la deuxième phase consiste à l'interrogation du serveur RADIUS qui lui même interroge la base NIS. 
-Avec le client Windows, nous avons remarqué que le temps de connexion était plus rapide qu'avec le client CISCO. Cela provient du fait que la solution ne se base pas sur le protocole IPsec. Cependant, la phase de connexion qui peut-être longue se situe pendant la phase de challenge MD5 car en fonction de la charge réseau l'échange d'informations peut se révéler longue.
-Avec le client OpenVPN, l'utilisateur s'authentifie et s'identifie très rapidement en comparaison des deux autres solutions. Nous pensons que la présence d'un certificat signé sur le poste utilisateur accélère la phase de connexion.
+Avec le client Windows, nous avons remarqué que le temps de connexion était plus rapide qu'avec le client CISCO. Cependant, la phase de challenge MD5 peut être longue en fonction de la charge réseau à laquelle le serveur est soumis.
 
-Concernant le délai de connexion, le client de OpenVPN s'avère être le plus performant.
+Avec le client OpenVPN, l'utilisateur s'authentifie et s'identifie très rapidement en comparaison des deux autres solutions. Nous pensons que la présence d'un certificat signé sur le poste utilisateur accélère cette phase de connexion.
 
-Il est à noter que nous n'avons pas souhaité mésurer le délai de connexion, car comme il s'agit d'une maquette sur un réseau local, on ne peut pas simuler le trafic réel d'Internet.
+~
 
-Après avoir détailler les deux critères du côte client, intéressons nous au coté serveur.
-
-
+Concernant le délai de connexion, le client de OpenVPN s'avère être le plus performant. Il est à noter que nous n'avons pas souhaité mésurer avec précision le délai de connexion, car ne s'agissant que d'une maquette sur un réseau local une telle mesure n'aurait pas été représentative.
 
 \subsubsection{Côté Serveur}
 
-Concernant le côté serveur, nous avons choisit deux critères:
-\begin{itemize}
- 	\item Déploiement du serveur
-	\item Coût de chaque solution 
-\end{itemize}
-
-Détaillons à présent ces différents critères
-
 \paragraph{Déploiement du serveur}
-~\
+~
 
+L'installation du serveur OpenVPN a été particulièrement longue. En effet, il a fallu dans un premier temps installer sur le serveur CentOS l'ensemble des dépendances nécessairesà la compilation d'OpenVPN, à le compiler, puis enfin à installer le logiciel. Une fois l'installation terminée, il nous a fallu générer les différents certificats pour les groupes PROFS et STUDENTS. En dernier temps il a fallu interfacer le serveur avec la base NIS de l'ISIMA pour récupérer les identifiants et mots de passes des utilisateurs.
 
-Tout comme la configuration du client, nous nous sommes intéressé à la complexité de l'installation des différents services nécessaires au bon fonctionnement 
+Pour Windows Server, nous avons dû installer quatre services différents : DNS, DHCP, Active Directory, Service d'accès distant. Une fois cette phase achevée, la configuration de chacun de ses services a été effectuée rapidement en comparaison d'OpenVPN.
 
-L'installation du serveur OpenVPN a été particulièrement longue. En effet, il a fallu dans un premier temps installer sur CentOS toute les dépendances nécessaires pour le bon fonctionnement du serveur. Une fois l'installation terminée, il nous a fallu générer les différents certificats pour les groupes PROFS et STUDENTS. Il nous a fallu aussi dans un troisième temps configurer le serveur OpenVPN pour qu'il puisse interroger la base NIS de l'ISIMA afin de valider les mots de passe utilisateur.
-On estime entre 3 à 4 jours de configuration pour que le serveur VPN soit fonctionnel.
+Enfin pour la solution CISCO, le serveur VPN est inclus dans le matériel. Toutefois nous avons dû installer un serveur RADIUS sur le serveur Linux afin que celui-ci consulte la base NIS pour authentifier l'utilisateur. L'avantage de la solution CISCO est que le fichier de configuration du routeur peut-être sauvegardé et réutilisé. Si un jour le routeur tombe en panne, il faudrait moins de dix minutes pour que le nouveau routeur démarre et récupère la configurationvia TFTP.
 
-Pour Windows Server, nous avons dû installer quatre services différents. (DNS, DHCP, Active Directory, Service d'accès distant). Une fois terminé, la configuration de chacun de ses services s'est avéré rapide en comparaison à OpenVPN.
-On estime à 2 jours de configuration pour qu'un client puisse se connecter au serveur VPN.
+~
 
-Enfin pour la solution CISCO, le serveur VPN est inclus dans le matériel. Toutefois nous avons dû installer un serveur RADIUS sur le serveur Linux afin que celui-ci consulte la base NIS pour authentifier l'utilisateur. L'avantage de la solution CISCO est que le fichier de configuration du routeur peut-être sauvegarder et réutilisable. Si un jour le routeur tombe en panne, il faudrait moins de cinq minutes pour que le nouveau routeur ait la configuration VPN par l'intermédiaire d'un serveur TFTP.
-On estime à une demi journée le temps de configuration de l'ensemble de la solution.
+On se rend compte rapidement que la solution CISCO est la plus adapté du point de vue temps d'installation mais aussi du point de vue de l'administration requise.
 
-
-On se rend compte rapidement que la solution CISCO est la plus adapté du point de vue temps d'installation mais aussi par rapport à l'administration du routeur.
-
-Cependant, l'inconvénient des ces trois solutions provient de leur dépendance. En effet, chaque solution a besoin d'un autre serveur pour fonctionner. Windows a besoin de se synchroniser avec le serveur ISIMA pour répliquer son Active Directory, OpenVPN fonctionne avec la base NIS, quant à CISCO, il dépend du serveur RADIUS mais aussi du serveur DNS.
-
-Voyons à présent le dernier critère que nous avons rétenu. Il s'agit du critère financier. 
+Rappelons qu'aucune des trois solutions n'est indépendante et autonome. En effet, chacune d'entre-elles a besoin d'un autre serveur pour fonctionner : Windows a besoin de se synchroniser avec le serveur ISIMA pour répliquer son Active Directory, OpenVPN fonctionne conjointement avec la base NIS, quant au routeur il dépend du serveur RADIUS qui dépend du NIS.
 
 \paragraph{Coût de chaque solution}
-~\
+~
 
-Il nous était impossible de proposer la meilleure solution VPN sans évoquer l'aspect financier. En effet, chacune des ces solutions a un coût. 
-En commencant par la solution CISCO, on se rend compte que cette solution reste la plus onéreuse En effet, afin d'avoir un solution VPN fonctionnel il faut investir dans un routeur de type 2811. Pour Microsoft, la coût de  solution est dû à la licence. Pour OpenVPN, sachant que c'est un logiciel opensource, le coût est nulle. 
+Il nous était impossible de proposer la meilleure solution VPN sans évoquer l'aspect financier. En effet chacune des ces solutions a un coût, à commencer par la solution CISCO qui est la plus onéreuse des trois, à cause de l'investissement matériel nécessaire. Pour Microsoft, la coût de la solution est à imputer à la licence, tandis que OpenVPN étant Open-Source le coût est nul.
 
-D'un point de vue coût on se rend compte que la solution OpenVPN est la plus avantageuse par rapport au deux autres. 
+~
 
-A présent intéressons nous au dernier thème, celui de la sécurité.
+D'un point de vue coût on se rend compte que la solution OpenVPN est la plus avantageuse par rapport au deux autres.
 
 \subsubsection{Sécurité}
 
-Concernant la partie sécurité, nous avons choisit trois critères:
-\begin{itemize}
- 	\item Authentification et identification
-	\item Login
-	\item Chiffrement
-
-\end{itemize}
-
 \paragraph{Authentification et identification}
+~
 
-Ce critère concerne la manière dont le client est authentifié et identifié.
-Du point de vue Microsoft, nous avons utilisé une authentification avec clé partagée. L'inconvénient de cette méthode est que l'authentification est faible, cela correspond au premier niveau. Pour l'identification, nous avons utilisé un active directory, qui stocke sa base un login et un mot de passe.
+Ce critère concerne la manière dont un client est authentifié et identifié. Pour la solution Microsoft, Le système d'authentification en place est un système faible à base de clefs partagées. L'identification passe par un annuaire Active Directory local référençant les identifiants et mots de passes. Rappelons que l'une des faiblesses de l'identification avec MS-Chap v2 était que l'identifiant utilisateur ciscule en clair sur le réseau.
 
-La solution CISCO utilise comme Microsoft une authentification avec clé partagée. La grande différence provient de l'identification. En effet, la solution CISCO utilise un serveur RADIUS qui lui même consulte la base NIS. On a ici une identification forte.
+La solution CISCO utilise également une authentification via clefs partagées. Par contre l'identification faitintervenir un serveur RADIUS qui lui même consulte la base NIS de l'école afin de récupérer les identifiants de l'ISIMA.
 
-Quant à OpenVPN l'authentification se fait par l'intermédiaire d'un certificat. Du point vue sécurité ce moyen est le plus sur comparée à la clé partagée. Pour l'identification, OpenVPN consulte la base NIS pour tester le login et le mot de passe.
+Quant à OpenVPN l'authentification se fait par l'intermédiaire de certificats signés. Il s'agit du moyen le plus sûr mis en place sur la plate-forme. L'identification passe par une consultation de la base NIS.
 
+~
 
-D'un point de vue authentification et identification, la solution OpenVPN est la plus fiable. Il est à remarquer que la solution CISCO peut fonctionner aussi avec des certificats. Cependant, nous n'avons pas réussi à le mettre en place. D'où notre choix pour OpenVPN.
+D'un point de vue authentification et identification, la solution OpenVPN est la plus fiable. Rappelons malgré tout que la solution CISCO peut également fonctionner avec des certificats mais nous ne sommes jamais parvenus à mettre ce système en place, d'où notre choix pour OpenVPN.
 
-\paragraph{Login}
+\paragraph{Efficacité des algorithmes de chiffrement}
+~
 
-Un autre critère qui nous a semblé intéressant est la manière dont le login passe sur le réseau. En utilisant un sniffer comme Wireshark, nous nous sommes rendu compte que le login de Microsoft n'est pas crypté. En effet, le login passe en clair sur le réseau, ce qui peut entrainer des problèmes de sécurité sachant que le nom du serveur n'est pas crypté. Quant à OpenVPN et CISCO, le login est crypté donc il est impossible de voir qui se connecte sur le réseau. 
+Lors de l'implémentation des trois solutions, nous avons remarqué une différence sur le type de chiffrement exploités par les solutions. Microsoft utilise un chiffrement symétrique de type MPPE avec une clef de 128 bits. Un inconvénient est que les systèmes d'exploitation antérieur à Windows XP sont incapables de le gérer, et réclameraient un chiffrement plus faible.
 
-Du point de vue login, OpenVPN et CISCO sont les plus performant.
+La solution CISCO utilise elle aussi un chiffrement symétrique mais sur 168 bits. OpenVPN quant à lui utilise une première phase de négociation en chiffrement asymétrique basé sur des certificats et clefs RSA de longueur 1024bits, puis se rabat sur un chiffrement symétrique 256 bits.
 
-Le dernier critère concerne le chiffrement.
+~
 
-\paragraph{Chiffrement}
-
-Lors de l'implémentation des trois solutions, nous avons remarqué une différence sur le type de chiffrement qu'utilise les solutions.
-Microsoft utilile un chiffrement symétrique de type MPPE avec une clé sur 128 bits. L'incovénient majeur est que les systèmes d'exploitation antérieur à Windows XP ne peuvent pas gérer ce type de chiffrement. CISCO utilise lui aussi un chiffrement symétrique mais sur 168 bits. 
-OpenVPN quant à lui utilise un chiffrement asymétrique. C'est à dire qu'on va utiliser une clé public et une clé privée. Ici les clés sont de taille 1024 bits.
-
-Pour le chiffrement, nous avons exclu la solution de Microsoft car il y a une dépendance vis à vis du système d'exploitation. Nous n'avons pas pu départager OpenVPN et CISCO car les deux types de chiffrements se valent.
-
-Voyons à présent les performances de chaque solution.
+La comparaison au niveau sécurité élimine clairement la solution de Microsoft (dans l'état où nous l'avons configurée) de la liste des solutions envisageable. Nous ne pouvons départager OpenVPN et CISCO car les deux types de chiffrements se vaudraient si seulement l'authentification via certificats avait fonctionné sur le routeur.
